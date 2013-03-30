@@ -1,3 +1,4 @@
+
 import random
 import math
 
@@ -96,26 +97,70 @@ def nearestNeighborRandom(retina, minDistance, density, densityArea, maxRandTrie
         currentNumberCells += 1
 
     return currentNumberCells, positions
+        
 
+def densityStatistics(retina, positions):
+    lstPositions    = list(positions)
+    numberPositions = len(lstPositions)
 
+    distanceSum         = 0.0
+    maxDistance         = 0.0
+    minDistance         = 9999999999999.9
+
+    distances = []
+
+    for a in range(numberPositions):
+        aLocID = lstPositions[a]
+        ax, ay = aLocID.split(".")     # Could also use map(int, a.split("."))
+        ax, ay = int(ax), int(ay)
+        for b in range(a+1, numberPositions):
+            bLocID = lstPositions[b]
+            bx, by = bLocID.split(".")
+            bx, by = int(bx), int(by)
+
+            distance = linearDistance(ax, ay, bx, by)
+            distances.append(distance)
+            
+    meanDistance    = sum(distances)/len(distances)
+    maxDistance     = max(distances)
+    minDistance     = min(distances)
+
+    varianceSquared = 0.0
+    for d in distances:
+        varianceSquared += (d - meanDistance)**2
+    stdev = (varianceSquared/len(distances))**0.5
+
+    meanDistance    *= retina.gridSize
+    maxDistance     *= retina.gridSize
+    minDistance     *= retina.gridSize
+    stdev           *= retina.gridSize
+    
+    return meanDistance, maxDistance, minDistance, stdev
+    
+
+            
+        
     
 
 
 um_to_m = 1/1000000.0
-m_to_um = 1/1000000.0
+m_to_um = 1/um_to_m
 
 retinaWidth     = 1000 *  um_to_m
 retinaHeight    = 1000 *  um_to_m
-retinaGridSize  = 1 * um_to_m
+retinaGridSize  = 100 * um_to_m
 retina          = Retina(retinaWidth, retinaHeight, retinaGridSize)
 
 
 minDistance     = 10 * um_to_m
-density         = 10000.0
+density         = 1000.0
 densityArea     = retinaWidth * retinaHeight
 numberCells,ps  = nearestNeighborRandom(retina, minDistance, density, densityArea, maxRandTries=10000)
 
 print numberCells
+m, ma, mi, sd = densityStatistics(retina, ps)
+print m*m_to_um, ma*m_to_um, mi*m_to_um, sd*m_to_um
+
 
 ##import cProfile
 ##cProfile.run("print nearestNeighborRandom(retina, minDistance, density, densityArea, maxRandTries=100)")
