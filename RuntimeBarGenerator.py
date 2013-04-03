@@ -43,6 +43,8 @@ class RuntimeBarGenerator:
         self.frameDuration      = 1.0/self.framerate
         self.barColor           = barColor    
         self.backgroundColor    = backgroundColor
+        self.movieWidth         = movieSize[0]
+        self.movieHeight        = movieSize[1]
 
         # Create the vertices of the bar
         self.barVertices = []
@@ -119,9 +121,9 @@ class RuntimeBarGenerator:
         pygame.draw.polygon(self.displaySurface, self.barColor, self.barVertices, 0)
         pygame.display.update()
     
-    def update(self, timeStep):
+    def update(self, timestep):
 
-        self.time += timeStep
+        self.time += timestep
 
         # Find the elapsed frame time since last update and set the new frame number
         elapsedTime     = 0.0
