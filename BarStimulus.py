@@ -29,6 +29,7 @@ class BarStimulus:
         self.position       = position
         self.pixelSize      = pixelSize
         self.barGenerator   = barGenerator
+        self.size           = (barGenerator.movieWidth * pixelSize, barGenerator.movieHeight * pixelSize)
 
         left    = position[0]
         right   = position[0] + barGenerator.movieWidth * pixelSize
@@ -44,7 +45,7 @@ class BarStimulus:
         x, y = int(x), int(y)
 
         rgbArray    = self.barGenerator.getScreenArray()
-        rgb         = rgbArray[x, y, :]
+        rgb         = rgbArray[x, y, :] # I think this needs to be [y, x, :]
         intensity   = np.average(rgb)/255.0
 
         return intensity
@@ -68,6 +69,11 @@ class BarStimulus:
         right   = int(m.ceil((right-self.position[0]) / self.pixelSize))
         up      = int(m.floor((up-self.position[1]) / self.pixelSize))
         down    = int(m.ceil((down-self.position[1]) / self.pixelSize))
+
+        left    = max(0, left)
+        right   = min(self.barGenerator.movieWidth-1, right)
+        up      = max(0, up)
+        down    = min(self.barGenerator.movieHeight-1, down)
 
         # Now that we have the pixel ranges, we can iterate through them and
         # check each pixel's retinal space bounding box for overlap with the cone

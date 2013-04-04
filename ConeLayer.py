@@ -2,6 +2,8 @@ import math
 import random
 from Constants import *
 
+from time import clock
+
 
 """
 Linear distance between two points
@@ -17,6 +19,8 @@ class ConeLayer:
         self.retina = retina
         
         self.nearest_neighbor_distance  = nearest_neighbor_distance
+        self.nearest_neighbor_distance_gridded  = nearest_neighbor_distance / retina.gridSize
+        
         self.minimum_required_density   = minimum_required_density
 
         density_area                    = 1 * MM_TO_M * MM_TO_M
@@ -28,11 +32,34 @@ class ConeLayer:
 
         self.placeNeurons()
 
-        self.input_field_radius = input_field_radius
+        self.input_field_radius         = input_field_radius
+        self.input_field_radius_gridded = input_field_radius / retina.gridSize
+        
         self.stimulus           = stimulus
-        self.establishInputs()
+        self.establishInputs()  
 
 
+    def updateActivity(self):
+        
+        
+        s1 = clock()
+        t = 0.0
+        for locID in self.locations:
+            connectedPixels = self.inputs[locID]
+            coneActivity = 0.0
+            for pixel in connectedPixels:
+                pixelID, pixelWeight = pixel
+                st = clock()
+                pixelActivity = self.stimulus.getPixelIntensity(pixelID)
+                t += clock()-st
+                coneActivity += (pixelActivity*-2.0 + 1.0) * pixelWeight
+            self.activities[locID] = coneActivity
+
+        print "Cone Total Update Time",clock()-s1
+        print "Cone Accessing Stimulus Time",t
+            
+            
+    
     def establishInputs(self):
         for locID in self.locations:
             x, y = locID.split(".")
@@ -45,8 +72,25 @@ class ConeLayer:
             down    = y + griddedRadius
             coneBox = [left, right, up, down]
 
-            print len(self.stimulus.getPixelOverlaps(coneBox))
+            connectedPixels = self.stimulus.getPixelOverlaps(coneBox)
+            connectedPixels = self.inputWeightingFunction(connectedPixels)
+            self.inputs[locID] = connectedPixels
+
+
+    def inputWeightingFunction(self, inputs):
+        weightSum = 0.0
+        for i in range(len(inputs)):
+            inputID, inputWeight = inputs[i]
+            weightSum += inputWeight
+        for i in range(len(inputs)):
+            inputWeight = inputs[i][1]
+            inputWeight /= weightSum
+            inputs[i][1] = inputWeight
+        return inputs
+        
             
+        
+
         
 
     """

@@ -33,10 +33,10 @@ Methods:
 """
 class RuntimeBarGenerator:
 
-    def __init__(self, framerate=30.0, movieSize=(800,600),
+    def __init__(self, framerate=30.0, movieSize=(800,800),
                  barOrientation=45.0, barSize=(20.0,60.0), barSpeed=20.0, barMovementDistance=500.0,
                  barColor=(0,0,0), backgroundColor=(255,255,255),
-                 startBarPosition=(400,300)):       
+                 startBarPosition=(600,200)):       
 
         # Initialize class variables
         self.framerate          = framerate
