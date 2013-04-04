@@ -33,7 +33,7 @@ Methods:
 """
 class RuntimeBarGenerator:
 
-    def __init__(self, framerate=30.0, movieSize=(800,800),
+    def __init__(self, framerate=30.0, movieSize=(800,600),
                  barOrientation=45.0, barSize=(20.0,60.0), barSpeed=20.0, barMovementDistance=500.0,
                  barColor=(0,0,0), backgroundColor=(255,255,255),
                  startBarPosition=(600,200)):       
@@ -75,6 +75,10 @@ class RuntimeBarGenerator:
         # Initialize the numpy array representing the screen
         self.npScreen = pygame.surfarray.pixels3d(self.displaySurface)
 
+        self.drawBar()
+        self.updateScreenArray()
+        pygame.display.update()
+
     
         
     def initBarVertices(self, width, height, orientation, position):
@@ -113,13 +117,15 @@ class RuntimeBarGenerator:
         x2, y2 = self.startPos
         self.distanceTraveled = linearDistance(x1, y1, x2, y2)
 
-    def getScreenArray(self):
-        return self.npScreen
-
     def drawBar(self):
         self.displaySurface.fill(self.backgroundColor)
         pygame.draw.polygon(self.displaySurface, self.barColor, self.barVertices, 0)
         pygame.display.update()
+
+    def updateScreenArray(self):        
+        # The pygame array returned by pygame is of size (rows=width x cols=height) 
+        screenRGB = pygame.surfarray.pixels3d(self.displaySurface)                   
+        self.npScreen = np.average(screenRGB, 2) / 255.0
     
     def update(self, timestep):
 
@@ -145,6 +151,8 @@ class RuntimeBarGenerator:
         # If the bar has moved, redraw
         if elapsedTime>0:
             self.drawBar()
-            self.npScreen = pygame.surfarray.pixels3d(self.displaySurface)
-        
+            self.updateScreenArray()
+            pygame.display.update()
+            
+       
         return True

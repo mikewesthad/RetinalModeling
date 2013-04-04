@@ -30,7 +30,7 @@ class Retina:
         s = clock()
         self.stimulus.update(1)
         print "Update Stimulus Time",clock()-s
-        
+
         s = clock()
         self.coneLayer.updateActivity()
         print "Update Cone Time",clock()-s

@@ -43,10 +43,7 @@ class BarStimulus:
     def getPixelIntensity(self, pixelID):
         x, y = pixelID.split(".")
         x, y = int(x), int(y)
-
-        rgbArray    = self.barGenerator.getScreenArray()
-        rgb         = rgbArray[x, y, :] # I think this needs to be [y, x, :]
-        intensity   = np.average(rgb)/255.0
+        intensity = self.barGenerator.npScreen[x, y]
 
         return intensity
 

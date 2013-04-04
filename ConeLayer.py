@@ -2,6 +2,7 @@ import math
 import random
 from Constants import *
 
+import numpy as np
 from time import clock
 
 
@@ -37,26 +38,18 @@ class ConeLayer:
         
         self.stimulus           = stimulus
         self.establishInputs()  
-
+        
 
     def updateActivity(self):
         
-        
-        s1 = clock()
-        t = 0.0
         for locID in self.locations:
             connectedPixels = self.inputs[locID]
             coneActivity = 0.0
             for pixel in connectedPixels:
                 pixelID, pixelWeight = pixel
-                st = clock()
-                pixelActivity = self.stimulus.getPixelIntensity(pixelID)
-                t += clock()-st
-                coneActivity += (pixelActivity*-2.0 + 1.0) * pixelWeight
+                intensity = self.stimulus.getPixelIntensity(pixelID)
+                coneActivity += (intensity*-2.0 + 1.0) * pixelWeight
             self.activities[locID] = coneActivity
-
-        print "Cone Total Update Time",clock()-s1
-        print "Cone Accessing Stimulus Time",t
             
             
     
