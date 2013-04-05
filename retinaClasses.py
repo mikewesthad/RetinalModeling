@@ -17,6 +17,8 @@ class locationID(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        
+    #round and force to Int
 
 def generateLocations(n):
     locations = []
@@ -36,8 +38,9 @@ def generateLocations(n):
 dendrite = generateLocations(5)
 for d in dendrite:
     print d.x, d.y
+    
 
-class Dendrite(object)
+class Dendrite(object):
     """A Dendrite is a set of sequential locations on the retinal grid that
     does not bifurcate.  In essence it is a section of a full, bifurcating
     dendrite.  The order is from most proximal to most distal location.
@@ -58,9 +61,11 @@ class Dendrite(object)
         #RetinalGrid needs to be defined
         
     def initPoints(self):
-        """Intantiates a DendritePoint object at each location in self.locations.
+        """Instantiates a DendritePoint object at each location in self.locations.
         """
-        #Can do
+        for loc in self.locations:
+	    p = DendritePoint(self, loc)
+            self.points.append(p)            
         
     def estInputs(self):
         """Searches through all dendritic locations for other neurons present
@@ -134,9 +139,19 @@ class Compartment(object):
         of the compartment.  Used for purpose of calculating distances from
         this compartment.
         """
-        #Can do
+        x_sum = 0.0
+        y_sum = 0.0        
+        n = len(self.dendrite_points)        
+        for p in self.dendrite_points:
+            x_sum += p.location.x
+            y_sum += p.location.y
+        centroid_x = round(x_sum/n)
+        centroid_y = round(y_sum/n)
+        self.center = locationID(centroid_x, centroid_y)
+            
 
-    
-
-
-        
+d = Dendrite("None", dendrite)
+d.initPoints()   
+c = Compartment()
+c.dendrite_points = d.points
+c.calculateCenter()
