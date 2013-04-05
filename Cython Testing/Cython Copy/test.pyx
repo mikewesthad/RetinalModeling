@@ -11,20 +11,20 @@ barMovie    = RuntimeBarGenerator()
 barStimulus = BarStimulus((0.0,0.0), 1.0, barMovie)
 
 # Build Retina
-retinaWidth     = 800 * UM_TO_M
-retinaHeight    = 800 * UM_TO_M
+retinaWidth     = 25 * UM_TO_M
+retinaHeight    = 25 * UM_TO_M
 retinaGridSize  = 1 * UM_TO_M
 retinaTimestep  = 1000 * MS_TO_S
 retina          = Retina(retinaWidth, retinaHeight, retinaGridSize,
                          retinaTimestep, barStimulus)
 
 # Cone Layer
-coneDistance    = 10 * UM_TO_M
-coneDensity     = 10000.0
-coneInputSize   = 10 * UM_TO_M
+coneDistance    = 0 * UM_TO_M
+coneDensity     = 8000.0
+coneInputSize   = 1 * UM_TO_M
 
 # Horizontal Layer
-diffusionDistance = 10 * UM_TO_M
+diffusionDistance = 40 * UM_TO_M
 retina.buildConeLayer(coneDistance, coneDensity, coneInputSize)
 retina.buildHorizontalLayer(diffusionDistance)
 

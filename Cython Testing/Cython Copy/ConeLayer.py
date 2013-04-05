@@ -46,6 +46,7 @@ class ConeLayer:
 
     def initializeActivties(self):
         self.activities = []
+        
         for i in range(self.history_size):
             self.activities.append(np.zeros((self.neurons, 1)))
             

@@ -45,16 +45,10 @@ class Retina:
 
     def buildHorizontalLayer(self, diffusionDistance):
         s = clock()
-        history = 100
         self.horizontalLayer = HorizontalLayer(self, self.coneLayer,
-                                               1, history, self.stimulus, 
-                                               diffusionDistance)
+                                               1, 5, self.stimulus, diffusionDistance)
         print "Horizontal Construction Time:",clock() - s
-        
-        for i in range(history-1):
-            self.horizontalLayer.updateActivity()
-        self.horizontalLayer.playHistory()
-        
+    
     def buildConeLayer(self, minimum_distance, minimum_density, input_field_size):
         s = clock()
         self.coneLayer = ConeLayer(self, minimum_distance, minimum_density,

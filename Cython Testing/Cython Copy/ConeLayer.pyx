@@ -2,6 +2,7 @@ import math
 import random
 from Constants import *
 
+import cython
 import numpy as np
 from time import clock
 
@@ -71,8 +72,10 @@ class ConeLayer:
             
     
     def establishInputs(self):
+        
         for locID in self.locations:
             x, y = locID
+            
 
             griddedRadius = self.input_field_radius / self.retina.gridSize
             left    = x - griddedRadius
@@ -112,11 +115,13 @@ class ConeLayer:
             A maximum number of tries has been exhausted
     """
     def placeNeurons(self, maxRandTries=1000):
+        
         # Set the bounds on the positions
         xmin = 0
         ymin = 0
         xmax = self.retina.gridWidth-1
         ymax = self.retina.gridHeight-1
+        
 
         # Convert the minimum distance from world units to grid units
         griddedDistance     = self.nearest_neighbor_distance / self.retina.gridSize
@@ -124,6 +129,7 @@ class ConeLayer:
 
         # Calculate the number of cells to place
         requiredNumberCells = self.minimum_required_cells
+        
         currentNumberCells  = 0
 
         # Create empty sets to hold the selected positions and the excluded positions
