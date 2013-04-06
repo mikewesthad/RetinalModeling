@@ -10,7 +10,7 @@ framerate               = 30.0              # Fps
 movie_size              = (800, 800)        # Pixels
 bar_orientation         = 45.0              # Degrees clockwise on circle
 bar_size                = (20.0, 60.0)      # Pixels (width = size in direction of motion)
-bar_speed               = 100.0             # Pixels/second
+bar_speed               = 10.0              # Pixels/second
 bar_movement_distance   = 500.0             # Pixels
 bar_position            = (100, 100)        # Pixels
 bar_color               = (0, 0, 0)         # (R,G,B)
@@ -44,23 +44,32 @@ retina = Retina(width, height, grid_size, timestep, bar_stimulus)
                          
 # Build the cone Layer
 cone_distance       = 10 * UM_TO_M
-cone_density        = 3000.0
+cone_density        = 300.0
 cone_input_size     = 10 * UM_TO_M
 retina.buildConeLayer(cone_distance, cone_density, cone_input_size)
 
 # Build the horizontal Layer
-input_strength      = 0.5
+input_strength      = 0.25
 decay_rate          = 0.01
 diffusion_radius    = 100 * UM_TO_M
 
 retina.buildHorizontalLayer(input_strength, decay_rate, diffusion_radius)
 
+# Build the bipolar layer
+bipolar_distance    = 20 * UM_TO_M
+bipolar_density     = 300.0
+input_field_radius  = 30 * UM_TO_M
+output_field_radius = 30 * UM_TO_M
+
+retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius, 
+                         output_field_radius)
+
 
 # Run the model
-duration = 20*timestep
-retina.runModel(duration)
+#duration = 20*timestep
+#retina.runModel(duration)
 
 # Visualize the model
-retina.visualizeConePlacement()
-retina.playConeActivity()
-retina.playHorizontalActivity()
+retina.visualizeOPLCellPlacement()
+#retina.playConeActivity()
+#retina.playHorizontalActivity()
