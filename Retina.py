@@ -31,6 +31,8 @@ class Retina:
         
         self.cone_activities        = []
         self.horizontal_activities  = []
+        self.on_bipolar_activities  = []
+        self.off_bipolar_activities = []
         
 
     """
@@ -57,6 +59,12 @@ class Retina:
         
         horizontal_activity = self.horizontal_layer.updateActivity()
         self.horizontal_activities.append(horizontal_activity)
+        
+        on_bipolar_activity = self.on_bipolar_layer.updateActivity()
+        self.on_bipolar_activities.append(on_bipolar_activity)
+        
+        off_bipolar_activity = self.off_bipolar_layer.updateActivity()
+        self.off_bipolar_activities.append(off_bipolar_activity)
 
     """
     Build the cone layer 
@@ -85,11 +93,15 @@ class Retina:
     def buildBipolarLayer(self, minimum_distance, minimum_density, input_field_radius, output_field_radius):
         input_delay = 1
         start_time = clock()
-        self.bipolar_layer = BipolarLayer(self, self.cone_layer, self.horizontal_layer,
-                                          self.history_size, input_delay,
-                                          minimum_distance, minimum_density,
-                                          input_field_radius, output_field_radius)
-        print "Bipolar Layer Construction Time:", clock() - start_time
+        self.on_bipolar_layer = BipolarLayer(self, self.cone_layer, self.horizontal_layer,
+                                             self.history_size, input_delay,
+                                             minimum_distance, minimum_density,
+                                             input_field_radius, output_field_radius)
+        self.off_bipolar_layer = BipolarLayer(self, self.cone_layer, self.horizontal_layer,
+                                              self.history_size, input_delay,
+                                              minimum_distance, minimum_density,
+                                              input_field_radius, output_field_radius)
+        print "On and Off Bipolar Layers Construction Time:", clock() - start_time
 
 
 
@@ -110,17 +122,20 @@ class Retina:
         background_color                = pygame.Color(255, 255, 255)
         cone_highlighted_color          = pygame.Color("#FFCF87")
         horizontal_highlighted_color    = pygame.Color("#FFA722")
-        bipolar_highlighted_color       = pygame.Color("#007DFF")
+        on_bipolar_highlighted_color    = pygame.Color("#5CCAE7")
+        off_bipolar_highlighted_color   = pygame.Color("#007DFF")
         
         display.fill(background_color)
 
         cone_radius         = int(self.cone_layer.nearest_neighbor_distance_gridded/2.0)
         horizontal_radius   = cone_radius + 3
-        bipolar_radius      = int(self.bipolar_layer.nearest_neighbor_distance_gridded/2.0)
+        on_bipolar_radius   = int(self.on_bipolar_layer.nearest_neighbor_distance_gridded/2.0)
+        off_bipolar_radius  = int(self.off_bipolar_layer.nearest_neighbor_distance_gridded/2.0)
         
         cone_locations          = self.cone_layer.locations
         horizontal_locations    = self.horizontal_layer.locations        
-        bipolar_locations       = self.bipolar_layer.locations
+        on_bipolar_locations    = self.on_bipolar_layer.locations      
+        off_bipolar_locations   = self.off_bipolar_layer.locations
 
         running = True
         highlightedLayer = 0
@@ -131,43 +146,61 @@ class Retina:
                 if event.type == KEYDOWN:
                     if event.key == K_LEFT:                        
                         highlightedLayer -= 1
-                        if highlightedLayer < 0: highlightedLayer = 3
+                        if highlightedLayer < 0: highlightedLayer = 4
                     if event.key == K_RIGHT:                    
                         highlightedLayer += 1
-                        if highlightedLayer > 3: highlightedLayer = 0
+                        if highlightedLayer > 4: highlightedLayer = 0
                 
             if highlightedLayer == 0:
                 pygame.display.set_caption("All Layers")      
                 cone_color          = cone_highlighted_color
                 horizontal_color    = horizontal_highlighted_color
-                bipolar_color       = bipolar_highlighted_color
-                drawOrder           = [[bipolar_locations, bipolar_color, bipolar_radius],
+                on_bipolar_color    = on_bipolar_highlighted_color
+                off_bipolar_color   = off_bipolar_highlighted_color
+                drawOrder           = [[on_bipolar_locations, on_bipolar_color, on_bipolar_radius],
+                                       [off_bipolar_locations, off_bipolar_color, off_bipolar_radius],
                                        [horizontal_locations, horizontal_color, horizontal_radius],
                                        [cone_locations, cone_color, cone_radius]]                
             elif highlightedLayer == 1:
                 pygame.display.set_caption("Cone Layer")      
                 cone_color          = cone_highlighted_color
                 horizontal_color    = self.lerpColors(horizontal_highlighted_color, background_color, 0.85)
-                bipolar_color       = self.lerpColors(bipolar_highlighted_color, background_color, 0.85)
-                drawOrder           = [[bipolar_locations, bipolar_color, bipolar_radius],
+                on_bipolar_color    = self.lerpColors(on_bipolar_highlighted_color, background_color, 0.85)
+                off_bipolar_color   = self.lerpColors(off_bipolar_highlighted_color, background_color, 0.85)
+                drawOrder           = [[on_bipolar_locations, on_bipolar_color, on_bipolar_radius],
+                                       [off_bipolar_locations, off_bipolar_color, off_bipolar_radius],
                                        [horizontal_locations, horizontal_color, horizontal_radius],
                                        [cone_locations, cone_color, cone_radius]] 
             elif highlightedLayer == 2:
                 pygame.display.set_caption("Horizontal Layer")      
                 cone_color          = self.lerpColors(cone_highlighted_color, background_color, 0.85)
                 horizontal_color    = horizontal_highlighted_color
-                bipolar_color       = self.lerpColors(bipolar_highlighted_color, background_color, 0.85)
-                drawOrder           = [[bipolar_locations, bipolar_color, bipolar_radius],
+                on_bipolar_color    = self.lerpColors(on_bipolar_highlighted_color, background_color, 0.85)
+                off_bipolar_color   = self.lerpColors(off_bipolar_highlighted_color, background_color, 0.85)
+                drawOrder           = [[on_bipolar_locations, on_bipolar_color, on_bipolar_radius],
+                                       [off_bipolar_locations, off_bipolar_color, off_bipolar_radius],
                                        [cone_locations, cone_color, cone_radius],
                                        [horizontal_locations, horizontal_color, horizontal_radius]] 
-            else:
-                pygame.display.set_caption("Bipolar Layer")                
+            elif highlightedLayer == 3:
+                pygame.display.set_caption("On Bipolar Layer")      
                 cone_color          = self.lerpColors(cone_highlighted_color, background_color, 0.85)
                 horizontal_color    = self.lerpColors(horizontal_highlighted_color, background_color, 0.85)
-                bipolar_color       = bipolar_highlighted_color
-                drawOrder           = [[horizontal_locations, horizontal_color, horizontal_radius],
+                on_bipolar_color    = on_bipolar_highlighted_color
+                off_bipolar_color   = self.lerpColors(off_bipolar_highlighted_color, background_color, 0.85)
+                drawOrder           = [[off_bipolar_locations, off_bipolar_color, off_bipolar_radius],
                                        [cone_locations, cone_color, cone_radius],
-                                       [bipolar_locations, bipolar_color, bipolar_radius]] 
+                                       [horizontal_locations, horizontal_color, horizontal_radius],
+                                       [on_bipolar_locations, on_bipolar_color, on_bipolar_radius]] 
+            else:
+                pygame.display.set_caption("Off Bipolar Layer")      
+                cone_color          = self.lerpColors(cone_highlighted_color, background_color, 0.85)
+                horizontal_color    = self.lerpColors(horizontal_highlighted_color, background_color, 0.85)
+                on_bipolar_color    = self.lerpColors(on_bipolar_highlighted_color, background_color, 0.85)
+                off_bipolar_color   = off_bipolar_highlighted_color
+                drawOrder           = [[on_bipolar_locations, on_bipolar_color, on_bipolar_radius],
+                                       [cone_locations, cone_color, cone_radius],
+                                       [horizontal_locations, horizontal_color, horizontal_radius],
+                                       [off_bipolar_locations, off_bipolar_color, off_bipolar_radius]] 
             
             for locations, color, radius in drawOrder:
                 for x, y in locations:
@@ -186,35 +219,49 @@ class Retina:
 
 
             
-            
-            
-    def playConeActivity(self):
-        pygame.init()
+    def playOnBipolarActivity(self):
+        self.playLayerActivity("On Bipolar", self.on_bipolar_layer, self.on_bipolar_activities)
         
+    def playOffBipolarActivity(self):
+        self.playLayerActivity("Off Bipolar", self.off_bipolar_layer, self.off_bipolar_activities)
+    
+    def playConeActivity(self):
+        self.playLayerActivity("Cone", self.cone_layer, self.cone_activities)
+    
+    def playHorizontalActivity(self):
+        self.playLayerActivity("Horizontal", self.horizontal_layer, self.horizontal_activities)
+            
+    def playLayerActivity(self, layer_name, layer, activities, 
+                          estimated_minimum_activity=-1.0, 
+                          estimated_maximum_activity=1.0):
+        pygame.init()        
         screen_size = (self.grid_width, self.grid_height)
         display     = pygame.display.set_mode(screen_size)
+        pygame.display.set_caption(layer_name+" Activity Timestep 0")
         
         background_color = (255, 255, 255)
         
-        cl              = self.cone_layer
-        radius          = int(cl.nearest_neighbor_distance_gridded/2)
+        radius          = int(layer.nearest_neighbor_distance_gridded/2)
+        max_activity    = np.amax(activities)
+        min_activity    = np.amin(activities)
+        max_activity    = max(max_activity, estimated_maximum_activity)
+        min_activity    = min(min_activity, estimated_minimum_activity)
+        print "Max",layer_name,"Activity Value:", max_activity
+        print "Min",layer_name,"Activity Value:", min_activity
         
         timestep        = 0
-        end_timestep    = len(self.cone_activities)-1
-        print "Cone Activity Timestep", timestep
-            
+        end_timestep    = len(activities)-1
+        
         running = True
         while running:
-            
             display.fill(background_color)
         
-            for n in range(cl.neurons):
-                x, y       = cl.locations[n]
-                activity   = self.cone_activities[timestep][0,n]
-                if activity < 0:
-                    color = (0,0,-1*activity*255)
-                else: 
-                    color = (activity*255,0,0)
+            for n in range(layer.neurons):
+                x, y        = layer.locations[n]
+                activity    = activities[timestep][0,n]                
+                percent     = (activity-min_activity) / (max_activity-min_activity)
+                if percent < 0.5:   color = (0,0,2*percent*255)
+                else:               color = (2*(percent-0.5)*255,0,0)
                 pygame.draw.circle(display, color, (x,y), radius) 
                 
             for event in pygame.event.get():
@@ -224,74 +271,13 @@ class Retina:
                     if event.key == K_RIGHT:
                         timestep += 1
                         if timestep > end_timestep: timestep = 0
-                        print "Cone Activity Timestep", timestep
+                        pygame.display.set_caption(layer_name+" Activity Timestep "+str(timestep))
                     elif event.key == K_LEFT:
                         timestep -= 1
                         if timestep < 0: timestep = end_timestep
-                        print "Cone Activity Timestep", timestep
+                        pygame.display.set_caption(layer_name+" Activity Timestep "+str(timestep))
                         
             pygame.display.update()
-            
-            
-    def playHorizontalActivity(self):
-        pygame.init()
-        
-        screen_size = (self.grid_width, self.grid_height)
-        display     = pygame.display.set_mode(screen_size)
-        
-        background_color = (255, 255, 255)
-        
-        hl              = self.horizontal_layer
-        radius          = int(hl.nearest_neighbor_distance_gridded/2)
-        max_activity    = np.amax(self.horizontal_activities)
-        min_activity    = np.amin(self.horizontal_activities)
-        max_activity    = max(max_activity, 1.0)
-        min_activity    = min(min_activity, -1.0)
-        print "Max Horizontal Activity Value", max_activity
-        print "Min Horizontal Activity Value", min_activity
-        
-        timestep        = 0
-        end_timestep    = len(self.horizontal_activities)-1
-        print "Horizontal Activity Timestep", timestep
-            
-        running = True
-        while running:
-            
-            display.fill(background_color)
-        
-            for n in range(hl.neurons):
-                x, y        = hl.locations[n]
-                activity    = self.horizontal_activities[timestep][0,n]                
-                percent     = (activity-min_activity) / (max_activity-min_activity)
-                if percent < 0.5:
-                    color = (0,0,2*percent*255)
-                else: 
-                    color = (2*(percent-0.5)*255,0,0)
-                    
-                try:
-                    pygame.draw.circle(display, color, (x,y), radius) 
-                except:
-                    print activity
-                    print percent
-                    print color
-                    asds
-                
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    running = False
-                elif event.type == KEYDOWN:
-                    if event.key == K_RIGHT:
-                        timestep += 1
-                        if timestep > end_timestep: timestep = 0
-                        print "Horizontal Activity Timestep", timestep
-                    elif event.key == K_LEFT:
-                        timestep -= 1
-                        if timestep < 0: timestep = end_timestep
-                        print "Horizontal Activity Timestep", timestep
-                        
-            pygame.display.update()
-
-
 
 
 
@@ -324,6 +310,7 @@ class Retina:
 #        
 #    def visualizeBipolarPlacement(self):
 #        self.visualizeCellPlacement(self.bipolar_layer, pygame.Color("#007DFF"))
+
 
 
 #    def visualizeConeWeights(self):

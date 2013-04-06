@@ -66,10 +66,12 @@ retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius,
 
 
 # Run the model
-#duration = 20*timestep
-#retina.runModel(duration)
+duration = 20*timestep
+retina.runModel(duration)
 
 # Visualize the model
 retina.visualizeOPLCellPlacement()
-#retina.playConeActivity()
-#retina.playHorizontalActivity()
+retina.playConeActivity()
+retina.playHorizontalActivity()
+retina.playOnBipolarActivity()
+retina.playOffBipolarActivity()

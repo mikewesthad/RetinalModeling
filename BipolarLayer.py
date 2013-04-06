@@ -36,6 +36,29 @@ class BipolarLayer:
         
 
             
+    def updateActivity(self):
+
+        del self.activities[-1]
+        currentActivities = np.zeros((1, self.neurons))
+        
+#        for n in range(self.neurons):
+#            x, y = self.locations[n]
+#            locID = str(x)+"."+str(y)
+#            connectedPixels = self.inputs[locID]
+#            coneActivity = 0.0
+#            for pixel in connectedPixels:
+#                pixelID, pixelWeight = pixel
+#                intensity = self.stimulus.getPixelIntensity(pixelID)
+#                coneActivity += (intensity*-2.0 + 1.0) * pixelWeight
+#            currentActivities[0, n] = coneActivity
+            
+        self.activities.insert(0, currentActivities)
+        
+        return currentActivities
+            
+            
+            
+            
             
 
     def initializeActivties(self):
