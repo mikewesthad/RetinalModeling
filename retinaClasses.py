@@ -6,6 +6,41 @@ Jason Farina
 """
 import random
 
+class RetinalGrid(object):
+    """The RetinalGrid keeps track of all neuron classes that are located at 
+    each of its locations.
+    """
+    grid = {}    
+    types_accepted = ['Neuron', 'Dendrite', 'DendritePoint', 'Compartment']    
+    type_index = {'Neuron': 0, 'Dendrite': 1, 'DendritePoint': 2, 'Compartment': 3}    
+    
+    def __init__(self, width, height, spacing):
+        """Creates retinal_grid dictionary by taking in the grid width, grid 
+        height, and grid spacing in micrometers.
+        """
+        width = width/spacing   #convert from um to rgu's (retinal grid units)
+        height = height/spacing #convert from um to rgu's
+        for w in range(width+1):
+            for h in range(height+1):
+                self.grid[(w,h)] = [ [], [], [], [] ]
+                
+    def registerLocation(self, member):
+        """Registers member with the grid at the single point specified in the
+        'location' attribute.  Cannot handle members that have a multiple
+        'locations' attribute.
+        """
+        type_info = str(type(member)).split(".")
+        type_info = type_info[1].split("'")
+        print(type_info)
+        type_tag = type_info[0]        
+        assert type_tag in self.types_accepted, '{0} not accepted.'.format(member)
+        assert hasattr(member, 'location'), 'Can only register objects with single "location."'        
+        index = self.type_index[type_tag]
+        key = member.location.x, member.location.y
+        self.grid[key][index].append(member)
+
+r = RetinalGrid(100,100,1)
+
 outputs = {'gly':  False,
            'glu':  False,
            'gab':  False,
@@ -15,10 +50,17 @@ class locationID(object):
     """This class specifies methods for handling retinal grid locations.
     """
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        self.x = int(round(x))
+        self.y = int(round(y))
         
-    #round and force to Int
+    @property
+    def xfloat(self):
+        return float(self.x)
+    
+    @property
+    def yfloat(self):
+        return float(self.y)
+        
 
 def generateLocations(n):
     locations = []
@@ -145,8 +187,8 @@ class Compartment(object):
         for p in self.dendrite_points:
             x_sum += p.location.x
             y_sum += p.location.y
-        centroid_x = round(x_sum/n)
-        centroid_y = round(y_sum/n)
+        centroid_x = x_sum/n
+        centroid_y = y_sum/n
         self.center = locationID(centroid_x, centroid_y)
             
 
