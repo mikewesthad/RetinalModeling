@@ -1,5 +1,3 @@
-import math
-import random
 import numpy as np
 import pygame
 from pygame.locals import *
@@ -7,40 +5,42 @@ from Constants import *
 
 
 
-"""
-Linear distance between two points
-"""
-def linearDistance(x1, y1, x2, y2):
-    return ((x2-x1)**2.0 + (y2-y1)**2.0)**0.5
-
 class HorizontalLayer:
 
-    def __init__(self, retina, cone_layer, input_delay, history_size, stimulus, diffusionDistance):
+    def __init__(self, retina, cone_layer, input_delay, history_size, 
+                 input_strength, decay_rate, diffusion_width):
 
-        self.retina = retina
+        self.retina     = retina
+        self.cone_layer = cone_layer
 
-        self.history_size = history_size
-        self.input_delay = input_delay
-
-        self.diffusionDistance = diffusionDistance/retina.gridSize
+        self.history_size   = history_size
+        self.input_delay    = input_delay
     
-        self.locations = cone_layer.locations
-        self.neurons = len(self.locations)
+        self.nearest_neighbor_distance          = cone_layer.nearest_neighbor_distance
+        self.nearest_neighbor_distance_gridded  = cone_layer.nearest_neighbor_distance_gridded
+        
+        self.diffusion_width            = diffusion_width
+        self.diffusion_width_gridded    = diffusion_width / retina.grid_size
+        
+        self.locations  = cone_layer.locations
+        self.neurons    = len(self.locations)
         self.initializeActivties()
 
         self.establishLateralConnections()
         
-        self.nearest_neighbor_distance  = cone_layer.nearest_neighbor_distance
-        self.nearest_neighbor_distance_gridded  = cone_layer.nearest_neighbor_distance_gridded
+        self.decay_rate         = decay_rate
+        self.input_strength     = input_strength
         
-        self.activities[0][0,20] = 1.0
-        self.activities[0][0,21] = 1.0
-        self.activities[0][0,22] = 1.0
+        
 
-
+    """
+    This function creates the weight matrix that defines diffusion.  It calculates
+    the distances from each horizontal cell to all other horizontal cells, applies
+    a gaussian to those distances and then normalizes the sum of each row to 1
+    """
     def establishLateralConnections(self):
         # An (n x n) array
-        self.lateralWeights = np.zeros((self.neurons, self.neurons))
+        distances = np.zeros((self.neurons, self.neurons))
         
         # Fill the array with distances between each neuron
         for n1 in range(self.neurons):
@@ -48,25 +48,57 @@ class HorizontalLayer:
             for n2 in range(n1, self.neurons):
                 x2, y2 = self.locations[n2]
                 distance = linearDistance(x1, y1, x2, y2)
-                self.lateralWeights[n1, n2] = distance
-                if n1 != n2: self.lateralWeights[n2, n1] = distance
+                distances[n1, n2] = distance
+                if n1 != n2: distances[n2, n1] = distance
         
         # Perform e^(-distance**2/width) on each element in the distance matrix
-        self.lateralWeights = np.exp(-(self.lateralWeights)**2/(2.0*self.diffusionDistance**2.0))
+        sigma = self.diffusion_width_gridded
+        self.lateral_weights = np.exp(-(distances)**2/(2.0*sigma**2.0))
         
         # Get the sum of each row
-        rowSum = np.sum(self.lateralWeights, 1)
+        row_sum = np.sum(self.lateral_weights, 1)
         
         # Reshape the rowSum into a column vector since sum removes a dimension
-        rowSum.shape = (self.neurons, 1)
+        row_sum.shape = (self.neurons, 1)
         
         # Normalize the weight matrix
-        self.lateralWeights = self.lateralWeights / rowSum
-
+        self.lateral_weights = self.lateral_weights / row_sum
+        
+        
+    """
+    Initialize a zero-filled history activity 
+    """
     def initializeActivties(self):
         self.activities = []
         for i in range(self.history_size):
-            self.activities.append(np.zeros((1, self.neurons)))
+            blank_activity = np.zeros((1, self.neurons))
+            self.activities.append(blank_activity)
+            
+    """
+    Update the horizontal cell activity based on diffusion, decay and cone activity 
+    """      
+    def updateActivity(self):
+        # Delete the oldest activity and get the current activity
+        del self.activities[-1]
+        last_activity = self.activities[0]
+        
+        # Calculate the diffusion
+        d = self.decay_rate
+        diffusionActivity = (1.0-d) * np.dot(last_activity, self.lateral_weights)
+        
+        # Get the cone activity
+        cone_activity   = self.cone_layer.activities[self.input_delay]
+        
+        # Find the new activity
+        i = self.input_strength
+        new_activity = (1.0-i) * diffusionActivity + i * cone_activity
+        
+        # Add the most recent activity to the front of the list
+        self.activities.insert(0, new_activity)
+        
+        return new_activity
+    
+    
     
     
     def playHistory(self):
@@ -77,7 +109,6 @@ class HorizontalLayer:
         
         backgroundColor = (255,255,255)
         horizontalColor = (255,0,0)
-        maxActivity = np.max(self.activities)
         radius = int(self.nearest_neighbor_distance_gridded/2)
         
         time = len(self.activities) - 1
@@ -102,12 +133,9 @@ class HorizontalLayer:
             for n in range(self.neurons):
                 x, y            = self.locations[n]
                 activity        = self.activities[time][0,n]
-                percentOfMax    = activity/maxActivity
-                horizontalColor = (percentOfMax*255,0,0)
+                horizontalColor = ((activity+1)/2.0*255,0,0)
                 
-                thickness       = 1
-                if percentOfMax > 0.00001: thickness = 0
-                pygame.draw.circle(displaySurface, horizontalColor, (x,y), radius, thickness) 
+                pygame.draw.circle(displaySurface, horizontalColor, (x,y), radius) 
                 
             
             
@@ -160,30 +188,33 @@ class HorizontalLayer:
             pygame.display.update()
 
 
-    def updateActivity(self):
-        del self.activities[-1]
-        lastActivity = self.activities[0]
-        newActivity = np.dot(lastActivity, self.lateralWeights)
-        self.activities.insert(0, newActivity)
+
         
-    def drawLocations(self):
-        
-        pygame.init()
-        screenSize = (self.retina.gridWidth, self.retina.gridHeight)
-        displaySurface = pygame.display.set_mode(screenSize)
-        
-        backgroundColor = (255,255,255)
-        horizontalColor = (255,0,0)
-        displaySurface.fill(backgroundColor)
-        
-        for loc in self.locations:
-            x, y = loc
-            pygame.draw.circle(displaySurface, horizontalColor, (x,y), int(self.diffusionDistance), 1)
-            
-        running = True
-        while running:
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    running = False
-            pygame.display.update()
-            
+#    def drawLocations(self):
+#        
+#        pygame.init()
+#        screenSize = (self.retina.gridWidth, self.retina.gridHeight)
+#        displaySurface = pygame.display.set_mode(screenSize)
+#        
+#        backgroundColor = (255,255,255)
+#        horizontalColor = (255,0,0)
+#        displaySurface.fill(backgroundColor)
+#        
+#        for loc in self.locations:
+#            x, y = loc
+#            pygame.draw.circle(displaySurface, horizontalColor, (x,y), int(self.diffusionDistance), 1)
+#            
+#        running = True
+#        while running:
+#            for event in pygame.event.get():
+#                if event.type == QUIT:
+#                    running = False
+#            pygame.display.update()
+    
+
+
+"""
+Linear distance between two points
+"""
+def linearDistance(x1, y1, x2, y2):
+    return ((x2-x1)**2.0 + (y2-y1)**2.0)**0.5
