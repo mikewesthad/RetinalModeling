@@ -35,8 +35,7 @@ class ConeLayer:
         self.history_size = history_size
         self.initializeActivties()
 
-        self.establishInputs()
-        
+        self.establishInputs()        
         
 
             

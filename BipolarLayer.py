@@ -6,13 +6,14 @@ from Constants import *
 
 class BipolarLayer:
     
-    def __init__(self, retina, cone_layer, horizontal_layer, history_size,
+    def __init__(self, retina, bipolar_type, cone_layer, horizontal_layer, history_size,
                  input_delay, nearest_neighbor_distance, minimum_required_density,
                  input_field_radius, output_field_radius):
                      
         self.retina             = retina
         self.cone_layer         = cone_layer
         self.horizontal_layer   = horizontal_layer
+        self.bipolar_type       = bipolar_type
 
         self.history_size   = history_size
         self.input_delay    = input_delay
@@ -32,8 +33,13 @@ class BipolarLayer:
         self.placeNeurons()
         self.neurons = len(self.locations)
         
+        # Hack to keep the structure of IDs = "x.y" (current visualization needs IDs of this structure)
+        self.triad_locations = {}
+        
+        
         self.initializeActivties()
         self.establishInputs()
+        
         
 
             
@@ -42,17 +48,30 @@ class BipolarLayer:
         del self.activities[-1]
         currentActivities = np.zeros((1, self.neurons))
         
-#        for n in range(self.neurons):
-#            x, y = self.locations[n]
-#            locID = str(x)+"."+str(y)
-#            connectedPixels = self.inputs[locID]
-#            coneActivity = 0.0
-#            for pixel in connectedPixels:
-#                pixelID, pixelWeight = pixel
-#                intensity = self.stimulus.getPixelIntensity(pixelID)
-#                coneActivity += (intensity*-2.0 + 1.0) * pixelWeight
-#            currentActivities[0, n] = coneActivity
+        cone_activities         = self.cone_layer.activities[self.input_delay]
+        horizontal_activities   = self.horizontal_layer.activities[self.input_delay]
+        
+        for n in range(self.neurons):
+            x, y                = self.locations[n]
+            loc_ID              = str(x)+"."+str(y)
+            connected_triads    = self.inputs[loc_ID]
+            bipolar_activity    = 0.0
             
+            for triad in connected_triads:
+                triad_ID, triad_weight  = triad
+                triad_number            = self.triad_locations[triad_ID]
+                cone_activity           = cone_activities[0, triad_number]
+                horizontal_activity     = horizontal_activities[0, triad_number]
+                
+                if self.bipolar_type == "On":
+                    triad_activity = -(cone_activity - horizontal_activity)/2.0  
+                else: 
+                    triad_activity = (cone_activity - horizontal_activity)/2.0
+                
+                bipolar_activity += triad_weight * triad_activity
+            
+            currentActivities[0, n] = bipolar_activity
+        
         self.activities.insert(0, currentActivities)
         
         return currentActivities
@@ -63,13 +82,16 @@ class BipolarLayer:
     def establishInputs(self):
         self.inputs = {}
         radius = self.input_field_radius_gridded
+        number_triads = len(self.cone_layer.locations)
         for x, y in self.locations:
             
             connected_triads = []
-            for triad_x, triad_y in self.cone_layer.locations:
+            for triad_number in range(number_triads):                
+                triad_x, triad_y = self.cone_layer.locations[triad_number]
                 if linearDistance(x, y, triad_x, triad_y) < radius:
                     triad_ID        = str(triad_x)+"."+str(triad_y)
                     triad_weight    = 1.0
+                    self.triad_locations[triad_ID] = triad_number                    
                     connected_triads.append([triad_ID, triad_weight])
                     
             connected_triads = self.inputWeightingFunction(connected_triads)

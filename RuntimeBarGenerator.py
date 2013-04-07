@@ -165,6 +165,10 @@ class RuntimeBarGenerator:
             self.updateScreenArray()
             
         return True
+        
+    
+    def removeDisplay(self):
+        self.display = None
 
 
 

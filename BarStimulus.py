@@ -24,6 +24,14 @@ class BarStimulus:
         self.bounding_box = [left, right, up, down]
         
     """
+    The module used for saving (pickle) can't handle pygame's surface, so it must
+    be unloaded before saving
+    """
+    def unloadStimulusForSaving(self):
+        self.bar_movie.removeDisplay()
+        
+    
+    """
     Update the bar_movie
     """
     def update(self, timestep):
