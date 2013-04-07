@@ -5,6 +5,8 @@ Jason Farina
 2013/04/04
 """
 import random
+import math
+import collections
 
 class RetinalGrid(object):
     """The RetinalGrid keeps track of all neuron classes that are located at 
@@ -69,16 +71,47 @@ class RetinalGrid(object):
         key = location.key
         #assert class_type in self.types_accepted, "That class_type is not accepted."
         index = self.type_index[class_type]
-        return self.grid[key][index]
+        if class_type:        
+            return self.grid[key][index]
+        else:
+            return self.grid[key]
 
 #instantiates a retinal grid 100x100um with 1um spacing
 r = RetinalGrid(100,100,1)
 
 
-outputs = {'gly':  False,
-           'glu':  False,
-           'gab':  False,
-           'ach':  False}
+neurotransmitters = ['gly', 'glu', 'gab', 'ach']
+
+class Outputs(object):
+    """This class specifies methods for handling the neurotransmitters that are
+    output from a particular object in retinal space."""
+    
+    outputs = {}   
+    
+    def __init__(self, neurotransmitters):
+        self.nt_types = neurotransmitters
+        for nt in neurotransmitters:
+            self.outputs[nt] = [False, 0]
+         
+    def isOutput(self, nt_type):
+        assert nt_type in self.nt_types, "Invalid neurotransmitter."
+        return self.outputs[nt_type][0]
+
+    def getAmount(self, nt_type):
+        assert nt_type in self.nt_types, "Invalid neurotransmitter."
+        return self.outputs[nt_type][1]
+        
+    def setAmount(self, nt_type, amount):
+        self.outputs[nt_type][1] = amount
+
+"""
+# dictionary = {n.t.:  [isOutput, amount]}
+outputs = {'gly':  [False, 0],
+           'glu':  [False, 0],
+           'gab':  [False, 0],
+           'ach':  [False, 0]} 
+nt_types = [k for k in outputs.keys()]
+"""
 
 class LocationID(object):
     """This class specifies methods for handling retinal grid locations.
@@ -99,7 +132,23 @@ class LocationID(object):
     def key(self):
         return self.x, self.y
         
+    def distFrom(self, location):
+        x1 = location.x
+        y1 = location.y
+        x2 = self.x
+        y2 = self.y
+        return math.sqrt( (x2-x1)**2 + (y2-y1)**2 )
+        
 
+class Neuron(object):
+    """A Neuron is a soma_location in conjunction with a host of individual
+    dendrites or a more general dendritic field (and possibly axonal) field.
+    """
+    
+    def __init__(self, location):
+        """Creates a new neuron at the location given."""
+        self.soma_location = location
+        
     
 
 class Dendrite(object):
@@ -137,13 +186,21 @@ class Dendrite(object):
         and updates self.inputs to include those that satisfy the connection
         requirements.
         """
-        #RetinalGrid needs to be defined
+        def isAppropriateInput(point):
+            return True
+                        
+        for point in self.points:
+            present = self.grid.whosHere(point.location, 'DendritePoint')
+            present = filter(lambda x:  x is not point, present)
+            connections = filter(isAppropriateInput, present)
+            new_connections = filter(lambda x:  x not in point.inputs, connections)            
+            point.inputs.extend(new_connections)
 
-    def calculateSomaPointHeading(pos):
+    def calculateHeadingFromSoma(self, pos):
         """Given a LocationID, calculates a heading from its neuron's soma to
         that location.  Returns an angle.
         """
-        #Needs Neuron class
+        return pos.distFrom(self.neuron.soma_location)
         
     
         
@@ -159,8 +216,9 @@ class DendritePoint(object):
         self.compartment = None
         self.location = location
         self.is_output_zone = True
-        self.outputs = outputs
+        self.outputs = Outputs(neurotransmitters)
         self.inputs = []
+        self.nt_accepted = neurotransmitters
 
 
 class Compartment(object):
@@ -170,12 +228,16 @@ class Compartment(object):
     grid = r    #Hardcoding this instance of the retinal grid as being associated
                 #with all dendrites
 
-    def __init__(self):
+    def __init__(self, neighbor):
         """Create a new compartment."""
+        self.neighbor_proximal = neighbor
+        self.neighbor_distal = None        
         self.points = []   
         self.inputs = []            #other compartments
-        self.outputs = outputs
+                                    #will be recast as dict = {elem: freq}
+        self.outputs = Outputs(neurotransmitters)
         self.center = None
+        self.nt_accepted = []
 
     def registerWithGrid(self):
         """Lets all of the corresponding retinal grid points know that he
@@ -187,21 +249,65 @@ class Compartment(object):
     def getInputs(self):
         """Updates self.inputs to contain all other compartments which input
         to this one.
+        
+        QUESTION:  This list may have duplicates.  Do we want to prevent 
+        duplicates and instead note how many times each appears?
+        
+        ANSWER:  Yes, that's what Mike wants.  Implemented below.        
+        
+        Possible implementation sketch:
+        import collections
+        inputs = collections.Counter(inputs)    #dictionary with freq value
+        inputs.keys()                           #items in list
+        inputs.values()                         #frequencies
+        
         """
-        #Can do once two dendrites have overlapping compartments
+        for point in self.points:                       #my DendritePoints
+            for input in point.inputs:                  #their inputs (other DendritePoints)
+                self.inputs.append(input.compartment)   #their associated compartment
+        self.inputs = collections.Counter(self.inputs)  #dict = {elem: freq}
+        #need to update self.nt_accepted based on constituent DendritePoints
 
     def updateActivity(self):
-        """Based onthe current inputs, this method updates the internal
+        """Based on the current inputs, this method updates the internal
         potential and thus the levels of neurotransmitters to be output.
         """
-        #Need inputs
+        def nt_in_2_potential(totals_in):
+            amount = sum(totals_in.values())            
+            potential = amount
+            return potential
+            
+        def potential_2_nt_out(nt_type, potential):
+            amount = potential
+            return amount
+        
+        totals_in = {}
+        #for each neurotransmitter accepted
+        for nt in self.nt_accepted:  
+            totals_in[nt] = 0.0
+            #for each input
+            for input in self.inputs:
+                #retrieve input amount
+                totals_in[nt] += input.getOutput(nt)
+            #Now calculate new potential
+            potential = nt_in_2_potential(totals_in)
+        #Then calculate each new output amout
+        #for each nt output
+        for nt in self.outputs.keys():            
+            new_amount = potential_2_nt_out(nt, potential)
+            self.outputs.setAmount(nt, new_amount)
+        #update outputs
+            
+        
 
-    def getOutputs(self, nt_type):
-        """Given a type of neurotransmitter, returns the amount released
-        from this compartment per retinal grid location.
-        """
-        #Can do
-
+    def getOutput(self, nt_type):
+        """Given a type of neurotransmitter, return the amount (per retinal 
+        grid location) released from this compartment.
+        """  
+        if self.outputs.isOutput(nt_type):            
+                return self.outputs.amount[nt_type]
+        
+            
     def calculateCenter(self):
         """Determines the retinal grid location that represents the "center"
         of the compartment.  Used for purpose of calculating distances from
@@ -216,7 +322,13 @@ class Compartment(object):
         centroid_x = x_sum/n
         centroid_y = y_sum/n
         self.center = LocationID(centroid_x, centroid_y)
-            
+  
+
+
+###############
+# Test Script #
+###############
+          
 #This code creates a random set of sequential locations
 def generateLocations(n):
     locations = []
@@ -248,7 +360,7 @@ d = Dendrite("None", dendrite)
 #who initializes his points
 d.initPoints()   
 #associates them with a compartment
-c = Compartment()
+c = Compartment(None)
 c.points = d.points
 c.calculateCenter()
 #registers them with the Retinal Grid
@@ -259,3 +371,29 @@ c.registerWithGrid()
 for i in range(len(d.points)):
     #print(r.whosHere(d.points[i].location, 'DendritePoint'))
     print(r.grid[d.points[i].location.key])
+    
+#dendrite establishes inputs
+d.estInputs()
+#and should come up empty...
+for i in range(len(d.points)):
+    print input
+
+#instantiate another dendrite, d1, that crosses the first dendrite, d
+locations = [LocationID(10,12), LocationID(11,11), LocationID(12,10)]
+d1 = Dendrite("None", locations)
+d1.initPoints()
+d1.registerWithGrid()
+
+#have dendrite d establish inputs again
+d.estInputs()
+#and this time should have one
+for point in d.points:
+    print point.inputs
+ 
+#Instantiate a Neuron n   
+n = Neuron(LocationID(10,10))
+#assign to dendrite d
+d.neuron = n
+#calculate distance from soma for all dendrite poionts
+for point in d.points:
+    print'Soma Distance =', d.calculateHeadingFromSoma(point.location)
