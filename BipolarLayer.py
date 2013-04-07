@@ -33,6 +33,7 @@ class BipolarLayer:
         self.neurons = len(self.locations)
         
         self.initializeActivties()
+        self.establishInputs()
         
 
             
@@ -55,34 +56,25 @@ class BipolarLayer:
         self.activities.insert(0, currentActivities)
         
         return currentActivities
-            
-            
-            
-            
-            
-
-    def initializeActivties(self):
-        self.activities = []
-        for i in range(self.history_size):
-            self.activities.append(np.zeros((1, self.neurons)))
-            
+    
+    """
+    Hacked
+    """
     def establishInputs(self):
-        for loc_ID in self.locations:
-            x, y = loc_ID
-
-            gridded_radius = self.input_field_radius_gridded
+        self.inputs = {}
+        radius = self.input_field_radius_gridded
+        for x, y in self.locations:
             
-            left        = x - gridded_radius
-            right       = x + gridded_radius
-            up          = y - gridded_radius
-            down        = y + gridded_radius
-            cone_box    = [left, right, up, down]
-
-            connected_pixels = self.stimulus.getPixelOverlaps(cone_box)
-            connected_pixels = self.inputWeightingFunction(connected_pixels)
-            
+            connected_triads = []
+            for triad_x, triad_y in self.cone_layer.locations:
+                if linearDistance(x, y, triad_x, triad_y) < radius:
+                    triad_ID        = str(triad_x)+"."+str(triad_y)
+                    triad_weight    = 1.0
+                    connected_triads.append([triad_ID, triad_weight])
+                    
+            connected_triads = self.inputWeightingFunction(connected_triads)
             loc_ID = str(x)+"."+str(y)
-            self.inputs[loc_ID] = connected_pixels
+            self.inputs[loc_ID] = connected_triads
 
     def inputWeightingFunction(self, inputs):
         weight_sum = 0.0
@@ -98,6 +90,10 @@ class BipolarLayer:
         return inputs
         
         
+    def initializeActivties(self):
+        self.activities = []
+        for i in range(self.history_size):
+            self.activities.append(np.zeros((1, self.neurons)))   
         
     """
     Nearest neighbor distance constrained placement of points

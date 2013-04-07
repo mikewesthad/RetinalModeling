@@ -35,7 +35,6 @@ class ConeLayer:
         self.history_size = history_size
         self.initializeActivties()
 
-        self.inputs = {}     
         self.establishInputs()
         
         
@@ -72,6 +71,7 @@ class ConeLayer:
             
     
     def establishInputs(self):
+        self.inputs = {}     
         for loc_ID in self.locations:
             x, y = loc_ID
 
