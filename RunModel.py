@@ -44,7 +44,7 @@ retina = Retina("Test", width, height, grid_size, timestep, bar_stimulus)
                          
 # Build the cone Layer
 cone_distance       = 10 * UM_TO_M
-cone_density        = 3000.0
+cone_density        = 300.0
 cone_input_size     = 10 * UM_TO_M
 retina.buildConeLayer(cone_distance, cone_density, cone_input_size)
 
@@ -57,7 +57,7 @@ retina.buildHorizontalLayer(input_strength, decay_rate, diffusion_radius)
 
 # Build the bipolar layer
 bipolar_distance    = 20 * UM_TO_M
-bipolar_density     = 3000.0
+bipolar_density     = 300.0
 input_field_radius  = 100 * UM_TO_M
 output_field_radius = 30 * UM_TO_M
 
@@ -66,10 +66,10 @@ retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius,
 
 
 # Run the model
-duration = 40*timestep
+duration = 5*timestep
 retina.runModel(duration)
 
-retina.saveModel()
+#retina.saveModel()
 
 # Visualize the model
 retina.visualizeOnBipolarWeights()

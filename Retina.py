@@ -43,6 +43,11 @@ class Retina:
         
         self.run_name = run_name
         
+        
+        self.display_width  = 1000
+        self.display_height = 1000
+        self.calculateDisplay()
+        
        
     """
     This function saves the current retina object using the Pickle module
@@ -148,17 +153,21 @@ class Retina:
 
 
 
-
-
 ###############################################################################
 # Visualization functions
 ###############################################################################
+
+    def calculateDisplay(self):        
+        width_scale         = self.display_width / float(self.grid_width)
+        height_scale        = self.display_height / float(self.grid_height)
+        self.display_scale  = min(width_scale, height_scale)
+        self.display_size   = (self.display_width, self.display_height) 
+        
     
     def visualizeOPLCellPlacement(self):
         pygame.init()
         
-        screen_size = (self.grid_width, self.grid_height)
-        display     = pygame.display.set_mode(screen_size)
+        display     = pygame.display.set_mode(self.display_size)
         
         cone_highlighted_color          = self.cone_color
         horizontal_highlighted_color    = self.horizontal_color
@@ -166,16 +175,16 @@ class Retina:
         off_bipolar_highlighted_color   = self.off_bipolar_color
         
         display.fill(self.background_color)
-
-        cone_radius         = int(self.cone_layer.nearest_neighbor_distance_gridded/2.0)
-        horizontal_radius   = cone_radius + 3
-        on_bipolar_radius   = int(self.on_bipolar_layer.nearest_neighbor_distance_gridded/2.0)
-        off_bipolar_radius  = int(self.off_bipolar_layer.nearest_neighbor_distance_gridded/2.0)
         
-        cone_locations          = self.cone_layer.locations
-        horizontal_locations    = self.horizontal_layer.locations        
-        on_bipolar_locations    = self.on_bipolar_layer.locations      
-        off_bipolar_locations   = self.off_bipolar_layer.locations
+        cone_radius         = int(round(self.cone_layer.nearest_neighbor_distance_gridded/2.0 * self.display_scale))
+        horizontal_radius   = int(round((self.horizontal_layer.nearest_neighbor_distance_gridded/2.0 + 3) * self.display_scale)) # Add 3 so you can see behind cones
+        on_bipolar_radius   = int(round(self.on_bipolar_layer.nearest_neighbor_distance_gridded/2.0 * self.display_scale))
+        off_bipolar_radius  = int(round(self.off_bipolar_layer.nearest_neighbor_distance_gridded/2.0 * self.display_scale))
+        
+        cone_locations          = [[int(round(x * self.display_scale)),int(round(y * self.display_scale))] for x, y in self.cone_layer.locations]
+        horizontal_locations    = [[int(round(x * self.display_scale)),int(round(y * self.display_scale))] for x, y in self.horizontal_layer.locations]        
+        on_bipolar_locations    = [[int(round(x * self.display_scale)),int(round(y * self.display_scale))] for x, y in self.on_bipolar_layer.locations] 
+        off_bipolar_locations   = [[int(round(x * self.display_scale)),int(round(y * self.display_scale))] for x, y in self.off_bipolar_layer.locations]
 
         running = True
         highlightedLayer = 0
@@ -244,7 +253,7 @@ class Retina:
             
             for locations, color, radius in drawOrder:
                 for x, y in locations:
-                    pygame.draw.circle(display, color, (x,y), radius)
+                    pygame.draw.circle(display, color, (x, y), radius)
                     
             pygame.display.update()      
                     
@@ -277,11 +286,10 @@ class Retina:
                           estimated_minimum_activity=-1.0, 
                           estimated_maximum_activity=1.0):
         pygame.init()        
-        screen_size = (self.grid_width, self.grid_height)
-        display     = pygame.display.set_mode(screen_size)
+        display = pygame.display.set_mode(self.display_size)
         pygame.display.set_caption(layer_name+" Activity Timestep 0")
         
-        radius          = int(layer.nearest_neighbor_distance_gridded/2)
+        radius          = int(round(layer.nearest_neighbor_distance_gridded/2.0 * self.display_scale))
         max_activity    = np.amax(activities)
         min_activity    = np.amin(activities)
         max_activity    = max(max_activity, estimated_maximum_activity)
@@ -298,6 +306,7 @@ class Retina:
         
             for n in range(layer.neurons):
                 x, y        = layer.locations[n]
+                x, y        = int(round(x * self.display_scale)), int(round(y * self.display_scale))
                 activity    = activities[timestep][0,n]
                 percent     = (activity-min_activity) / (max_activity-min_activity)
                 if percent < 0.5:   color = (0,0,2*percent*255)
@@ -334,17 +343,16 @@ class Retina:
     def visualizeInputWeights(self, layer, input_layer, layer_color, 
                               input_layer_color, layer_name, input_layer_name):
         pygame.init()        
-        screen_size = (self.grid_width, self.grid_height)
-        display = pygame.display.set_mode(screen_size)
+        display = pygame.display.set_mode(self.display_size)
         pygame.display.set_caption(layer_name+" Inputs From "+input_layer_name+" Layer")
         
         location_index  = 0
         last_location   = len(layer.locations) - 1         
         
-        radius          = int(layer.input_field_radius_gridded)
-        input_radius    = int(input_layer.nearest_neighbor_distance_gridded)
+        radius          = int(round(layer.input_field_radius_gridded*self.display_scale))
+        input_radius    = int(round(input_layer.nearest_neighbor_distance_gridded*self.display_scale))
         
-        background_layer_radius = int(layer.nearest_neighbor_distance_gridded)
+        background_layer_radius = int(round(layer.nearest_neighbor_distance_gridded*self.display_scale))
         background_layer_color  = self.lerpColors(layer_color, self.background_color, 0.85)
         
         running = True
@@ -352,19 +360,22 @@ class Retina:
             display.fill(self.background_color)                
             
             for x, y in layer.locations:
-                pygame.draw.circle(display, background_layer_color, (x,y), background_layer_radius)
+                display_x, display_y = int(round(x * self.display_scale)), int(round(y * self.display_scale))
+                pygame.draw.circle(display, background_layer_color, (display_x, display_y), background_layer_radius)
             
             x, y    = layer.locations[location_index]
             loc_ID  = str(x)+"."+str(y)
-            pygame.draw.circle(display, layer_color, (x,y), radius)
+            display_x, display_y = int(round(x * self.display_scale)), int(round(y * self.display_scale))
+            pygame.draw.circle(display, layer_color, (display_x, display_y), radius)
         
             connected_inputs = layer.inputs[loc_ID]
             for i in connected_inputs:
                 ID, w   = i
                 ix, iy  = ID.split(".")
                 ix, iy  = int(ix), int(iy)
+                display_x, display_y = int(round(ix * self.display_scale)), int(round(iy * self.display_scale))
                 color   = self.lerpColors(self.background_color, input_layer_color, w)
-                pygame.draw.circle(display, color, (ix,iy), input_radius)
+                pygame.draw.circle(display, color, (display_x, display_y), input_radius)
                 
             for event in pygame.event.get():
                 if event.type == QUIT: 
@@ -426,9 +437,5 @@ class Retina:
 #                if event.type == QUIT:
 #                    running = False
 #            pygame.display.update()
-
-            
-
-        
 
         
