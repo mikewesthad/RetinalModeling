@@ -38,7 +38,15 @@ class ConeLayer:
         self.establishInputs()        
         
 
-            
+    def __str__(self):
+        string = ""
+        string += "Cone Layer\n"
+        string += "\nnearest_neighbor_distance:\t"+str(self.nearest_neighbor_distance)
+        string += "\ninput_field_radius:\t\t"+str(self.input_field_radius)
+        string += "\nminimum_required_density:\t"+str(self.minimum_required_density)
+        string += "\nnumber neurons:\t\t\t"+str(self.neurons)
+        return string        
+        
             
 
     def initializeActivties(self):

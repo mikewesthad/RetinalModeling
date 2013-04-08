@@ -30,6 +30,16 @@ class HorizontalLayer:
         self.input_strength     = input_strength
         
         
+    def __str__(self):
+        string = ""
+        string += "Horizontal Layer\n"
+        string += "\nnearest_neighbor_distance:\t"+str(self.nearest_neighbor_distance)
+        string += "\nnumber neurons:\t\t\t"+str(self.neurons)
+        string += "\ninput_delay:\t\t\t"+str(self.input_delay)
+        string += "\ndiffusion_width:\t\t"+str(self.diffusion_width)
+        string += "\ndecay_rate:\t\t\t"+str(self.decay_rate)
+        string += "\ninput_strength:\t\t\t"+str(self.input_strength)
+        return string    
 
     """
     This function creates the weight matrix that defines diffusion.  It calculates
@@ -90,6 +100,10 @@ class HorizontalLayer:
         # Find the new activity
         i = self.input_strength
         new_activity = (1.0-i) * diffusionActivity + i * cone_activity
+        
+        # Alternative method of updating, no weighted average with cone input
+#        new_activity = diffusionActivity + i * cone_activity
+#        new_activity = np.clip(new_activity, -1.0, 1.0)        
         
         # Add the most recent activity to the front of the list
         self.activities.insert(0, new_activity)

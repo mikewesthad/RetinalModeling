@@ -41,7 +41,15 @@ class BipolarLayer:
         self.establishInputs()
         
         
-
+    def __str__(self):
+        string = ""
+        string += "Bipolar " + self.bipolar_type + " Layer\n"
+        string += "\nnearest_neighbor_distance:\t"+str(self.nearest_neighbor_distance)
+        string += "\ninput_field_radius:\t\t"+str(self.input_field_radius)
+        string += "\nminimum_required_density:\t"+str(self.minimum_required_density)
+        string += "\nnumber neurons:\t\t\t"+str(self.neurons)
+        string += "\ninput_delay:\t\t\t"+str(self.input_delay)
+        return string    
             
     def updateActivity(self):
 
@@ -93,10 +101,13 @@ class BipolarLayer:
                     triad_weight    = 1.0
                     self.triad_locations[triad_ID] = triad_number                    
                     connected_triads.append([triad_ID, triad_weight])
-                    
-            connected_triads = self.inputWeightingFunction(connected_triads)
+            
             loc_ID = str(x)+"."+str(y)
-            self.inputs[loc_ID] = connected_triads
+            if connected_triads == []: 
+                self.inputs[loc_ID] = []
+            else:
+                connected_triads    = self.inputWeightingFunction(connected_triads)
+                self.inputs[loc_ID] = connected_triads
 
     def inputWeightingFunction(self, inputs):
         weight_sum = 0.0

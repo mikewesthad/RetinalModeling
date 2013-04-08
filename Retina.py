@@ -12,7 +12,7 @@ from BipolarLayer import BipolarLayer
 Retina class
 """
 class Retina:
-    def __init__(self, run_name, retina_width, retina_height, grid_size, timestep, stimulus):
+    def __init__(self, retina_width, retina_height, grid_size, timestep, stimulus):
 
         self.width  = float(retina_width)
         self.height = float(retina_height)
@@ -29,6 +29,11 @@ class Retina:
         
         self.history_size = 3
         
+        self.cone_layer         = None
+        self.horizontal_layer   = None
+        self.on_bipolar_layer   = None
+        self.off_bipolar_layer  = None
+        
         self.cone_activities        = []
         self.horizontal_activities  = []
         self.on_bipolar_activities  = []
@@ -41,22 +46,41 @@ class Retina:
         self.on_bipolar_color   = pygame.Color("#5CCAE7")
         self.off_bipolar_color  = pygame.Color("#007DFF")
         
-        self.run_name = run_name
-        
         
         self.display_width  = 1000
         self.display_height = 1000
         self.calculateDisplay()
+    
+    def __str__(self):
+        string = ""
+        string += "Retina\n"
+        string += "\nwidth:\t\t\t\t"+str(self.width)
+        string += "\nheight:\t\t\t\t"+str(self.height)
+        string += "\narea:\t\t\t\t"+str(self.area)
+        string += "\ngrid_size:\t\t\t"+str(self.grid_size)
+        string += "\ngrid_width:\t\t\t"+str(self.grid_width)
+        string += "\ngrid_height:\t\t\t"+str(self.grid_height)
+        string += "\ntimestep:\t\t\t"+str(self.timestep)
+        string += "\ntime:\t\t\t\t"+str(self.time)
+        
+        string += "\n\n\n" + str(self.cone_layer)
+        string += "\n\n\n" + str(self.horizontal_layer)
+        string += "\n\n\n" + str(self.on_bipolar_layer)
+        string += "\n\n\n" + str(self.off_bipolar_layer)
+        return string  
         
        
     """
     This function saves the current retina object using the Pickle module
     """ 
-    def saveModel(self):
+    def saveModel(self, name):
         import pickle, os
         
+        if not(os.path.exists("Saved Retinas")):
+            os.mkdir("Saved Retinas")
+        
         # Create a new directory with run_name
-        directory_name = self.run_name
+        directory_name = os.path.join("Saved Retinas", name)
         
         # Add underscores to the name until it is unique
         while os.path.exists(directory_name):
@@ -79,6 +103,12 @@ class Retina:
         # Pickle the retina!
         pickle.dump(self, fh)
         
+        parameterPath = os.path.join(save_path, "parameters.txt")
+        parameterFile = open(parameterPath, "w")
+        parameterFile.write(str(self))
+        parameterFile.close()
+        
+        
         
 
     """
@@ -98,19 +128,23 @@ class Retina:
     def updateActivity(self):
         print self.time
         
-        self.stimulus.update(self.time)
+        self.stimulus.update(self.timestep)
         
-        cone_activity = self.cone_layer.updateActivity()
-        self.cone_activities.append(cone_activity)
+        if self.cone_layer != None:
+            cone_activity = self.cone_layer.updateActivity()
+            self.cone_activities.append(cone_activity)
         
-        horizontal_activity = self.horizontal_layer.updateActivity()
-        self.horizontal_activities.append(horizontal_activity)
+        if self.horizontal_layer != None:
+            horizontal_activity = self.horizontal_layer.updateActivity()
+            self.horizontal_activities.append(horizontal_activity)
         
-        on_bipolar_activity = self.on_bipolar_layer.updateActivity()
-        self.on_bipolar_activities.append(on_bipolar_activity)
+        if self.on_bipolar_layer != None:
+            on_bipolar_activity = self.on_bipolar_layer.updateActivity()
+            self.on_bipolar_activities.append(on_bipolar_activity)
         
-        off_bipolar_activity = self.off_bipolar_layer.updateActivity()
-        self.off_bipolar_activities.append(off_bipolar_activity)
+        if self.off_bipolar_layer != None:
+            off_bipolar_activity = self.off_bipolar_layer.updateActivity()
+            self.off_bipolar_activities.append(off_bipolar_activity)
 
     """
     Build the cone layer 
@@ -269,12 +303,10 @@ class Retina:
 
             
     def playOnBipolarActivity(self):
-        self.playLayerActivity("On Bipolar", self.on_bipolar_layer, self.on_bipolar_activities,
-                               estimated_minimum_activity=0, estimated_maximum_activity=1)
+        self.playLayerActivity("On Bipolar", self.on_bipolar_layer, self.on_bipolar_activities)
         
     def playOffBipolarActivity(self):
-        self.playLayerActivity("Off Bipolar", self.off_bipolar_layer, self.off_bipolar_activities,
-                               estimated_minimum_activity=0, estimated_maximum_activity=1)
+        self.playLayerActivity("Off Bipolar", self.off_bipolar_layer, self.off_bipolar_activities)
     
     def playConeActivity(self):
         self.playLayerActivity("Cone", self.cone_layer, self.cone_activities)
@@ -284,19 +316,20 @@ class Retina:
             
     def playLayerActivity(self, layer_name, layer, activities, 
                           estimated_minimum_activity=-1.0, 
-                          estimated_maximum_activity=1.0):
+                          estimated_maximum_activity=1.0,
+                          activity_centered_on_zero=True):
         pygame.init()        
         display = pygame.display.set_mode(self.display_size)
         pygame.display.set_caption(layer_name+" Activity Timestep 0")
+        print "Visualizing Activity For",layer_name,"..."
         
-        radius          = int(round(layer.nearest_neighbor_distance_gridded/2.0 * self.display_scale))
-        max_activity    = np.amax(activities)
-        min_activity    = np.amin(activities)
-        max_activity    = max(max_activity, estimated_maximum_activity)
-        min_activity    = min(min_activity, estimated_minimum_activity)
-        print "Max",layer_name,"Activity Value:", max_activity
-        print "Min",layer_name,"Activity Value:", min_activity
+        radius = int(round(layer.nearest_neighbor_distance_gridded/2.0 * self.display_scale))
         
+        min_activity, max_activity = self.findActivityBounds(activities, 
+                                                             estimated_minimum_activity,
+                                                             estimated_maximum_activity,
+                                                             activity_centered_on_zero)
+
         timestep        = 0
         end_timestep    = len(activities)-1
         
@@ -308,9 +341,8 @@ class Retina:
                 x, y        = layer.locations[n]
                 x, y        = int(round(x * self.display_scale)), int(round(y * self.display_scale))
                 activity    = activities[timestep][0,n]
-                percent     = (activity-min_activity) / (max_activity-min_activity)
-                if percent < 0.5:   color = (0,0,2*percent*255)
-                else:               color = (2*(percent-0.5)*255,0,0)
+                color       = self.mapActivityToColor(activity, min_activity, max_activity, 
+                                                      activity_centered_on_zero)
                 pygame.draw.circle(display, color, (x,y), radius) 
                 
             for event in pygame.event.get():
@@ -328,7 +360,49 @@ class Retina:
                         
             pygame.display.update()
 
-
+    def mapActivityToColor(self, activity, min_activity, max_activity, activity_centered_on_zero):
+        positive_activity_color         = pygame.Color(255, 0, 0)
+        zero_positive_activity_color    = pygame.Color(0, 0, 0)
+        negative_activity_color         = pygame.Color(0, 0, 255)
+        zero_negative_activity_color    = pygame.Color(0, 0, 0)
+        
+        if activity_centered_on_zero:
+            if activity < 0:
+                percent_from_zero_to_min = activity/min_activity
+                color = self.lerpColors(zero_negative_activity_color, negative_activity_color, percent_from_zero_to_min)
+            else:
+                percent_from_zero_to_max = activity/max_activity
+                color = self.lerpColors(zero_positive_activity_color, positive_activity_color, percent_from_zero_to_max)
+        else:
+            percent_from_min_to_max = (activity-min_activity) / (max_activity-min_activity)
+            color = self.lerpColors(zero_positive_activity_color, positive_activity_color, percent_from_min_to_max)
+            
+        return color
+        
+    def findActivityBounds(self, activities, estimated_min, estimated_max, activity_centered_on_zero):
+        # Find the real max/min activity values
+        max_activity = np.amax(activities)
+        min_activity = np.amin(activities)
+        
+        print "\tTrue Max Activity Value:", max_activity
+        print "\tTrue Min Activity Value:", min_activity
+        
+        # Impose an estimated max/min
+        max_activity    = max(max_activity, estimated_max)
+        min_activity    = min(min_activity, estimated_min)
+        
+        # If the range of activity values is expected to be symmetric and
+        # centered on zero, then the max and min values should be equal
+        if activity_centered_on_zero:
+            bound           = max(abs(max_activity), abs(min_activity))
+            max_activity    = bound
+            min_activity    = -bound
+            
+        print "\tAdjusted Max Activity Value For Color Scale:", max_activity
+        print "\tAdjusted Min Activity Value For Color Scale:", min_activity
+        
+        return min_activity, max_activity
+        
 
     def visualizeOnBipolarWeights(self):
         self.visualizeInputWeights(self.on_bipolar_layer, self.cone_layer, 
