@@ -5,7 +5,6 @@ Jason Farina
 2013/04/04
 """
 import random
-import math
 import collections
 
 class RetinalGrid(object):
@@ -15,9 +14,9 @@ class RetinalGrid(object):
     grid = {}    
     types_accepted = ['Neuron', 'Dendrite', 'DendritePoint', 'Compartment']    
     type_index = {'Neuron': 0, 'Dendrite': 1, 'DendritePoint': 2, 'Compartment': 3} 
-    width = None
-    height = None
-    spacing = None    
+    width = None    #retinal grid units
+    height = None   #retinal grid units  
+    spacing = None  #retinal grid units   
     
     def __init__(self, width, height, spacing=1):
         """Creates retinal_grid dictionary by taking in the grid width, grid 
@@ -62,7 +61,7 @@ class RetinalGrid(object):
         """
             
         
-    def whosHere(self, location, class_type=None):
+    def whosHere(self, location, class_type):
         """Returns a list of all of the members of a particular class who are
         present at the specified retinal grid location.
         
@@ -71,16 +70,14 @@ class RetinalGrid(object):
         key = location.key
         #assert class_type in self.types_accepted, "That class_type is not accepted."
         index = self.type_index[class_type]
-        if class_type:        
-            return self.grid[key][index]
-        else:
-            return self.grid[key]
+        return self.grid[key][index]
+
 
 #instantiates a retinal grid 100x100um with 1um spacing
 r = RetinalGrid(100,100,1)
 
 
-neurotransmitters = ['gly', 'glu', 'gab', 'ach']
+NEUROTRANSMITTERS = ['gly', 'glu', 'gab', 'ach']
 
 class Outputs(object):
     """This class specifies methods for handling the neurotransmitters that are
@@ -88,14 +85,16 @@ class Outputs(object):
     
     outputs = {}   
     
-    def __init__(self, neurotransmitters):
-        self.nt_types = neurotransmitters
-        for nt in neurotransmitters:
+    def __init__(self, NEUROTRANSMITTERS):
+        self.nt_types = NEUROTRANSMITTERS
+        for nt in NEUROTRANSMITTERS:
             self.outputs[nt] = [False, 0]
          
     def isOutput(self, nt_type):
         assert nt_type in self.nt_types, "Invalid neurotransmitter."
         return self.outputs[nt_type][0]
+
+    # def setIsOutput()
 
     def getAmount(self, nt_type):
         assert nt_type in self.nt_types, "Invalid neurotransmitter."
@@ -137,7 +136,8 @@ class LocationID(object):
         y1 = location.y
         x2 = self.x
         y2 = self.y
-        return math.sqrt( (x2-x1)**2 + (y2-y1)**2 )
+        return ((x2-x1)**2 + (y2-y1)**2)**0.5
+        
         
 
 class Neuron(object):
@@ -158,7 +158,7 @@ class Dendrite(object):
     """
     grid = r    #Hardcoding this instance of the retinal grid as being associated
                 #with all dendrites
-
+            
     def __init__(self, neuron, locations):
         """Creates a new dendrite."""
         self.neuron = neuron    #The neuron object to which this dendrite belongs
@@ -186,21 +186,22 @@ class Dendrite(object):
         and updates self.inputs to include those that satisfy the connection
         requirements.
         """
-        def isAppropriateInput(point):
+        def isAppropriateInput(point): #this should not live here.
             return True
                         
         for point in self.points:
             present = self.grid.whosHere(point.location, 'DendritePoint')
-            present = filter(lambda x:  x is not point, present)
+            present = filter(lambda x:  x is not point, present) #remove "me"
             connections = filter(isAppropriateInput, present)
             new_connections = filter(lambda x:  x not in point.inputs, connections)            
             point.inputs.extend(new_connections)
 
-    def calculateHeadingFromSoma(self, pos):
+    def calculateHeadingFromSoma(self, location):
         """Given a LocationID, calculates a heading from its neuron's soma to
         that location.  Returns an angle.
         """
-        return pos.distFrom(self.neuron.soma_location)
+        return location.distFrom(self.neuron.soma_location)
+        
         
     
         
@@ -216,9 +217,9 @@ class DendritePoint(object):
         self.compartment = None
         self.location = location
         self.is_output_zone = True
-        self.outputs = Outputs(neurotransmitters)
+        self.outputs = Outputs(NEUROTRANSMITTERS)
         self.inputs = []
-        self.nt_accepted = neurotransmitters
+        self.nt_accepted = NEUROTRANSMITTERS
 
 
 class Compartment(object):
@@ -231,11 +232,11 @@ class Compartment(object):
     def __init__(self, neighbor):
         """Create a new compartment."""
         self.neighbor_proximal = neighbor
-        self.neighbor_distal = None        
+        self.neighbor_distal = []        
         self.points = []   
         self.inputs = []            #other compartments
                                     #will be recast as dict = {elem: freq}
-        self.outputs = Outputs(neurotransmitters)
+        self.outputs = Outputs(NEUROTRANSMITTERS)
         self.center = None
         self.nt_accepted = []
 
@@ -262,9 +263,9 @@ class Compartment(object):
         inputs.values()                         #frequencies
         
         """
-        for point in self.points:                       #my DendritePoints
-            for input in point.inputs:                  #their inputs (other DendritePoints)
-                self.inputs.append(input.compartment)   #their associated compartment
+        for point in self.points:                             #my DendritePoints
+            for input_point in point.inputs:                  #their inputs (other DendritePoints)
+                self.inputs.append(input_point.compartment)   #their associated compartment
         self.inputs = collections.Counter(self.inputs)  #dict = {elem: freq}
         #need to update self.nt_accepted based on constituent DendritePoints
 
@@ -286,10 +287,12 @@ class Compartment(object):
         for nt in self.nt_accepted:  
             totals_in[nt] = 0.0
             #for each input
-            for input in self.inputs:
+            for comp, w in self.inputs:  
                 #retrieve input amount
-                totals_in[nt] += input.getOutput(nt)
-            #Now calculate new potential
+                totals_in[nt] += w*comp.getOutput(nt)
+            #scale total input to input/point
+            totals_in[nt] = totals_in[nt]/len(self.points)
+            #Now calculate new potential per point
             potential = nt_in_2_potential(totals_in)
         #Then calculate each new output amout
         #for each nt output
@@ -376,7 +379,7 @@ for i in range(len(d.points)):
 d.estInputs()
 #and should come up empty...
 for i in range(len(d.points)):
-    print input
+    print d.points[i].inputs
 
 #instantiate another dendrite, d1, that crosses the first dendrite, d
 locations = [LocationID(10,12), LocationID(11,11), LocationID(12,10)]
