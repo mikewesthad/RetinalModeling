@@ -47,10 +47,10 @@ class Visualizer:
         self.screen_surface.fill((255,255,255))        
         
         # Create a set of linked buttons to determine the visualization type
-        visualization_types = ["Input Weights", "Soma Placement", "Activity"]
+        visualization_types = ["Stimulus", "Input Weights", "Soma Placement", "Activity"]
         buttons = []
-        width, height = 200, 50
-        dy = int(height + height/2.0)
+        width, height = 200, 40
+        dy = 40 + 20
         x, y = int(self.controls_width/2.0-width/2.0), dy
         for vis_type in visualization_types:
             button = Button(self.controls_surface, text=vis_type, name=vis_type,
@@ -62,8 +62,8 @@ class Visualizer:
         # Create a set of linked buttons to determine the cell type
         cell_types = ["Cone", "Horizontal", "On Bipolar", "Off Bipolar"]
         buttons = []
-        width, height = 200, 50
-        dy = int(height + height/2.0)
+        width, height = 200, 40
+        dy = 40 + 20
         x, y = int(self.controls_width/2.0-width/2.0), 400
         for cell_type in cell_types:
             button = Button(self.controls_surface, text=cell_type, name=cell_type,
@@ -74,7 +74,7 @@ class Visualizer:
         
         # Create a set of linked buttons to change the timestep
         width   = 90
-        height  = 50        
+        height  = 40        
         x1  = button.button_rectangle.left
         x2  = button.button_rectangle.right - width
         y1  = 800
