@@ -69,3 +69,6 @@ duration = 4*timestep
 retina.runModel(duration)
 
 retina.saveModel("Diffuse Bipolar")
+
+from Visualizer import Visualizer
+v = Visualizer(retina)
