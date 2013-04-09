@@ -10,11 +10,3 @@ retina = pickle.load(open(saved_path, "rb"))
 #retina.horizontal_activities = retina.horizontal_activities[3:]
 #retina.on_bipolar_activities = retina.on_bipolar_activities[3:]
 #retina.off_bipolar_activities = retina.off_bipolar_activities[3:]
-
-retina.visualizeOPLCellPlacement()
-retina.visualizeOnBipolarWeights()
-retina.visualizeOffBipolarWeights()
-retina.playConeActivity()
-retina.playHorizontalActivity()
-retina.playOnBipolarActivity()
-retina.playOffBipolarActivity()

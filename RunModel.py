@@ -69,12 +69,3 @@ duration = 4*timestep
 retina.runModel(duration)
 
 retina.saveModel("Diffuse Bipolar")
-
-# Visualize the model
-retina.visualizeOnBipolarWeights()
-retina.visualizeOffBipolarWeights()
-retina.visualizeOPLCellPlacement()
-retina.playConeActivity()
-retina.playHorizontalActivity()
-retina.playOnBipolarActivity()
-retina.playOffBipolarActivity()
