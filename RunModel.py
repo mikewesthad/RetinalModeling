@@ -31,7 +31,6 @@ bar_stimulus = BarStimulus(position_on_retina=position_on_retina,
                            pixel_size=pixel_size, 
                            bar_movie=bar_movie)
 
-
  
 
 # Build Retina
@@ -44,7 +43,7 @@ retina = Retina(width, height, grid_size, timestep, bar_stimulus)
                          
 # Build the cone Layer
 cone_distance       = 10 * UM_TO_M
-cone_density        = 10000.0
+cone_density        = 100.0
 cone_input_size     = 10 * UM_TO_M
 retina.buildConeLayer(cone_distance, cone_density, cone_input_size)
 
@@ -57,7 +56,7 @@ retina.buildHorizontalLayer(input_strength, decay_rate, diffusion_radius)
 
 # Build the bipolar layer
 bipolar_distance    = 20 * UM_TO_M
-bipolar_density     = 10000.0
+bipolar_density     = 100.0
 input_field_radius  = 50 * UM_TO_M
 output_field_radius = 10 * UM_TO_M
 
@@ -66,7 +65,7 @@ retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius,
 
 
 # Run the model
-duration = 40*timestep
+duration = 4*timestep
 retina.runModel(duration)
 
 retina.saveModel("Diffuse Bipolar")

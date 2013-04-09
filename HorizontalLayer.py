@@ -33,12 +33,12 @@ class HorizontalLayer:
     def __str__(self):
         string = ""
         string += "Horizontal Layer\n"
-        string += "\nnearest_neighbor_distance:\t"+str(self.nearest_neighbor_distance)
-        string += "\nnumber neurons:\t\t\t"+str(self.neurons)
-        string += "\ninput_delay:\t\t\t"+str(self.input_delay)
-        string += "\ndiffusion_width:\t\t"+str(self.diffusion_width)
-        string += "\ndecay_rate:\t\t\t"+str(self.decay_rate)
-        string += "\ninput_strength:\t\t\t"+str(self.input_strength)
+        string += "\nNearest Neightbor Distance (um)\t\t"+str(self.nearest_neighbor_distance * M_TO_UM)
+        string += "\nNumber of Neurons\t\t\t"+str(self.neurons)
+        string += "\nInput Delay (timesteps)\t\t\t"+str(self.input_delay)
+        string += "\nDiffusion Width (um)\t\t\t"+str(self.diffusion_width * M_TO_UM)
+        string += "\nDecay Rate\t\t\t\t"+str(self.decay_rate)
+        string += "\nInput Strength:\t\t\t\t"+str(self.input_strength)
         return string    
 
     """

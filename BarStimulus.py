@@ -23,6 +23,17 @@ class BarStimulus:
         down    = position_on_retina[1] + self.height_on_retina
         self.bounding_box = [left, right, up, down]
         
+    def __str__(self):
+        string = ""
+        string += "\nPosition (rgu):\t\t\t\t"+str(self.position_on_retina)
+        string += "\nPixel size (rgu):\t\t\t"+str(self.pixel_size)
+        string += "\nWidth (pixels):\t\t\t\t"+str(self.width_in_pixels)
+        string += "\nHeight (pixels):\t\t\t"+str(self.height_in_pixels)
+        string += "\nWidth (rgu):\t\t\t\t"+str(self.width_on_retina)
+        string += "\nHeight (rgu):\t\t\t\t"+str(self.height_on_retina)
+        string += str(self.bar_movie)
+        return string
+        
     """
     The module used for saving (pickle) can't handle pygame's surface, so it must
     be unloaded before saving

@@ -37,6 +37,9 @@ class RuntimeBarGenerator:
         self.movie_height       = movie_size[1]
         self.bar_color          = bar_color    
         self.background_color   = background_color
+        self.orientation        = bar_orientation
+        self.starting_bar_pos   = bar_position
+        self.bar_size           = bar_size
 
         # Create the vertices of the bar
         self.bar_vertices = []
@@ -70,6 +73,17 @@ class RuntimeBarGenerator:
         self.drawBar()
         self.updateScreenArray()
 
+    def __str__(self):
+        string = ""
+        string += "\nFramerate\t\t\t\t"+str(self.framerate)
+        string += "\nBar Size\t\t\t\t"+str(self.bar_size)
+        string += "\nBar Color\t\t\t\t"+str(self.bar_color)
+        string += "\nBackground Color\t\t\t"+str(self.background_color)        
+        string += "\nOrientation (deg)\t\t\t"+str(self.orientation)       
+        string += "\nSpeed (px/s)\t\t\t\t"+str(self.bar_speed)    
+        string += "\nStart Position\t\t\t\t"+str(self.starting_bar_pos)
+        string += "\nMovement Distance\t\t\t"+str(self.max_distance)
+        return string
     
     """
     Create a list of bar vertices, [ul, ur, lr, ll], defining a rotated

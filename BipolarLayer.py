@@ -44,11 +44,11 @@ class BipolarLayer:
     def __str__(self):
         string = ""
         string += "Bipolar " + self.bipolar_type + " Layer\n"
-        string += "\nnearest_neighbor_distance:\t"+str(self.nearest_neighbor_distance)
-        string += "\ninput_field_radius:\t\t"+str(self.input_field_radius)
-        string += "\nminimum_required_density:\t"+str(self.minimum_required_density)
-        string += "\nnumber neurons:\t\t\t"+str(self.neurons)
-        string += "\ninput_delay:\t\t\t"+str(self.input_delay)
+        string += "\nNearest Neightbor Distance (um)\t\t"+str(self.nearest_neighbor_distance * M_TO_UM)
+        string += "\nInput Field Radius\t\t\t"+str(self.input_field_radius * M_TO_UM)
+        string += "\nMinimum Required Density (cells/mm^2)\t"+str(self.minimum_required_density)
+        string += "\nNumber of Neurons\t\t\t"+str(self.neurons)
+        string += "\nInput Delay (timesteps)\t\t\t"+str(self.input_delay)
         return string    
             
     def updateActivity(self):

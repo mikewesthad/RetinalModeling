@@ -5,6 +5,7 @@ from pygame.locals import *
 from ConeLayer import ConeLayer
 from HorizontalLayer import HorizontalLayer
 from BipolarLayer import BipolarLayer
+from Constants import *
 
 
 
@@ -53,15 +54,17 @@ class Retina:
     
     def __str__(self):
         string = ""
-        string += "Retina\n"
-        string += "\nwidth:\t\t\t\t"+str(self.width)
-        string += "\nheight:\t\t\t\t"+str(self.height)
-        string += "\narea:\t\t\t\t"+str(self.area)
-        string += "\ngrid_size:\t\t\t"+str(self.grid_size)
-        string += "\ngrid_width:\t\t\t"+str(self.grid_width)
-        string += "\ngrid_height:\t\t\t"+str(self.grid_height)
-        string += "\ntimestep:\t\t\t"+str(self.timestep)
-        string += "\ntime:\t\t\t\t"+str(self.time)
+        string += "Stimulus\n" + str(self.stimulus)
+        
+        string += "\n\n\nRetina\n"
+        string += "\nWidth (um)\t\t\t\t"+str(self.width * M_TO_UM)
+        string += "\nHeight (um)\t\t\t\t"+str(self.height * M_TO_UM)
+        string += "\nArea (um)\t\t\t\t"+str(self.area * M_TO_UM)
+        string += "\nGrid Size (um)\t\t\t\t"+str(self.grid_size * M_TO_UM)
+        string += "\nGrid Width (rgu)\t\t\t"+str(self.grid_width)
+        string += "\nGrid Height (rgu)\t\t\t"+str(self.grid_height)
+        string += "\nTimestep (ms)\t\t\t\t"+str(self.timestep * S_TO_MS)
+        string += "\nTime (ms)\t\t\t\t"+str(self.time * S_TO_MS)
         
         string += "\n\n\n" + str(self.cone_layer)
         string += "\n\n\n" + str(self.horizontal_layer)
