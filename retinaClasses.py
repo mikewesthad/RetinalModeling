@@ -6,6 +6,7 @@ Jason Farina
 """
 import random
 import collections
+import numpy
 
 class RetinalGrid(object):
     """The RetinalGrid keeps track of all neuron classes that are located at 
@@ -13,7 +14,10 @@ class RetinalGrid(object):
     """
     grid = {}    
     types_accepted = ['Neuron', 'Dendrite', 'DendritePoint', 'Compartment']    
-    type_index = {'Neuron': 0, 'Dendrite': 1, 'DendritePoint': 2, 'Compartment': 3} 
+#    type_index = {'Neuron':         0, 
+#                  'Dendrite':       1, 
+#                  'DendritePoint':  2, 
+#                  'Compartment':    3} 
     width = None    #retinal grid units
     height = None   #retinal grid units  
     spacing = None  #retinal grid units   
@@ -28,7 +32,9 @@ class RetinalGrid(object):
             
         for w in range(width+1):
             for h in range(height+1):
-                self.grid[(w,h)] = [ [], [], [], [] ]
+                self.grid[(w,h)] = {}
+                for type_tag in self.types_accepted:
+                    self.grid[(w,h)][type_tag] = []
                 
     @property
     def widthWorld(self):
@@ -41,25 +47,14 @@ class RetinalGrid(object):
     def registerLocation(self, location, member):
         """Registers 'member' object with the grid at the 'location'.
         """
-        type_info = str(type(member)).split(".")
-        type_info = type_info[1].split("'")
-        print(type_info)
-        type_tag = type_info[0]        
+        type_tag = type(member).__name__        
         assert type_tag in self.types_accepted, '{0} not accepted.'.format(member)
-        index = self.type_index[type_tag]        
-        self.grid[location.key][index].append(member)
+        if type_tag in self.grid[location.ID]:
+            self.grid[location.ID][type_tag].append(member)
+        else:
+            self.grid[location.ID][type_tag] = [].append(member)
         
-        
-        """        
-        if hasattr(member, 'location'): #for 'members' that exist at a single location        
-            key = member.location.x, member.location.y
-            self.grid[key][index].append(member)
-        elif hasattr(member, 'points'): #for 'members' that exist at multiple locations
-            for point in member.points:                 #for all points
-                key = point.location.x, point.location.y#at the location of the point
-                self.grid[key][index].append(member)    #register the member
-        """
-            
+       
         
     def whosHere(self, location, class_type):
         """Returns a list of all of the members of a particular class who are
@@ -67,10 +62,7 @@ class RetinalGrid(object):
         
         types_accepted = ['Neuron', 'Dendrite', 'DendritePoint', 'Compartment']
         """
-        key = location.key
-        #assert class_type in self.types_accepted, "That class_type is not accepted."
-        index = self.type_index[class_type]
-        return self.grid[key][index]
+        return self.grid[location.ID][class_type]
 
 
 #instantiates a retinal grid 100x100um with 1um spacing
@@ -94,7 +86,8 @@ class Outputs(object):
         assert nt_type in self.nt_types, "Invalid neurotransmitter."
         return self.outputs[nt_type][0]
 
-    # def setIsOutput()
+    def setIsOutput(self, nt_type, is_output):
+        self.outputs[nt_type][0] = is_output
 
     def getAmount(self, nt_type):
         assert nt_type in self.nt_types, "Invalid neurotransmitter."
@@ -112,7 +105,7 @@ outputs = {'gly':  [False, 0],
 nt_types = [k for k in outputs.keys()]
 """
 
-class LocationID(object):
+class Location(object):
     """This class specifies methods for handling retinal grid locations.
     """
     def __init__(self, x, y):
@@ -128,7 +121,7 @@ class LocationID(object):
         return float(self.y)
         
     @property
-    def key(self):
+    def ID(self):
         return self.x, self.y
         
     def distFrom(self, location):
@@ -188,23 +181,16 @@ class Dendrite(object):
         """
         def isAppropriateInput(point): #this should not live here.
             return True
-                        
+                                            
         for point in self.points:
             present = self.grid.whosHere(point.location, 'DendritePoint')
-            present = filter(lambda x:  x is not point, present) #remove "me"
-            connections = filter(isAppropriateInput, present)
-            new_connections = filter(lambda x:  x not in point.inputs, connections)            
-            point.inputs.extend(new_connections)
-
-    def calculateHeadingFromSoma(self, location):
-        """Given a LocationID, calculates a heading from its neuron's soma to
-        that location.  Returns an angle.
-        """
-        return location.distFrom(self.neuron.soma_location)
-        
-        
+            if present != None:            
+                present = filter(lambda x:  x is not point, present) #remove "me"
+                connections = filter(isAppropriateInput, present)
+                new_connections = filter(lambda x:  x not in point.inputs, 
+                                         connections)            
+                point.inputs.extend(new_connections)
     
-        
 
 
 class DendritePoint(object):
@@ -220,8 +206,28 @@ class DendritePoint(object):
         self.outputs = Outputs(NEUROTRANSMITTERS)
         self.inputs = []
         self.nt_accepted = NEUROTRANSMITTERS
-
-
+        self.heading = None
+        
+    @property    
+    def heading_from_soma(self):
+        """Returns (or calculates if not already calculated) the heading from soma to DendritePoint.  Returns an angle in radians [-pi, pi].
+        """
+        if self.heading:
+            return self.heading
+        else:
+            delta_x = self.location.x - self.dendrite.neuron.soma_location.x
+            delta_y = self.location.y - self.dendrite.neuron.soma_location.y
+            self.heading = numpy.arctan2(delta_y, delta_x)
+            return self.heading
+     
+    @property       
+    def headingWorld(self):
+        """Retinal Grid dimensions/distances are labeled positive to the right
+        and positive down (a reflection across the x-axis from normal
+        convention).  This method provides access to the "real-world" heading.
+        """        
+        return -1*self.heading
+            
 class Compartment(object):
     """A collection of points along a dendrite.  The compartment is the
     fundamental unit of analysis in the model.
@@ -287,16 +293,16 @@ class Compartment(object):
         for nt in self.nt_accepted:  
             totals_in[nt] = 0.0
             #for each input
-            for comp, w in self.inputs:  
+            for compartment, w in self.inputs:  
                 #retrieve input amount
-                totals_in[nt] += w*comp.getOutput(nt)
+                totals_in[nt] += w*compartment.getOutput(nt)
             #scale total input to input/point
             totals_in[nt] = totals_in[nt]/len(self.points)
             #Now calculate new potential per point
             potential = nt_in_2_potential(totals_in)
         #Then calculate each new output amout
         #for each nt output
-        for nt in self.outputs.keys():            
+        for nt in self.outputs.key():            
             new_amount = potential_2_nt_out(nt, potential)
             self.outputs.setAmount(nt, new_amount)
         #update outputs
@@ -324,7 +330,7 @@ class Compartment(object):
             y_sum += p.location.y
         centroid_x = x_sum/n
         centroid_y = y_sum/n
-        self.center = LocationID(centroid_x, centroid_y)
+        self.center = Location(centroid_x, centroid_y)
   
 
 
@@ -344,7 +350,7 @@ def generateLocations(n):
             x += pow(-1,power)
         else:
             y += pow(-1,power)
-        pos = LocationID(x,y)
+        pos = Location(x,y)
         locations.append(pos)
     return locations
 #assignes them to a dendrite
@@ -352,7 +358,7 @@ dendrite = generateLocations(5)
 #but don't use them
 #overwrite random locations with hardcoded ones
 locations = []
-locations = [LocationID(10,10), LocationID(11,11), LocationID(12,12)]
+locations = [Location(10,10), Location(11,11), Location(12,12)]
 dendrite = locations
 
 #instantiate a Dendrite with the locations contained in 'dendrite'
@@ -373,7 +379,7 @@ c.registerWithGrid()
 #who prints out everyone who's present at each of those locations.
 for i in range(len(d.points)):
     #print(r.whosHere(d.points[i].location, 'DendritePoint'))
-    print(r.grid[d.points[i].location.key])
+    print(r.grid[d.points[i].location.ID])
     
 #dendrite establishes inputs
 d.estInputs()
@@ -382,7 +388,7 @@ for i in range(len(d.points)):
     print d.points[i].inputs
 
 #instantiate another dendrite, d1, that crosses the first dendrite, d
-locations = [LocationID(10,12), LocationID(11,11), LocationID(12,10)]
+locations = [Location(10,12), Location(11,11), Location(12,10)]
 d1 = Dendrite("None", locations)
 d1.initPoints()
 d1.registerWithGrid()
@@ -394,9 +400,9 @@ for point in d.points:
     print point.inputs
  
 #Instantiate a Neuron n   
-n = Neuron(LocationID(10,10))
+n = Neuron(Location(10,10))
 #assign to dendrite d
 d.neuron = n
 #calculate distance from soma for all dendrite poionts
 for point in d.points:
-    print'Soma Distance =', d.calculateHeadingFromSoma(point.location)
+    print'Soma Distance =', point.heading_from_soma
