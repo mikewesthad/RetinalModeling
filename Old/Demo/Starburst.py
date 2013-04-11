@@ -7,8 +7,8 @@ from pygame.locals import *
 
 class Neuron(object):
     
-    def __init__(self, retina, location, average_wirelength=500*UM_TO_M, radius_deviation=.1,
-                 min_branches=1, max_branches=1, heading_deviation=180, step_size=20*UM_TO_M):
+    def __init__(self, retina, location, average_wirelength=3000*UM_TO_M, radius_deviation=.1,
+                 min_branches=1, max_branches=1, heading_deviation=45, step_size=10*UM_TO_M):
         
         self.retina     = retina
         self.location   = np.array(location) / self.retina.grid_size
@@ -42,6 +42,27 @@ class Neuron(object):
         clock = pygame.time.Clock()
         
         
+
+        p1 = np.array([600.0, 100.0])
+        p2 = np.array([700.0, 800.0])
+        d = self.createTwoPointDendrite(p1, p2)
+        self.all_dendrites.append(d)
+        
+        p1 = np.array([300.0, 100.0])
+        p2 = np.array([400.0, 800.0])
+        d = self.createTwoPointDendrite(p1, p2)
+        self.all_dendrites.append(d)
+        
+        p1 = np.array([300.0, 300.0])
+        p2 = np.array([800.0, 400.0])
+        d = self.createTwoPointDendrite(p1, p2)
+        self.all_dendrites.append(d)
+        
+        p1 = np.array([300.0, 800.0])
+        p2 = np.array([800.0, 600.0])
+        d = self.createTwoPointDendrite(p1, p2)
+        self.all_dendrites.append(d)
+        
         running = True
         while active_dendrites != []:
             i = 0
@@ -66,20 +87,30 @@ class Neuron(object):
                         running = False
                 if not(running): break
                 pygame.display.update()
-                clock.tick(60)
+                clock.tick(30)
             if not(running): break
         
-        while running:
-            pygame.display.update()
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    running = False
+#        while running:
+#            pygame.display.update()
+#            for event in pygame.event.get():
+#                if event.type == QUIT:
+#                    running = False
             
     
     
     def branchProbability(self, wirelength):
         return 0
-        
+
+
+    def createTwoPointDendrite(self, p1, p2):
+        d =  DendriteSegment(self, p1, 0, 0, 0)
+        d.locations.append(p2)
+        pygame.draw.line(self.display, (random.randint(0,255),0,0), p1, p2, 1)        
+        radius = linearDistance(p1, p2) / 2.0
+        midpoint = (p1 + p2) / 2.0
+        slope, y_intercept = d.solveLine(p1, p2)
+        d.collision_info.append([radius, midpoint, slope, y_intercept])
+        return d
         
         
         
@@ -101,7 +132,8 @@ class DendriteSegment(object):
         
         self.max_growth_attempts = 100
         
-        self.color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+#        self.color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
+        self.color = (0,0,0)
         
         
     def grow(self):
@@ -145,17 +177,17 @@ class DendriteSegment(object):
             
             number_attempts += 1
             if number_attempts >= self.max_growth_attempts:
+                print "Death by collision"
                 self.is_growing = False
                 return self.is_growing, []
                 
         # Successful growth
         self.heading = new_heading
         self.resources -= self.step_size
-        print self.resources
         self.locations.append(new_location)
         self.collision_info.append([radius, midpoint, slope, y_intercept])
         
-        pygame.draw.line(self.neuron.display, self.color, last_location, new_location, 4)
+        pygame.draw.line(self.neuron.display, self.color, last_location, new_location, 1)
         
         return self.is_growing, []
     
@@ -181,7 +213,7 @@ class DendriteSegment(object):
             
             # If the other has more than 1 location, check each consecutive pair of locations
             number_other_locations = len(other.locations)
-            if number_other_locations > 2:
+            if number_other_locations >= 2:
                             
                 # If the other neuron is myself, then do not check the last pair of points
                 # (These will always show a collision since they share a point)
@@ -189,7 +221,7 @@ class DendriteSegment(object):
                 if other == self:
                     end_index = number_other_locations - 3
                 else:
-                    end_index = number_other_locations - 1
+                    end_index = number_other_locations - 2
                 
                 for i in range(start_index, end_index+1): 
                     
@@ -199,7 +231,7 @@ class DendriteSegment(object):
                     other_midpoint          = other_collision_info[1]
                     min_circle_distance     = radius + other_radius
                     dist_between_circles    = linearDistance(midpoint, other_midpoint)
-                    if dist_between_circles < min_circle_distance:
+                    if dist_between_circles <= min_circle_distance:
                         
                         # Check whether the line segments intersect
                         other_point_a        = other.locations[i]
@@ -227,16 +259,17 @@ class DendriteSegment(object):
                                                     
                             else:
                                 # Find the intersection
-                                x = (y_intercept - other_y_intercept) / (other_slope - slope)
+                                x = (other_y_intercept - y_intercept) / (slope - other_slope)
                                 y = slope * x + y_intercept
                             
-                            intersection_point = (x,y)
-                            if linearDistance(midpoint, intersection_point) < radius:
-                                print point_a, point_b
-                                print other_point_a, other_point_b                        
-                                print "Collision"
-                                print
-                                return True
+                            intersection_point = np.array((x,y))
+                            
+                            intersect_on_self = linearDistance(midpoint, intersection_point) <= radius
+                            if intersect_on_self:
+                                intersect_on_other = linearDistance(other_midpoint, intersection_point) <= other_radius
+                            
+                                if intersect_on_other:
+                                    return True
         return False    
     
     def spawnChildren(self):

@@ -10,4 +10,5 @@ timestep    = 100 * MS_TO_S
 
 retina = Retina(width, height, grid_size)
 
-startburst = Neuron(retina, (500 * UM_TO_M, 500 * UM_TO_M))
+for x in range(20):
+    startburst = Neuron(retina, (500 * UM_TO_M, 500 * UM_TO_M))
