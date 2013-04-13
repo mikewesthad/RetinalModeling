@@ -11,7 +11,7 @@ Methods:
     normalize (this will modify the location instance in-place)
 """
 
-from math import cos, sin, pi
+from math import cos, sin, pi, atan2
 
 class Vector2D(object):
     
@@ -119,6 +119,17 @@ class Vector2D(object):
         self.x /= vector_length  
         self.y /= vector_length
         return self
+    
+    """
+    Calculate the angluar heading from self to other 
+    Returns an angle (0-360) measured counter-clockwise from positive x-axis
+    """
+    def angleHeadingTo(self, other):
+        vector = other-self
+        angle = atan2(vector.y, vector.x) * 180.0/pi
+        if angle < 0: angle += 360.0
+        return angle
+        
     def unitHeadingTo(self, other):
         vector = other-self
         vector.normalize()
@@ -128,7 +139,7 @@ class Vector2D(object):
     def generateHeadingFromAngle(classReference, angle):
         return Vector2D(cos(angle * pi/180.0), sin(angle * pi/180.0))
         
- 
+        
     def distanceTo(self, other):
         return ((self.x-other.x)**2.0 + (self.y-other.y)**2.0)**0.5
     
