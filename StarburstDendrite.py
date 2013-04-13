@@ -53,6 +53,7 @@ class DendriteSegment(object):
             
         children = self.attemptToSpawnChildren()
         if children != []:
+            self.children = children
             self.is_growing = False
             return self.is_growing, children
         
@@ -231,41 +232,50 @@ class DendriteSegment(object):
             
         # Babies R Us
         return [child_1, child_2]
+        
+        
 
-     
+    """
+    Sample the continuous-regime line segments onto the retinal grid
+    Recursively move from dendrite to children to children's children...
+    """
+    def discretize(self, delta=1.0, range_deltas=[], parent_locations=[]):
+        self.gridded_locations = []
+        
+        if range_deltas == []:
+            range_deltas = np.arange(0.0, self.step_size, delta) 
+            
+        for i in range(len(self.locations)-1):
+            p1 = self.locations[i]
+            p2 = self.locations[i+1]
+        
+            heading_vector = p1.unitHeadingTo(p2)
+            
+            for d in range_deltas:
+                p = p1 + heading_vector * d
+                p = p.roundedIntCopy()
+                if (p not in self.gridded_locations) and (p not in parent_locations): 
+                    self.gridded_locations.append(p)
+                    
+        for child in self.children:
+            child.discretize(delta, range_deltas, self.gridded_locations)
+            
+            
     
     """
     Visualization function
     """
-    def draw(self, draw_allowable_headings=False, draw_grid=False):
-        if not(draw_grid):
-            if (draw_allowable_headings):
-                last = self.locations[-1]
-                pygame.draw.circle(self.neuron.display, (255,0,0), last.toIntTuple(), int(self.vision_radius), 1)
-                allowable_range = self.buildAllowableHeadingRange(self.heading, self.heading_deviation)
-                for heading_min, heading_max in allowable_range:
-                    rad_min = np.deg2rad(heading_min)
-                    rad_max = np.deg2rad(heading_max)
-                    heading_min_point = last + Vector2D(np.cos(rad_min)*self.vision_radius, np.sin(rad_min)*self.vision_radius)
-                    heading_max_point = last + Vector2D(np.cos(rad_max)*self.vision_radius, np.sin(rad_max)*self.vision_radius)
-                    pygame.draw.polygon(self.neuron.display, (200,200,255), [last.toIntTuple(), heading_min_point.toIntTuple(), heading_max_point.toIntTuple()]) 
-                    
+    def draw(self, draw_grid=False):
+        if draw_grid:
+            for loc in self.gridded_locations:
+                pygame.draw.circle(self.neuron.display, self.color, loc.toIntTuple(), 2)   
+        else:            
             start_index = 0
             end_index = len(self.locations) - 2
             for i in range(start_index, end_index+1): 
                 a = self.locations[i]
                 b = self.locations[i+1]
                 pygame.draw.line(self.neuron.display, self.color, a.toIntTuple(), b.toIntTuple(), 1)    
-        else:
-            start_index = 0
-            end_index = len(self.gridded_locations) - 2
-            for i in range(start_index, end_index+1): 
-                a = self.gridded_locations[i]
-                b = self.gridded_locations[i+1]                
-                pygame.draw.line(self.neuron.display, self.color, a.toIntTuple(), b.toIntTuple(), 1) 
-            
-            for loc in self.gridded_locations:
-                pygame.draw.circle(self.neuron.display, self.color, loc.toIntTuple(), 2)   
                 
              
              

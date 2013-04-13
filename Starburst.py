@@ -36,6 +36,7 @@ class Starburst(object):
         heading_spacing     = 360.0 / number_dendrites
         heading             = 0.0
         
+        self.master_dendrites   = []
         self.dendrites          = []
         self.active_dendrites   = []
         colors = [[0,0,0], [255,0,0],[0,255,0],[0,0,255],[50,255,255],[0,255,255]]
@@ -46,6 +47,7 @@ class Starburst(object):
             dendrite.color = colors.pop()
             self.dendrites.append(dendrite)
             self.active_dendrites.append(dendrite)
+            self.master_dendrites.append(dendrite)
             heading += heading_spacing
         
         # Plot the branching probability function
@@ -60,6 +62,12 @@ class Starburst(object):
         self.grow()
         
         self.findCentroid()
+        
+        for dendrite in self.master_dendrites:
+            dendrite.discretize(delta=1.0)
+            
+        for dendrite in self.dendrites:
+            dendrite.draw(True)
             
         # So that the display window will stay open,
         self.loopUntilExit()
@@ -146,13 +154,3 @@ class Starburst(object):
 
 
 
-
-# Build Retina
-width       = 1000 * UM_TO_M
-height      = 1000 * UM_TO_M
-grid_size   = 1 * UM_TO_M
-timestep    = 100 * MS_TO_S
-
-retina      = Retina(width, height, grid_size)
-location    = Vector2D(500 * UM_TO_M, 500 * UM_TO_M)
-startburst  = Starburst(retina, location)
