@@ -5,14 +5,16 @@ from pygame.locals import *
 from Retina import Retina
 from Constants import *
 
+from Vector2D import Vector2D
+
 class Neuron(object):
     
     def __init__(self, retina, location, average_wirelength=150*UM_TO_M, radius_deviation=.1,
-                 min_branches=6, max_branches=6, heading_deviation=30, step_size=10*UM_TO_M,
-                 dendrite_vision_radius=30*UM_TO_M):
+                 min_branches=6, max_branches=6, heading_deviation=10, step_size=10*UM_TO_M,
+                 children_deviation=20, dendrite_vision_radius=30*UM_TO_M):
         
         self.retina     = retina
-        self.location   = np.array(location) / self.retina.grid_size
+        self.location   = Vector2D(location[0], location[1]) / self.retina.grid_size
         
         self.heading_deviation  = heading_deviation
         self.step_size          = step_size / self.retina.grid_size
@@ -23,6 +25,8 @@ class Neuron(object):
         
         self.bounding_radius = max_wirelength
         
+        self.max_segment_length = 30*UM_TO_M / self.retina.grid_size
+        
         self.dendrite_vision_radius = dendrite_vision_radius / self.retina.grid_size
         
         number_dendrites    = random.randint(min_branches, max_branches)
@@ -30,14 +34,18 @@ class Neuron(object):
         heading             = 0.0
         active_dendrites    = []
         self.all_dendrites  = []
+        colors = [[0,0,0], [255,0,0],[0,255,0],[0,0,255],[50,255,255],[0,255,255]]
         for i in range(number_dendrites):
             wirelength = random.uniform(min_wirelength, max_wirelength)
             dendrite = DendriteSegment(self, self.location, heading, wirelength, wirelength,
-                                       self.dendrite_vision_radius)
+                                       children_deviation, self.dendrite_vision_radius)
+                                       
+            dendrite.color = colors.pop()
             active_dendrites.append(dendrite)
             self.all_dendrites.append(dendrite)
             heading += heading_spacing
         
+        self.plotBranchProbability()
         
         # Update the dendrites, but let's visualize it using pygame
         pygame.init()
@@ -50,7 +58,8 @@ class Neuron(object):
         while active_dendrites != []:
             self.display.fill((255,255,255))
             
-            if next_move:
+            if next_move:              
+                
 #                next_move = False
                 dendrite = active_dendrites[i]
                 is_growing, children = dendrite.grow()
@@ -61,7 +70,7 @@ class Neuron(object):
                     
                 if children != []:
                     for child in children: 
-                        active_dendrites.append(child)
+                        active_dendrites.insert(0, child)
                         self.all_dendrites.append(child)
                     
                 i += 1
@@ -70,11 +79,11 @@ class Neuron(object):
                 if len(active_dendrites) == 0: break
             
 
-            
             for dendrite in self.all_dendrites:
-                draw_allowable = False
-                if dendrite == active_dendrites[i]: draw_allowable = True
-                dendrite.draw(draw_allowable)
+                draw_allowable_headings = False
+                if dendrite == active_dendrites[i]: draw_allowable_headings = True
+                dendrite.draw(draw_allowable_headings=draw_allowable_headings,
+                              draw_grid=False)
                 
             for event in pygame.event.get():
                 if event.type == QUIT: running = False
@@ -83,15 +92,48 @@ class Neuron(object):
         
             pygame.display.update()
 
-
-        self.checkDendritesForCollisions()
+    
+#        print "Snapping"
+#        for dendrite in self.all_dendrites:
+#            dendrite.snapToNearestGrid()
+#        print "Snapped"
+#        print
+        
+        average_location = Vector2D(0.0, 0.0)
+        number_locations = 0.0
+        for dendrite in self.all_dendrites:
+            for loc in dendrite.locations:
+                average_location += loc
+                number_locations += 1.0
+        average_location /= number_locations
+        soma_to_average = average_location.distanceTo(self.location)
+        soma_to_average_fraction = soma_to_average / self.bounding_radius
+        print "Cell Centroid:\t\t\t\t\t", average_location
+        print "Number of Dendrite Points:\t\t\t\t",number_locations
+        print "Linear Distance from Soma to Centroid:\t\t\t",soma_to_average
+        print "Linear Distance from Soma to Centroid Normalized by Radius:\t", soma_to_average_fraction
+        print
+        
+        print "Checking for dendrites that only have one locations..."
+        one_location_dendrites = 0
+        for dendrite in self.all_dendrites:
+            if len(dendrite.locations) < 2: one_location_dendrites += 1
+        print one_location_dendrites,"found"
+        print
+                
+        
+#        print "Comparing all dendrites looking for collisions (using non-gridded locations)..."
+#        self.checkDendritesForCollisions()
+#        print "Done with collision detection"
+#        print
         
         while running:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     running = False
             for dendrite in self.all_dendrites:
-                dendrite.draw()
+                dendrite.draw(draw_allowable_headings=False) 
+#                              draw_grid=True)
             pygame.display.update()
             if not(running): break
     
@@ -100,8 +142,8 @@ class Neuron(object):
     def checkDendritesForCollisions(self):
         for dendrite in self.all_dendrites:
             for other in self.all_dendrites:
-                for s in range(len(dendrite.locations)-2):
-                    for o in range(len(other.locations)-2):
+                for s in range(len(dendrite.locations)-1):
+                    for o in range(len(other.locations)-1):
                         a = dendrite.locations[s]
                         b = dendrite.locations[s+1]
                         c = other.locations[o]
@@ -110,15 +152,29 @@ class Neuron(object):
                         if not(np.allclose(a,c) or np.allclose(a,d) or np.allclose(b,c) or np.allclose(b,d)):
                             collide, point = collisionDetect(a, b, c, d)
                             if collide:
+                                print "Collision Found"                                
                                 print point
                                 print a,b
                                 print c,d
                                 print
-        print "Done"
     
-    def branchProbability(self, wirelength):
-#        return 0
-        return -1.5 * wirelength/self.bounding_radius + 1
+    
+    def plotBranchProbability(self):
+        import matplotlib.pyplot as plt
+        xs = np.arange(0, self.max_segment_length, 0.1)
+        ys = [self.branchProbability(x) for x in xs]
+#        xs = xs/self.bounding_radius
+        plt.plot(xs,ys)
+        plt.title("Branching as a Function of Wirelength")
+        plt.xlabel("Fraction of Max Wirelength")
+        plt.ylabel("Branch Probability")
+#        plt.axis([0, 1, 0, 1])       
+        plt.grid(True)
+        plt.show()
+        
+    
+    def branchProbability(self, segment_length):
+        return 1.05**(segment_length-self.max_segment_length)
         
         
         
@@ -126,17 +182,20 @@ class Neuron(object):
 class DendriteSegment(object):
             
     def __init__(self, neuron, location, heading, resources, original_resources,
-                 vision_radius):
+                 children_deviation, vision_radius):
         self.neuron             = neuron
         self.heading            = heading
         self.locations          = [location]
+        self.gridded_locations  = []
         self.circle_bounds      = []
         self.children           = []     
         self.resources          = resources
         self.original_resources = original_resources
         self.is_growing         = True
         self.vision_radius      = vision_radius
+        self.children_deviation = children_deviation
         
+        self.length             = 0.0
         self.step_size          = self.neuron.step_size
         self.heading_deviation  = self.neuron.heading_deviation
         
@@ -155,48 +214,38 @@ class DendriteSegment(object):
     def grow(self):
         # Check if the dendrite segment has resources left for growth
         if self.resources<self.step_size:
-            # No resources left, time to die.
+            # No resources left, you should die.
             self.is_growing = False
             return self.is_growing, []
             
         # Calculate the headings to which you can travel
-        allowable_range = self.buildAllowableHeadingRange()
+        allowable_range = self.buildAllowableHeadingRange(self.heading, self.heading_deviation)
         
         # If you can't travel anywhere, die.
         if allowable_range == []:
             self.is_growing = False
             return self.is_growing, []
             
-        # So, you've got enough resources to grow AND you have some possible 
-        # directions you can grow.  Hot stuff.
-        # We should check you should branch and have children.
-        if len(self.locations) >= 2:
-            # You should also have grown a step before being allowed to branch,
-            # otherwise dendrites could start piling up in one location without moving
-            wirelength      = self.original_resources - self.resources
-            rand            = random.random()
-            probabilitiy    = self.neuron.branchProbability(wirelength)
-            if rand<probabilitiy:
-                # Babies R Us
-                self.children   = self.spawnChildren()
-                self.is_growing = False
-                return self.is_growing, self.children
+            
+        children = self.attemptToSpawnChildren()
+        if children != []:
+            self.is_growing = False
+            return self.is_growing, children
+        
 
         # Okay, whatever, you didn't die or procreate, so you can grow. (alone.)
-        
-        # Pick a new heading angle
+        # Start by pick a new heading angle
         self.heading = generateRandomInAllowableRanges(allowable_range)
         # Find the unit vector that represents that angle
-        cos_heading         = np.cos(np.deg2rad(self.heading))
-        sin_heading         = np.sin(np.deg2rad(self.heading))
-        vector_direction    = np.array([cos_heading, sin_heading])
+        vector_direction = Vector2D.generateHeadingFromAngle(self.heading)
         # Move in that vector direction by your step_size
         old_location = self.locations[-1] 
         new_location = old_location + vector_direction * self.step_size
         # Find the distance you traveled
-        distance = linearDistance(old_location, new_location)
+        distance = old_location.distanceTo(new_location)
         # Update your internals
         self.resources -= distance
+        self.length += distance
         self.locations.append(new_location)
         self.circle_bounds.append([distance/2.0, (old_location+new_location)/2.0])
         
@@ -216,13 +265,13 @@ class DendriteSegment(object):
         If my allowable heading range overlaps with the range of angles to exlude
         then remove them from my allowable heading list      
     """
-    def buildAllowableHeadingRange(self):            
+    def buildAllowableHeadingRange(self, heading, heading_deviation):            
         # Get the circular bounding box that describes the locations I will avoid
         vision_radius = self.vision_radius
         vision_center = self.locations[-1]
         
         # Find my allowed heading ranges (based on my ability to turn as defined by heading_deviation)
-        allowable_headings = calculateHeadingRange(self.heading, self.heading_deviation)        
+        allowable_headings = calculateHeadingRange(heading, heading_deviation)        
         
         # For each dendrite in the neuron
         for other in self.neuron.all_dendrites:
@@ -245,7 +294,7 @@ class DendriteSegment(object):
                 # Check if circular bounding box defined by the other line
                 # segment intersects with bounding box defined by my visual range                
                 collision_circle_distance   = vision_radius + line_segment_radius
-                distance_between_circles    = linearDistance(vision_center, line_segment_center)
+                distance_between_circles    = vision_center.distanceTo(line_segment_center)
                 if distance_between_circles <= collision_circle_distance:
                     
                     # Now find the angle from myself to each of the line segment endpoints
@@ -257,14 +306,14 @@ class DendriteSegment(object):
                     # the range of exluded angles.
                     # WORKAROUND: Hacky, but just use the midpoint of the line
                     # segment.
-                    if np.array_equal(a, vision_center): a = line_segment_center
-                    if np.array_equal(b, vision_center): b = line_segment_center
+                    if a == vision_center: a = line_segment_center
+                    if b == vision_center: b = line_segment_center
                     
                     # Calculate the angles
                     vector_to_a = a - vision_center
                     vector_to_b = b - vision_center
-                    angle_to_a = np.arctan2(vector_to_a[1], vector_to_a[0]) * 180.0/np.pi
-                    angle_to_b = np.arctan2(vector_to_b[1], vector_to_b[0]) * 180.0/np.pi
+                    angle_to_a = np.arctan2(vector_to_a.y, vector_to_a.x) * 180.0/np.pi
+                    angle_to_b = np.arctan2(vector_to_b.y, vector_to_b.x) * 180.0/np.pi
                     
                     # Unwrap the angles into [0-360]                    
                     if angle_to_a < 0: angle_to_a += 360   
@@ -310,6 +359,61 @@ class DendriteSegment(object):
                             
         return allowable_headings
     
+    
+    
+    def attemptToSpawnChildren(self):
+        # If you haven't grown a line segment (2 points), then you can't have children
+        if len(self.locations) < 2: return []
+        
+        # If you don't have enough resources left, then you can't have children 
+        # but this check has already been performed
+        
+        # Find the probability of branching based on your current segment length
+        random_number           = random.random()
+        probability_threshold   = self.neuron.branchProbability(self.length)
+        
+        # The odds aren't in your favor...
+        if random_number > probability_threshold: return []
+        
+        # Now let's make sure that your children would be able to grow
+        location = self.locations[-1]
+        
+        # Spawn the first child
+        child_1_heading = self.heading - self.children_deviation
+        
+        # Unwrap the heading bounds into the range [0-360]
+        if child_1_heading > 360:   child_1_heading -= 360.0
+        if child_1_heading < 0:     child_1_heading += 360.0
+        
+        child_1 = DendriteSegment(self.neuron, location, child_1_heading, self.resources, 
+                                  self.original_resources, self.children_deviation, self.vision_radius)
+        child_1.color = self.color                
+        # Have the first child take its first step
+        is_growing, children = child_1.grow()
+        # If the child couldn't take a step, then you don't have room for children
+        if not(is_growing):
+            return []
+
+        # Repeat the same procedure with a second child
+        child_2_heading = self.heading + self.children_deviation
+
+        # Unwrap the heading bounds into the range [0-360]
+        if child_2_heading > 360:   child_2_heading -= 360.0
+        if child_2_heading < 0:     child_2_heading += 360.0        
+        
+        child_2 = DendriteSegment(self.neuron, location, child_2_heading, self.resources, 
+                                  self.original_resources, self.children_deviation, self.vision_radius)
+        child_2.color = self.color
+        # Have the second child take its first step
+        is_growing, children = child_2.grow()     
+        # If the child couldn't take a step, then you don't have room for children
+        if not(is_growing):
+            return []
+            
+        # Babies R Us
+        return [child_1, child_2]
+
+    
     """
     Create two children DendriteSegments that:
         Have the same resources as the parent DendriteSegment
@@ -324,28 +428,87 @@ class DendriteSegment(object):
         child_2 = DendriteSegment(self.neuron, last_location, child_2_heading,
                                   self.resources, self.original_resources, self.vision_radius)
         return [child_1, child_2]
-      
+     
+     
+#    def snapToNearestGrid(self, delta):
+#        first_point             = np.around(self.locations[0])
+#        self.gridded_locations  = []
+#        
+#        range_deltas = np.arange(0, self.step_size, delta)
+#        for i in range(len(self.locations)-1):
+#            p1 = self.locations[i]
+#            p2 = self.locations[i+1]
+#            
+#            heading_vector = p2-p1
+#            heading_vector = heading_vector/np.linalg.norm(heading_vector)
+#            
+#            for d in range_deltas:
+#                p = p1 + heading_vector * d
+#                p = np.around(p)
+#                
+#                location_already_exists = False
+#                if np.array_equal(p, first_point): 
+#                    location_already_exists = True
+#                if any([np.array_equal(p, loc) for loc in self.gridded_locations]):
+#                    location_already_exists = True
+#                
+#                if not(location_already_exists):
+#                    self.gridded_locations.append(p)
+
+
+#    def snapToNearestGrid(locations, grid_size, step_size, delta, last_points=[]):
+#        gridded_locations = []
+#        
+#        range_deltas = np.arange(0, step_size, delta)
+#        for i in range(len(locations)-1):
+#            p1 = locations[i]
+#            p2 = locations[i+1]
+#            
+#            heading_vector = p1.unitHeadingTo(p2)
+#            
+#            for d in range_deltas:
+#                p = p1 + heading_vector * d
+#                p = p.roundedIntCopy()
+#                
+#                if not(p in last_points or p in gridded_locations): 
+#                    gridded_locations.append(p)
+#                    
+#        self.gridded_locations = gridded_locations
+    
+    
     """
     Visualization function
     """
-    def draw(self, draw_allowable=False):
-        if (draw_allowable):
-            last = self.locations[-1]
-            pygame.draw.circle(self.neuron.display, (255,0,0), last.astype(int), int(self.vision_radius), 1)
-            allowable_range = self.buildAllowableHeadingRange()
-            for heading_min, heading_max in allowable_range:
-                rad_min = np.deg2rad(heading_min)
-                rad_max = np.deg2rad(heading_max)
-                heading_min_point = last + np.array([np.cos(rad_min)*self.vision_radius, np.sin(rad_min)*self.vision_radius])
-                heading_max_point = last + np.array([np.cos(rad_max)*self.vision_radius, np.sin(rad_max)*self.vision_radius])
-                pygame.draw.polygon(self.neuron.display, (200,200,255), [last, heading_min_point, heading_max_point]) 
+    def draw(self, draw_allowable_headings=False, draw_grid=False):
+        if not(draw_grid):
+            if (draw_allowable_headings):
+                last = self.locations[-1]
+                pygame.draw.circle(self.neuron.display, (255,0,0), last.toIntTuple(), int(self.vision_radius), 1)
+                allowable_range = self.buildAllowableHeadingRange(self.heading, self.heading_deviation)
+                for heading_min, heading_max in allowable_range:
+                    rad_min = np.deg2rad(heading_min)
+                    rad_max = np.deg2rad(heading_max)
+                    heading_min_point = last + Vector2D(np.cos(rad_min)*self.vision_radius, np.sin(rad_min)*self.vision_radius)
+                    heading_max_point = last + Vector2D(np.cos(rad_max)*self.vision_radius, np.sin(rad_max)*self.vision_radius)
+                    pygame.draw.polygon(self.neuron.display, (200,200,255), [last.toIntTuple(), heading_min_point.toIntTuple(), heading_max_point.toIntTuple()]) 
+                    
+            start_index = 0
+            end_index = len(self.locations) - 2
+            for i in range(start_index, end_index+1): 
+                a = self.locations[i]
+                b = self.locations[i+1]
+                pygame.draw.line(self.neuron.display, self.color, a.toIntTuple(), b.toIntTuple(), 1)    
+        else:
+            start_index = 0
+            end_index = len(self.gridded_locations) - 2
+            for i in range(start_index, end_index+1): 
+                a = self.gridded_locations[i]
+                b = self.gridded_locations[i+1]                
+                pygame.draw.line(self.neuron.display, self.color, a.toIntTuple(), b.toIntTuple(), 1) 
+            
+            for loc in self.gridded_locations:
+                pygame.draw.circle(self.neuron.display, self.color, loc.toIntTuple(), 2)   
                 
-        start_index = 0
-        end_index = len(self.locations) - 2
-        for i in range(start_index, end_index+1): 
-            a = self.locations[i]
-            b = self.locations[i+1]
-            pygame.draw.line(self.neuron.display, self.color, a, b, 1)       
              
              
              
