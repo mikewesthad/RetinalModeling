@@ -18,31 +18,20 @@ starburst   = Starburst(retina, location)
 
 pygame.init()
 screen_size = (1000, 1000)
-scale = 3
 display = pygame.display.set_mode(screen_size)     
 background_color = (255,255,255)
-
 display.fill(background_color)
+
+
+scale = 5
 
 for i in range(0,1000,scale):
     pygame.draw.line(display, (200,200,200), (i,0), (i,1000))
     pygame.draw.line(display, (200,200,200), (0,i), (1000,i))
 
-for dendrite in starburst.dendrites:
-    color = list(dendrite.color)
-    import random
-    color[0] += random.randint(-50,50)
-    color[1] += random.randint(-50,50)
-    color[2] += random.randint(-50,50)
-    color[0] = min(255, color[0])
-    color[0] = max(0, color[0])
-    color[1] = min(255, color[1])
-    color[1] = max(0, color[1])
-    color[2] = min(255, color[2])
-    color[2] = max(0, color[2])
-    for location in dendrite.gridded_locations:
-        scaled_location = location * scale
-        pygame.draw.circle(display, color, scaled_location.toIntTuple(), 2)
+starburst.moveTo(Vector2D(500,500))
+starburst.rescale(scale)
+starburst.draw(display, True)
         
 running = True
 while running:

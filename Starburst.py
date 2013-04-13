@@ -2,6 +2,7 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 import pygame
+from copy import deepcopy
 from pygame.locals import *
 from Retina import Retina
 from Vector2D import Vector2D
@@ -36,19 +37,19 @@ class Starburst(object):
         heading_spacing     = 360.0 / number_dendrites
         heading             = 0.0
         
-        self.master_dendrites   = []
         self.dendrites          = []
-        self.active_dendrites   = []
         colors = [[0,0,0], [255,0,0],[0,255,0],[0,0,255],[50,255,255],[0,255,255]]
         for i in range(number_dendrites):
             wirelength = random.uniform(min_wirelength, max_wirelength)
-            dendrite = DendriteSegment(self, self.location, heading, wirelength, wirelength,
+            dendrite = DendriteSegment(self, Vector2D(0.0, 0.0), heading, wirelength, wirelength,
                                        children_deviation, self.dendrite_vision_radius)
             dendrite.color = colors.pop()
             self.dendrites.append(dendrite)
-            self.active_dendrites.append(dendrite)
-            self.master_dendrites.append(dendrite)
             heading += heading_spacing
+        
+        # Slicing needed to force a copy of the elements (instead of creating a reference to a list)
+        # Note: this only works if the lists are not nested (if they are, use deepcopy)
+        self.master_dendrites = self.dendrites[:]  
         
         # Plot the branching probability function
         self.plotBranchProbability()
@@ -65,15 +66,29 @@ class Starburst(object):
         
         for dendrite in self.master_dendrites:
             dendrite.discretize(delta=1.0)
-            
-        for dendrite in self.dendrites:
-            dendrite.draw(True)
+        
+        self.display.fill(self.background_color)
+        self.draw(self.display, draw_grid=True)
+        pygame.display.update()
             
         # So that the display window will stay open,
         self.loopUntilExit()
 
-        
-        
+    
+    def createCopy(self):
+        return deepcopy(self)
+    
+    def moveTo(self, new_center):
+        self.location = new_center
+    
+    def draw(self, surface, draw_grid=False):
+        for dendrite in self.dendrites:
+            dendrite.draw(surface, draw_grid)
+    
+    def rescale(self, scale_factor):
+        for dendrite in self.dendrites:
+            dendrite.rescale(scale_factor)
+    
     def findCentroid(self):
         average_location = Vector2D(0.0, 0.0)
         number_locations = 0.0
@@ -82,10 +97,10 @@ class Starburst(object):
                 average_location += location
                 number_locations += 1.0
         average_location /= number_locations
-        soma_to_average = average_location.distanceTo(self.location)
+        soma_to_average = average_location.distanceTo(Vector2D(0.0,0.0))
         soma_to_average_fraction = soma_to_average / self.bounding_radius
         print "Cell Centroid:\t\t\t\t\t", average_location
-        print "Number of Dendrite Points:\t\t\t\t{0:,.0f}".format(number_locations)
+        print "Number of Dendrite Points (before discretization):\t\t{0:,.0f}".format(number_locations)
         print "Linear Distance from Soma to Centroid:\t\t\t{0:.3f}".format(soma_to_average)
         print "Linear Distance from Soma to Centroid Normalized by Radius:\t{0:.3%}".format(soma_to_average_fraction)
         print
@@ -99,33 +114,35 @@ class Starburst(object):
             pygame.display.update()
         
     def grow(self):
+        # Slicing needed to force a copy of the elements (instead of creating a reference to a list)
+        # Note: this only works if the lists are not nested (if they are, use deepcopy)
+        active_dendrites = self.master_dendrites[:]
+        
         running = True
         i = 0
-        while running and self.active_dendrites != []:
+        while running and active_dendrites != []:
             
             # Grab a dendrite and update it
-            dendrite = self.active_dendrites[i]
+            dendrite = active_dendrites[i]
             is_growing, children = dendrite.grow()
             
             # If it isn't growing, delete it and adjust index
             if not(is_growing):
-                del self.active_dendrites[i]
+                del active_dendrites[i]
                 i -= 1
             
             # If it had children, add them to the active list                 
             if children != []:
                 for child in children: 
-                    self.active_dendrites.insert(0, child)
+                    active_dendrites.insert(0, child)
                     self.dendrites.append(child)
             
             # Increment index
             i += 1
-            if i >= len(self.active_dendrites): i=0
+            if i >= len(active_dendrites): i=0
             
-            # Draw the current dendrites
             self.display.fill(self.background_color)
-            for dendrite in self.dendrites:
-                dendrite.draw()
+            self.draw(self.display)
             pygame.display.update()
                 
             # Check for close button signal from pygame window
