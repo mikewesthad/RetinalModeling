@@ -16,6 +16,8 @@ class Retina:
         self.grid_width     = int(self.width / self.grid_size)
         self.grid_height    = int(self.height / self.grid_size)
         
+        self.density_area = 1 * MM_TO_M * MM_TO_M
+        
     
     def __str__(self):
         return ""

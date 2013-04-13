@@ -2,7 +2,7 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 import pygame
-from copy import deepcopy
+from copy import deepcopy, copy
 from pygame.locals import *
 from Retina import Retina
 from Vector2D import Vector2D
@@ -14,12 +14,13 @@ class Starburst(object):
     
     def __init__(self, retina, location, average_wirelength=150*UM_TO_M, radius_deviation=.1,
                  min_branches=6, max_branches=6, heading_deviation=10, step_size=10*UM_TO_M,
-                 max_segment_length=35*UM_TO_M, children_deviation=20, dendrite_vision_radius=30*UM_TO_M):
+                 max_segment_length=35*UM_TO_M, children_deviation=20, dendrite_vision_radius=30*UM_TO_M,
+                 visualize_growth=True, display=None):
         
         # General neuron variables
         self.retina             = retina
-        self.location           = location / self.retina.grid_size
-        
+        self.location           = location
+    
         # Wirelength variables
         average_wirelength      = average_wirelength / self.retina.grid_size
         max_wirelength          = average_wirelength * (1.0+radius_deviation)
@@ -39,6 +40,7 @@ class Starburst(object):
         
         self.dendrites          = []
         colors = [[0,0,0], [255,0,0],[0,255,0],[0,0,255],[50,255,255],[0,255,255]]
+        random.shuffle(colors)
         for i in range(number_dendrites):
             wirelength = random.uniform(min_wirelength, max_wirelength)
             dendrite = DendriteSegment(self, Vector2D(0.0, 0.0), heading, wirelength, wirelength,
@@ -51,28 +53,27 @@ class Starburst(object):
         # Note: this only works if the lists are not nested (if they are, use deepcopy)
         self.master_dendrites = self.dendrites[:]  
         
-        # Plot the branching probability function
-        self.plotBranchProbability()
+#        # Plot the branching probability function
+#        self.plotBranchProbability()   
         
-        # Create a pygame display
-        pygame.init()
-        screen_size = (self.retina.grid_width, self.retina.grid_height)
-        self.display = pygame.display.set_mode(screen_size)     
-        self.background_color = (255,255,255)
-        
+        self.visualize_growth = visualize_growth
+        if visualize_growth:
+            self.display = display 
+            self.background_color = (255,255,255)
+            
         self.grow()
-        
-        self.findCentroid()
-        
         for dendrite in self.master_dendrites:
             dendrite.discretize(delta=1.0)
         
-        self.display.fill(self.background_color)
-        self.draw(self.display, draw_grid=True)
-        pygame.display.update()
+        
+#        self.findCentroid()
+
+        if visualize_growth:        
+            self.display.fill(self.background_color)
+            self.draw(self.display, draw_grid=True)
+            pygame.display.update()
+            self.loopUntilExit()
             
-        # So that the display window will stay open,
-        self.loopUntilExit()
 
     
     def createCopy(self):
@@ -141,13 +142,14 @@ class Starburst(object):
             i += 1
             if i >= len(active_dendrites): i=0
             
-            self.display.fill(self.background_color)
-            self.draw(self.display)
-            pygame.display.update()
-                
-            # Check for close button signal from pygame window
-            for event in pygame.event.get():
-                if event.type == QUIT: running = False
+            if self.visualize_growth:
+                self.display.fill(self.background_color)
+                self.draw(self.display)
+                pygame.display.update()
+                    
+                # Check for close button signal from pygame window
+                for event in pygame.event.get():
+                    if event.type == QUIT: running = False
         
     
     def plotBranchProbability(self):

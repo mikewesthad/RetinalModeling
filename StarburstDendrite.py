@@ -26,8 +26,7 @@ class DendriteSegment(object):
         self.heading_deviation  = self.neuron.heading_deviation
         
         self.color = (0, 0, 0)
-        
-        
+    
     """
     Do one of three things:
         Die.
