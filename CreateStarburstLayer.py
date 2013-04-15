@@ -23,7 +23,7 @@ background_color = (255,255,255)
 display.fill(background_color)
 
 nearest_neighbor_distance = 30 * UM_TO_M
-minimum_required_density = 1000
+minimum_required_density = 100
 sl = StarburstLayer(retina, "On", None, 3, 1, nearest_neighbor_distance, minimum_required_density,
                     visualize_growth=True, display=display)
 
