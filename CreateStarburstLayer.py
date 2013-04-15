@@ -27,8 +27,6 @@ minimum_required_density = 100
 sl = StarburstLayer(retina, "On", None, 3, 1, nearest_neighbor_distance, minimum_required_density,
                     visualize_growth=True, display=display)
 
-
-
         
 running = True
 while running:

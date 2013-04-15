@@ -4,7 +4,6 @@ import numpy as np
 import pygame
 from copy import deepcopy, copy
 from pygame.locals import *
-from Retina import Retina
 from Vector2D import Vector2D
 from StarburstDendrite import DendriteSegment
 from Constants import *
@@ -62,8 +61,8 @@ class Starburst(object):
             self.background_color = (255,255,255)
             
         self.grow()
-        for dendrite in self.master_dendrites:
-            dendrite.discretize(delta=1.0)
+        
+        self.discretize(1.0)
         
         
 #        self.findCentroid()
@@ -73,8 +72,15 @@ class Starburst(object):
             self.draw(self.display, draw_grid=True)
             pygame.display.update()
             self.loopUntilExit()
-            
+    
 
+    def compartmentalize(self, compartment_size):
+        for dendrite in self.master_dendrites:
+            dendrite.compartmentalize(compartment_size=compartment_size)
+    
+    def discretize(self, delta):
+        for dendrite in self.master_dendrites:
+            dendrite.discretize(delta=delta)
     
     def createCopy(self):
         return deepcopy(self)

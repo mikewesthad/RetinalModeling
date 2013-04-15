@@ -12,9 +12,6 @@ height      = 1000 * UM_TO_M
 grid_size   = 1 * UM_TO_M
 timestep    = 100 * MS_TO_S
 
-retina      = Retina(width, height, grid_size)
-location    = Vector2D(175 * UM_TO_M, 175 * UM_TO_M)
-starburst   = Starburst(retina, location)
 
 pygame.init()
 screen_size = (1000, 1000)
@@ -23,6 +20,11 @@ background_color = (255,255,255)
 display.fill(background_color)
 
 
+retina      = Retina(width, height, grid_size)
+location    = Vector2D(175 * UM_TO_M, 175 * UM_TO_M)
+starburst   = Starburst(retina, location, display=display, visualize_growth=True)
+
+display.fill(background_color)
 scale = 5
 
 for i in range(0,1000,scale):
@@ -40,14 +42,15 @@ while running:
             running = False
     pygame.display.update()
 
+
 numberPoints = 0
 overlaps = 0
 for a in range(len(starburst.dendrites)):
+    numberPoints += len(starburst.dendrites[a].gridded_locations)
     for b in range(a+1, len(starburst.dendrites)):
         dendrite_a = starburst.dendrites[a]
         dendrite_b = starburst.dendrites[b]
         for location_a in dendrite_a.gridded_locations:
-            numberPoints += 1
             for location_b in dendrite_b.gridded_locations:
                 if location_a == location_b:
                     overlaps += 1

@@ -1,6 +1,7 @@
 from time import clock
 import numpy as np
 from Constants import *
+from StarburstLayer import StarburstLayer
 
 """
 Retina class
@@ -17,6 +18,26 @@ class Retina:
         self.grid_height    = int(self.height / self.grid_size)
         
         self.density_area = 1 * MM_TO_M * MM_TO_M
+        
+        self.layers = []
+        grid = {}
+        self.layers.append(grid)
+        
+    
+    def buildStarburstLayer(self, nearest_neighbor_distance, minimum_required_density):
+        input_delay = 1
+        start_time = clock()
+        self.on_starburst_layer = StarburstLayer(self, "On", None, 3, 1, 
+                                                 nearest_neighbor_distance,
+                                                 minimum_required_density,
+                                                 visualize_growth = False,
+                                                 display=None)
+        self.off_starburst_layer = StarburstLayer(self, "Off", None, 3, 1, 
+                                                 nearest_neighbor_distance,
+                                                 minimum_required_density,
+                                                 visualize_growth = False,
+                                                 display=None)
+        print "On and Off Starburst Layers Construction Time", clock() - start_time
         
     
     def __str__(self):

@@ -1,5 +1,4 @@
 from Retina import Retina
-from Starburst import Neuron
 from Constants import *
 
 # Build Retina
@@ -10,4 +9,7 @@ timestep    = 100 * MS_TO_S
 
 retina = Retina(width, height, grid_size)
 
-startburst = Neuron(retina, (500 * UM_TO_M, 500 * UM_TO_M))
+
+nearest_neighbor_distance = 30 * UM_TO_M
+minimum_required_density = 100
+retina.buildStarburstLayer(nearest_neighbor_distance, minimum_required_density)

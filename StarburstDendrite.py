@@ -5,6 +5,7 @@ from random import random, uniform
 from math import atan2
 from Vector2D import Vector2D
 
+
 class DendriteSegment(object):
             
     def __init__(self, neuron, location, heading, resources, original_resources,
@@ -26,6 +27,51 @@ class DendriteSegment(object):
         self.heading_deviation  = self.neuron.heading_deviation
         
         self.color = (0, 0, 0)
+
+    
+    def compartmentalize(self, compartment_size):
+        pass
+        #compartment, num_points_tot, num_points_left, dendrite_segment, index):
+    
+#        comp = compartment 
+#    
+#        while (num_points_left > 0) and (index < len(dendrite_segment.points)):
+#                comp.addDendritePoint(dendrite_segment.points[index])
+#                index += 1
+#                num_points_left -= 1
+#        
+#        if (num_points_left > 0) and (index == len(dendrite_segment.points)):
+#            #proceed to compartmentalize the children.
+#            num_children = len(dendrite_segment.children)        
+#            if num_children > 0:
+#                #apportion num_points_left over children in integer values.
+#                num_needed_each = num_points_left // num_children
+#                num_extras_left = num_points_left % num_children            
+#                for child in dendrite_segment.children:
+#                    if num_extras_left > 0:
+#                        extra = 1
+#                        num_extras_left -= 1
+#                    else:
+#                        extra = 0
+#                    compartmentalize(comp, num_points_tot, 
+#                                     num_needed_each + extra,
+#                                     child, 0)
+#                    # add to neigh                                     
+#            return None
+#                  
+#        if num_points_left == 0:
+#            if index < len(dendrite_segment.points):
+#                new_comp = Compartment(comp, comp.neuron, comp.grid)  
+#                    # add to neigh          
+#                compartmentalize(new_comp, num_points_tot, num_points_tot,
+#                                 dendrite_segment, index)
+#            else:
+#                for child in dendrite_segment.children:
+#                    new_comp = Compartment(comp, comp.neuron, comp.grid)      
+#                    # add to neigh           
+#                    compartmentalize(new_comp, num_points_tot, num_points_tot,
+#                                     child, 0)
+#            return None
     
     """
     Do one of three things:
