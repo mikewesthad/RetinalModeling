@@ -3,6 +3,7 @@ import pygame
 from pygame.locals import *
 from random import random, uniform
 from math import atan2
+from DendritePoint import DendritePoint
 from Vector2D import Vector2D
 
 
@@ -11,9 +12,11 @@ class DendriteSegment(object):
     def __init__(self, neuron, location, heading, resources, original_resources,
                  children_deviation, vision_radius):
         self.neuron             = neuron
+        self.retina             = neuron.retina
         self.heading            = heading
         self.locations          = [location]
         self.gridded_locations  = []
+        self.points             = []
         self.circle_bounds      = []
         self.children           = []     
         self.resources          = resources
@@ -29,10 +32,9 @@ class DendriteSegment(object):
         self.color = (0, 0, 0)
 
     
-    def compartmentalize(self, compartment_size):
-        pass
-        #compartment, num_points_tot, num_points_left, dendrite_segment, index):
-    
+    def compartmentalize(self, compartment, compartment_size_total, compartment_size,
+                         dendrite, index):
+        pass    
 #        comp = compartment 
 #    
 #        while (num_points_left > 0) and (index < len(dendrite_segment.points)):
@@ -284,7 +286,7 @@ class DendriteSegment(object):
     Sample the continuous-regime line segments onto the retinal grid
     Recursively move from dendrite to children to children's children...
     """
-    def discretize(self, delta=1.0, range_deltas=[], parent_locations=[]):
+    def discretize(self, delta=1.0, range_deltas=[], parent_locations=[]):   
         self.gridded_locations = []
         
         if range_deltas == []:
@@ -309,8 +311,8 @@ class DendriteSegment(object):
     def rescale(self, scale_factor):
         for i in range(len(self.locations)):
             self.locations[i] *= scale_factor
-        for i in range(len(self.gridded_locations)):
-            self.gridded_locations[i] *= scale_factor
+        for i in range(len(self.points)):
+            self.points[i].location = self.points[i].location * scale_factor
     
     """
     Visualization function

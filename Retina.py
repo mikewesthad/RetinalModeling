@@ -7,8 +7,9 @@ from StarburstLayer import StarburstLayer
 Retina class
 """
 class Retina:
-    def __init__(self, retina_width, retina_height, grid_size):
-
+    def __init__(self, retina_width, retina_height, grid_size, display):
+        self.display = display        
+        
         self.width  = float(retina_width)
         self.height = float(retina_height)
         self.area   = retina_width * retina_height
@@ -19,20 +20,51 @@ class Retina:
         
         self.density_area = 1 * MM_TO_M * MM_TO_M
         
+        self.history_size = 3
+        
         self.layers = []
         grid = {}
         self.layers.append(grid)
         
     
+    def registerPointWithGrid(self, point, neuron):
+        pass
+#        location    = point.location + neuron.location
+#        depth       = neuron.layer.layer_depth
+#        key         = location.toIntTuple()
+#        
+#        if key in self.layers[depth]:
+#            self.layers[depth][key] = self.layers[depth][key] + [point]
+#        else:
+#            self.layers[depth][key] = [point]
+            
+    def getOverlappingPoints(self, point, neuron):
+        pass
+#        location    = point.location + neuron.location
+#        depth       = neuron.layer.layer_depth
+#        key         = location.toIntTuple()
+#        
+#        overlaps = []
+#        if key in self.layers[depth]:
+#            overlaps = self.layers[depth]
+#            overlaps.remove(point)
+#        
+#        return overlaps
+        
+        
+    
     def buildStarburstLayer(self, nearest_neighbor_distance, minimum_required_density):
         input_delay = 1
+        layer_depth = 0
         start_time = clock()
-        self.on_starburst_layer = StarburstLayer(self, "On", None, 3, 1, 
+        self.on_starburst_layer = StarburstLayer(self, "On", None, layer_depth, 
+                                                 self.history_size, input_delay, 
                                                  nearest_neighbor_distance,
                                                  minimum_required_density,
-                                                 visualize_growth = False,
-                                                 display=None)
-        self.off_starburst_layer = StarburstLayer(self, "Off", None, 3, 1, 
+                                                 visualize_growth = True,
+                                                 display=self.display)
+        self.off_starburst_layer = StarburstLayer(self, "Off", None, layer_depth, 
+                                                 self.history_size, input_delay,  
                                                  nearest_neighbor_distance,
                                                  minimum_required_density,
                                                  visualize_growth = False,

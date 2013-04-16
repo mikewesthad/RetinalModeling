@@ -10,13 +10,14 @@ from Vector2D import *
 
 class StarburstLayer:
     
-    def __init__(self, retina, starburst_type, bipolar_layer, history_size,
+    def __init__(self, retina, starburst_type, bipolar_layer, layer_depth, history_size,
                  input_delay, nearest_neighbor_distance, minimum_required_density,
-                 number_morphologies=10, visualize_growth=True, display=None):
+                 number_morphologies=3, visualize_growth=True, display=None):
                      
         self.retina             = retina
         self.bipolar_layer      = bipolar_layer
         self.starburst_type     = starburst_type
+        self.layer_depth        = layer_depth
 
         self.history_size   = history_size
         self.input_delay    = input_delay
@@ -34,7 +35,9 @@ class StarburstLayer:
         print "Growing cells..."
         unique_morphologies = []
         for i in range(number_morphologies):
-            unique_starburst = Starburst(retina, self.locations[i], visualize_growth=False)
+            unique_starburst = Starburst(retina, self.locations[i], layer=self, 
+                                         visualize_growth=visualize_growth,
+                                         display=display)
             unique_morphologies.append(unique_starburst)
             print "Generated {0} of {1} unique cells".format(i+1, number_morphologies)
         print "Grown"
@@ -47,6 +50,10 @@ class StarburstLayer:
             new_location = self.locations[i]
             starburst_copy.moveTo(new_location)
             self.starburst_cells.add(starburst_copy)
+            if visualize_growth: 
+                self.draw(display)
+                pygame.display.update()
+            print "Copied {0} of {1} unique cells".format(i+1, self.neurons)
         print "Copied"
         
         

@@ -11,7 +11,7 @@ from Constants import *
 
 class Starburst(object):
     
-    def __init__(self, retina, location, average_wirelength=150*UM_TO_M, radius_deviation=.1,
+    def __init__(self, retina, location, layer=None, average_wirelength=150*UM_TO_M, radius_deviation=.1,
                  min_branches=6, max_branches=6, heading_deviation=10, step_size=10*UM_TO_M,
                  max_segment_length=35*UM_TO_M, children_deviation=20, dendrite_vision_radius=30*UM_TO_M,
                  visualize_growth=True, display=None):
@@ -19,6 +19,8 @@ class Starburst(object):
         # General neuron variables
         self.retina             = retina
         self.location           = location
+        self.input_delay        = 1
+        self.layer              = layer
     
         # Wirelength variables
         average_wirelength      = average_wirelength / self.retina.grid_size
@@ -37,7 +39,7 @@ class Starburst(object):
         heading_spacing     = 360.0 / number_dendrites
         heading             = 0.0
         
-        self.dendrites          = []
+        self.dendrites = []
         colors = [[0,0,0], [255,0,0],[0,255,0],[0,0,255],[50,255,255],[0,255,255]]
         random.shuffle(colors)
         for i in range(number_dendrites):
@@ -52,18 +54,19 @@ class Starburst(object):
         # Note: this only works if the lists are not nested (if they are, use deepcopy)
         self.master_dendrites = self.dendrites[:]  
         
-#        # Plot the branching probability function
+        # Plot the branching probability function
 #        self.plotBranchProbability()   
         
         self.visualize_growth = visualize_growth
         if visualize_growth:
             self.display = display 
-            self.background_color = (255,255,255)
+            self.background_color = (255,255,255
+            )
             
         self.grow()
         
         self.discretize(1.0)
-        
+#        self.compartmentalize(50)
         
 #        self.findCentroid()
 
@@ -75,6 +78,7 @@ class Starburst(object):
     
 
     def compartmentalize(self, compartment_size):
+        self.compartments = []
         for dendrite in self.master_dendrites:
             dendrite.compartmentalize(compartment_size=compartment_size)
     
