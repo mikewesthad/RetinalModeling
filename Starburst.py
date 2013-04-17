@@ -14,13 +14,14 @@ class Starburst(object):
     def __init__(self, retina, location, layer=None, average_wirelength=150*UM_TO_M, radius_deviation=.1,
                  min_branches=6, max_branches=6, heading_deviation=10, step_size=10*UM_TO_M,
                  max_segment_length=35*UM_TO_M, children_deviation=20, dendrite_vision_radius=30*UM_TO_M,
-                 visualize_growth=True, display=None):
+                 visualize_growth=True, display=None, generate_morphology=True):
         
         # General neuron variables
         self.retina             = retina
         self.location           = location
         self.input_delay        = 1
         self.layer              = layer
+        self.display            = display
     
         # Wirelength variables
         average_wirelength      = average_wirelength / self.retina.grid_size
@@ -34,47 +35,48 @@ class Starburst(object):
         self.max_segment_length = max_segment_length / self.retina.grid_size
         self.dendrite_vision_radius = dendrite_vision_radius / self.retina.grid_size
         
-        # Initialize the first branches
-        number_dendrites    = random.randint(min_branches, max_branches)
-        heading_spacing     = 360.0 / number_dendrites
-        heading             = 0.0
-        
-        self.dendrites = []
-        colors = [[0,0,0], [255,0,0],[0,255,0],[0,0,255],[50,255,255],[0,255,255]]
-        random.shuffle(colors)
-        for i in range(number_dendrites):
-            wirelength = random.uniform(min_wirelength, max_wirelength)
-            dendrite = DendriteSegment(self, Vector2D(0.0, 0.0), heading, wirelength, wirelength,
-                                       children_deviation, self.dendrite_vision_radius)
-            dendrite.color = colors.pop()
-            self.dendrites.append(dendrite)
-            heading += heading_spacing
-        
-        # Slicing needed to force a copy of the elements (instead of creating a reference to a list)
-        # Note: this only works if the lists are not nested (if they are, use deepcopy)
-        self.master_dendrites = self.dendrites[:]  
-        
-        # Plot the branching probability function
-#        self.plotBranchProbability()   
-        
-        self.visualize_growth = visualize_growth
-        if visualize_growth:
-            self.display = display 
-            self.background_color = (255,255,255
-            )
+        if generate_morphology:
+            # Initialize the first branches
+            number_dendrites    = random.randint(min_branches, max_branches)
+            heading_spacing     = 360.0 / number_dendrites
+            heading             = 0.0
             
-        self.grow()
+            self.dendrites = []
+            colors = [[0,0,0], [255,0,0],[0,255,0],[0,0,255],[50,255,255],[0,255,255]]
+            random.shuffle(colors)
+            for i in range(number_dendrites):
+                wirelength = random.uniform(min_wirelength, max_wirelength)
+                dendrite = DendriteSegment(self, Vector2D(0.0, 0.0), heading, wirelength, wirelength,
+                                           children_deviation, self.dendrite_vision_radius)
+                dendrite.color = colors.pop()
+                self.dendrites.append(dendrite)
+                heading += heading_spacing
+            
+            # Slicing needed to force a copy of the elements (instead of creating a reference to a list)
+            # Note: this only works if the lists are not nested (if they are, use deepcopy)
+            self.master_dendrites = self.dendrites[:]  
         
-        self.discretize(1.0)
-#        self.compartmentalize(50)
-        
-#        self.findCentroid()
-
-        if visualize_growth:        
-            self.display.fill(self.background_color)
-            self.draw(self.display, draw_grid=True)
-            pygame.display.update()
-            self.loopUntilExit()
+            # Plot the branching probability function
+#            self.plotBranchProbability()   
+            
+            self.visualize_growth = visualize_growth
+            if visualize_growth:
+                self.display = display 
+                self.background_color = (255,255,255
+                )
+                
+            self.grow()
+            
+            self.discretize(1.0)
+#            self.compartmentalize(50)
+            
+#            self.findCentroid()
+    
+            if visualize_growth:        
+                self.display.fill(self.background_color)
+                self.draw(self.display, draw_grid=True)
+                pygame.display.update()
+#                self.loopUntilExit()
     
 
     def compartmentalize(self, compartment_size):
@@ -87,7 +89,50 @@ class Starburst(object):
             dendrite.discretize(delta=delta)
     
     def createCopy(self):
-        return deepcopy(self)
+        starburst_copy = Starburst(self.retina, self.location.copy(), self.layer, 
+                                   visualize_growth=self.visualize_growth, 
+                                   display=self.display, generate_morphology=False)
+        starburst_copy.input_delay              = self.input_delay     
+        starburst_copy.bounding_radius          = self.bounding_radius
+        starburst_copy.heading_deviation        = self.heading_deviation
+        starburst_copy.step_size                = self.step_size
+        starburst_copy.max_segment_length       = self.max_segment_length
+        starburst_copy.dendrite_vision_radius   = self.dendrite_vision_radius
+        
+        starburst_copy.master_dendrites = []
+        starburst_copy.dendrites = []
+        for dendrite in self.master_dendrites:
+            new_dendrite = dendrite.createCopy(starburst_copy)
+            starburst_copy.master_dendrites.append(new_dendrite)
+        
+                
+        return starburst_copy
+        
+#        retina  = self.retina
+#        layer   = self.layer
+#        
+#        del self.retina
+#        del self.layer
+#        
+#        for dendrite in self.dendrites:
+#            dendrite.eraseReferences()
+#        
+#        new_copy = deepcopy(self)
+#        
+#        for dendrite in self.dendrites:
+#            dendrite.reinitReferences(retina, self)
+#        
+#        self.retina     = retina
+#        self.layer      = layer
+#        
+#        for dendrite in new_copy.dendrites:
+#            dendrite.reinitReferences(retina, self)
+#            
+#        new_copy.retina     = retina
+#        new_copy.layer      = layer
+#        
+#        return new_copy
+        
     
     def moveTo(self, new_center):
         self.location = new_center

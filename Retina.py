@@ -63,12 +63,14 @@ class Retina:
                                                  minimum_required_density,
                                                  visualize_growth = True,
                                                  display=self.display)
-        self.off_starburst_layer = StarburstLayer(self, "Off", None, layer_depth, 
-                                                 self.history_size, input_delay,  
-                                                 nearest_neighbor_distance,
-                                                 minimum_required_density,
-                                                 visualize_growth = False,
-                                                 display=None)
+                                                 
+        
+#        self.off_starburst_layer = StarburstLayer(self, "Off", None, layer_depth, 
+#                                                 self.history_size, input_delay,  
+#                                                 nearest_neighbor_distance,
+#                                                 minimum_required_density,
+#                                                 visualize_growth = False,
+#                                                 display=None)
         print "On and Off Starburst Layers Construction Time", clock() - start_time
         
     

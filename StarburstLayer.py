@@ -1,4 +1,5 @@
 from random import randint, choice
+from time import clock
 import math as m
 import numpy as np
 import pygame
@@ -45,6 +46,7 @@ class StarburstLayer:
         print "Copying cells..."
         self.starburst_cells = set()
         for i in range(self.neurons):
+            start_time = clock()
             unique_starburst = choice(unique_morphologies)
             starburst_copy = unique_starburst.createCopy()
             new_location = self.locations[i]
@@ -53,7 +55,8 @@ class StarburstLayer:
             if visualize_growth: 
                 self.draw(display)
                 pygame.display.update()
-            print "Copied {0} of {1} unique cells".format(i+1, self.neurons)
+            elapsed_time = clock() - start_time
+            print "Copied {0} of {1} unique cells in {2} seconds".format(i+1, self.neurons, elapsed_time)
         print "Copied"
         
         

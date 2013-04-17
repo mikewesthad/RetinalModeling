@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+from copy import deepcopy
 from pygame.locals import *
 from random import random, uniform
 from math import atan2
@@ -7,7 +8,7 @@ from DendritePoint import DendritePoint
 from Vector2D import Vector2D
 
 
-class DendriteSegment(object):
+class DendriteSegment:
             
     def __init__(self, neuron, location, heading, resources, original_resources,
                  children_deviation, vision_radius):
@@ -31,6 +32,34 @@ class DendriteSegment(object):
         
         self.color = (0, 0, 0)
 
+    def createCopy(self, new_starburst, parent_dendrite=None):
+        new_dendrite = DendriteSegment(new_starburst, None, self.heading, 
+                                       self.resources, self.original_resources, 
+                                       self.children_deviation, self.vision_radius)
+        new_dendrite.locations          = deepcopy(self.locations)        
+        new_dendrite.gridded_locations  = deepcopy(self.gridded_locations)
+        new_dendrite.color              = deepcopy(self.color)
+        
+        new_starburst.dendrites.append(new_dendrite)
+        
+        if parent_dendrite != None:
+            parent_dendrite.children.append(new_dendrite)
+        
+        if self.children != []:
+            for child in self.children:
+                child.createCopy(new_starburst, new_dendrite)
+        
+        return new_dendrite
+        
+        
+
+    def eraseReferences(self):
+        del self.neuron
+        del self.retina
+        
+    def reinitReferences(self, retina, neuron):
+        self.retina = retina
+        self.neuron = neuron
     
     def compartmentalize(self, compartment, compartment_size_total, compartment_size,
                          dendrite, index):
