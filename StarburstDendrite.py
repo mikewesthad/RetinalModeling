@@ -335,7 +335,12 @@ class DendriteSegment:
                     
         for child in self.children:
             child.discretize(delta, range_deltas, self.gridded_locations)
-            
+    
+    def createPoints(self):
+        self.points = []
+        for gridded_location in self.gridded_locations:
+            point = DendritePoint(self.retina, self, gridded_location)
+            self.points.append(point)
             
     def rescale(self, scale_factor):
         for i in range(len(self.locations)):

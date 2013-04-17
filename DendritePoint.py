@@ -1,4 +1,4 @@
-class DendritePoint(object):
+class DendritePoint:
 
     def __init__(self, retina, dendrite, location):
         self.retina     = None    
