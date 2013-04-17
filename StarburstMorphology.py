@@ -5,6 +5,7 @@ import pygame
 from pygame.locals import *
 from Vector2D import Vector2D
 from StarburstDendrite import DendriteSegment
+from Compartment import Compartment
 from Constants import *
 
 
@@ -63,7 +64,10 @@ class StarburstMorphology(object):
         
         self.discretize(1.0)
         self.createPoints()
-#            self.compartmentalize(50)
+        self.compartmentalize(20)
+        
+        for c in self.compartments:
+            print c.getSize()
 
 
     def grow(self):
@@ -103,10 +107,23 @@ class StarburstMorphology(object):
                 for event in pygame.event.get():
                     if event.type == QUIT: running = False
 
+
     def compartmentalize(self, compartment_size):
         self.compartments = []
-        for dendrite in self.master_dendrites:
-            dendrite.compartmentalize(compartment_size=compartment_size)
+        
+        # Build all the compartments recursively
+        self.master_compartments = []
+        for dendrite in self.master_dendrites:            
+            new_compartment = Compartment(self)
+            self.master_compartments.append(new_compartment)            
+            dendrite.compartmentalize(new_compartment, compartment_size, compartment_size)
+        
+        # Connect all the master compartments together
+        for compartment_a in self.master_compartments:
+            for compartment_b in self.master_compartments:
+                if compartment_a != compartment_b:
+                    compartment_a.neighbors.append(compartment_b)
+            
     
     def discretize(self, delta):
         for dendrite in self.master_dendrites:
@@ -116,9 +133,13 @@ class StarburstMorphology(object):
         for dendrite in self.dendrites:
             dendrite.createPoints()
             
-    def draw(self, surface, draw_grid=False):
-        for dendrite in self.dendrites:
-            dendrite.draw(surface, draw_grid)
+    def draw(self, surface, draw_grid=False, draw_compartments=False):
+        if draw_compartments:
+            for compartment in self.compartments:
+                compartment.draw(surface)
+        else:
+            for dendrite in self.dendrites:
+                dendrite.draw(surface, draw_grid)
     
     def rescale(self, scale_factor):
         for dendrite in self.dendrites:

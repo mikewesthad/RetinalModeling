@@ -5,6 +5,7 @@ from pygame.locals import *
 from random import random, uniform
 from math import atan2
 from DendritePoint import DendritePoint
+from Compartment import Compartment
 from Vector2D import Vector2D
 
 
@@ -50,59 +51,57 @@ class DendriteSegment:
                 child.createCopy(new_starburst, new_dendrite)
         
         return new_dendrite
-        
-        
-
-    def eraseReferences(self):
-        del self.neuron
-        del self.retina
-        
-    def reinitReferences(self, retina, neuron):
-        self.retina = retina
-        self.neuron = neuron
     
-    def compartmentalize(self, compartment, compartment_size_total, compartment_size,
-                         dendrite, index):
-        pass    
-#        comp = compartment 
-#    
-#        while (num_points_left > 0) and (index < len(dendrite_segment.points)):
-#                comp.addDendritePoint(dendrite_segment.points[index])
-#                index += 1
-#                num_points_left -= 1
-#        
-#        if (num_points_left > 0) and (index == len(dendrite_segment.points)):
-#            #proceed to compartmentalize the children.
-#            num_children = len(dendrite_segment.children)        
-#            if num_children > 0:
-#                #apportion num_points_left over children in integer values.
-#                num_needed_each = num_points_left // num_children
-#                num_extras_left = num_points_left % num_children            
-#                for child in dendrite_segment.children:
-#                    if num_extras_left > 0:
-#                        extra = 1
-#                        num_extras_left -= 1
-#                    else:
-#                        extra = 0
-#                    compartmentalize(comp, num_points_tot, 
-#                                     num_needed_each + extra,
-#                                     child, 0)
-#                    # add to neigh                                     
-#            return None
-#                  
-#        if num_points_left == 0:
-#            if index < len(dendrite_segment.points):
-#                new_comp = Compartment(comp, comp.neuron, comp.grid)  
-#                    # add to neigh          
-#                compartmentalize(new_comp, num_points_tot, num_points_tot,
-#                                 dendrite_segment, index)
-#            else:
-#                for child in dendrite_segment.children:
-#                    new_comp = Compartment(comp, comp.neuron, comp.grid)      
-#                    # add to neigh           
-#                    compartmentalize(new_comp, num_points_tot, num_points_tot,
-#                                     child, 0)
-#            return None
+    def compartmentalize(self, compartment, compartment_points_needed, compartment_size_goal, index=0):   
+        # Calculate the remaining available points left in the current dendrite                             
+        points_in_dendrite      = len(self.points)
+        points_left_in_dendrite = points_in_dendrite - index
+        
+        # Add a batch of points to the current compartment (limited by either
+        # dendrite size or compartment size)
+        number_points_to_grab   = min(compartment_points_needed, points_left_in_dendrite)
+        end_index               = index + number_points_to_grab
+        points_to_grab          = self.points[index:end_index]
+        compartment.points      = compartment.points + points_to_grab
+        
+        # Generate flags
+        compartment_points_needed   = compartment_points_needed - number_points_to_grab
+        compartment_needs_points    = (compartment_points_needed > 0)
+        dendrite_has_points_left    = (end_index < points_in_dendrite)
+        dendrite_has_children       = (self.children != [])
+                
+        if compartment_needs_points and not(dendrite_has_points_left) and dendrite_has_children:
+            child1, child2 = self.children
+        
+            child1_compartment_size_left = compartment_points_needed // 2
+            child2_compartment_size_left = compartment_points_needed // 2
+            
+            if (compartment_points_needed % 2) == 1:               
+                child1_compartment_size_left += 1
+            
+            child1.compartmentalize(compartment, child1_compartment_size_left,
+                                    compartment_size_goal, 0)
+            child2.compartmentalize(compartment, child2_compartment_size_left,
+                                    compartment_size_goal, 0)
+        
+        elif not(compartment_needs_points) and dendrite_has_points_left:
+            new_compartment = Compartment(self.neuron)
+            compartment.neighbors.append(new_compartment)
+            self.compartmentalize(new_compartment, compartment_size_goal,
+                                  compartment_size_goal, end_index)
+                                  
+        elif not(compartment_needs_points) and not(dendrite_has_points_left) and dendrite_has_children:
+            child1, child2      = self.children                  
+            child1_compartment  = Compartment(self.neuron)  
+            child2_compartment  = Compartment(self.neuron)
+            
+            compartment.neighbors = compartment.neighbors + [child1_compartment, child2_compartment]
+            
+            child1.compartmentalize(child1_compartment, compartment_size_goal,
+                                    compartment_size_goal, 0)
+            child2.compartmentalize(child2_compartment, compartment_size_goal,
+                                    compartment_size_goal, 0)
+            
     
     """
     Do one of three things:
@@ -345,6 +344,8 @@ class DendriteSegment:
     def rescale(self, scale_factor):
         for i in range(len(self.locations)):
             self.locations[i] *= scale_factor
+        for i in range(len(self.gridded_locations)):
+            self.gridded_locations[i] *= scale_factor
         for i in range(len(self.points)):
             self.points[i].location = self.points[i].location * scale_factor
     
