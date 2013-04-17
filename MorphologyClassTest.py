@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 from Retina import Retina
+from Starburst import Starburst
 from StarburstMorphology import StarburstMorphology
 from Vector2D import Vector2D
 from Constants import *
@@ -16,11 +17,27 @@ timestep    = 100 * MS_TO_S
 
 retina = Retina(width, height, grid_size, display)
 
-unique_starburst = StarburstMorphology(retina, Vector2D(100,100), visualize_growth=True, display=display)
+starburst_morphology = StarburstMorphology(retina, Vector2D(0.0,0.0), visualize_growth=False)
   
-unique_starburst.rescale(3)
+#starburst_morphology.rescale(3)
+#starburst_morphology.animateCompartments(display)  
 
-unique_starburst.animateCompartments(display)  
+starburst = Starburst(retina, None, starburst_morphology, Vector2D(500.0,500.0), 0, 0)
+starburst.registerWithRetina()
+#starburst.draw(display)
+
+running = True
+while running:
+    display.fill((255,255,255))
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            running = False
+            
+    retina.drawGrid(display, 0)
+#    starburst.draw(display, False)
+    pygame.display.update()
+
+
 
         
 #running = True

@@ -187,13 +187,21 @@ class StarburstMorphology(object):
         for dendrite in self.dendrites:
             dendrite.createPoints()
             
-    def draw(self, surface, draw_grid=False, draw_compartments=False):
+    def draw(self, surface, draw_grid=False, draw_compartments=False, new_location=None):
+        if new_location == None: 
+            new_location = self.location
+
+        old_location = self.location
+        self.location = new_location        
+        
         if draw_compartments:
             for compartment in self.compartments:
                 compartment.draw(surface)
         else:
             for dendrite in self.dendrites:
                 dendrite.draw(surface, draw_grid)
+                
+        self.location = old_location
     
     def rescale(self, scale_factor):
         for dendrite in self.dendrites:

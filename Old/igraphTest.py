@@ -8,7 +8,7 @@ Created on Thu Apr 11 16:48:08 2013
 import numpy as np
 from igraph import *
 
-compartments = 10000
+compartments = 1000
 
 
 a = np.random.random_integers(0, 1, size=(compartments,compartments))

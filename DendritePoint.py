@@ -7,13 +7,6 @@ class DendritePoint:
         self.heading    = None  
         self.inputs     = []
         
-        self.registerPointWithGrid()
-        
-        
-    def registerPointWithGrid(self):
-        pass
-#        self.retina.registerPointWithGrid(self, self.dendrite.neuron)
-        
     def __eq__(self, other):
         if self.location == other.location and self.dendrite == other.dendrite:
             return True

@@ -25,31 +25,32 @@ class Retina:
         self.layers = []
         grid = {}
         self.layers.append(grid)
-        
     
-    def registerPointWithGrid(self, point, neuron):
-        pass
-#        location    = point.location + neuron.location
-#        depth       = neuron.layer.layer_depth
-#        key         = location.toIntTuple()
-#        
-#        if key in self.layers[depth]:
-#            self.layers[depth][key] = self.layers[depth][key] + [point]
-#        else:
-#            self.layers[depth][key] = [point]
+    def drawGrid(self, surface, depth):
+        for x in range(self.grid_width):
+            for y in range(self.grid_width):
+                key = (x, y)
+                if key in self.layers[depth]:
+                    elements = self.layers[depth][key]
+                    for neuron, compartment in elements:
+                        surface.set_at(key, compartment.color)        
+    
+    def register(self, neuron, compartment, depth, location):
+        key = location.toIntTuple()
+        if key in self.layers[depth]:
+            self.layers[depth][key].append((neuron, compartment))
+        else:
+            self.layers[depth][key] = [(neuron, compartment)]
             
-    def getOverlappingPoints(self, point, neuron):
-        pass
-#        location    = point.location + neuron.location
-#        depth       = neuron.layer.layer_depth
-#        key         = location.toIntTuple()
-#        
-#        overlaps = []
-#        if key in self.layers[depth]:
-#            overlaps = self.layers[depth]
-#            overlaps.remove(point)
-#        
-#        return overlaps
+    def getOverlappingNeurons(self, neuron, location):
+        key = location.toIntTuple()
+        if key in self.layers[depth]:
+            overlap = []
+            for (other_neuron, other_compartment) in self.layers[depth][key]:
+                if neuron != other_neuron:
+                    overlap.append((other_neuron, other_compartment))
+                    
+        return []
         
         
     
