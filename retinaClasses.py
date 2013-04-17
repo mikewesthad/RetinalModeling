@@ -7,11 +7,28 @@ Jason Farina
 import random
 import collections
 import numpy
+import pygame
 
 test = False
+test_estInputs = True
+
+
 ###############
 ## Constants ##
 ###############
+DISPLAY_WIDTH = 800
+DISPLAY_HEIGHT = 800
+
+R_WIDTH = 800
+R_HEIGHT =800
+R_SPACING = 1
+
+R_TO_DISP_W = DISPLAY_WIDTH / R_WIDTH
+R_TO_DISP_H = DISPLAY_HEIGHT / R_HEIGHT
+
+SOMA_SPACING = 200
+DENDRITE_LENGTH = 201
+
 
 NEUROTRANSMITTERS = set(['gly', 'glu', 'gab', 'ach'])
 
@@ -93,7 +110,7 @@ class RetinalGrid(object):
         """
         self.width = width/spacing   #convert from um to rgu's (retinal grid units)
         self.height = height/spacing #convert from um to rgu's
-        self.spacing            
+        self.spacing = spacing           
             
         for w in range(width+1):
             for h in range(height+1):
@@ -139,7 +156,28 @@ class NeuronLayer(object):
         self.neurons = []
         
     def placeNeurons(self):
-        pass
+        ss = SOMA_SPACING
+        dlen = 0 #DENDRITE_LENGTH
+        x = 0
+        while x < self.grid.width:
+            y = 0
+            while y < self.grid.height:
+                if y%ss==0:
+                    if x%ss==0:
+                        if (x-dlen)>0 and (x+dlen)<self.grid.width and (y-dlen)>0 and (y+dlen)<self.grid.height:
+                            n = Neuron(Location(x,y), self.grid)
+                            self.neurons.append(n)
+                if (y + ss/2)%ss == 0:
+                    if (x + ss/2)%ss == 0:
+                        if (x-dlen)>0 and (x+dlen)<self.grid.width and (y-dlen)>0 and (y+dlen)<self.grid.height:
+                            n = Neuron(Location(x,y), self.grid)
+                            self.neurons.append(n)
+                y += self.grid.spacing
+            x += self.grid.spacing
+    
+    def grow(self):
+        for n in self.neurons:
+            n.grow()
     
     def initPoints(self):
         for neuron in self.neurons:
@@ -171,7 +209,20 @@ class Neuron(object):
         self.compartments = []        
         
     def grow(self):
-        pass
+        dendrite_length = DENDRITE_LENGTH
+        s = self.soma_location
+        d1_loc, d2_loc, d3_loc, d4_loc = [], [], [], []
+        for i in range(dendrite_length):
+            d1_loc.append(Location(s.x+1+i, s.y))
+            d2_loc.append(Location(s.x, s.y-1-i))
+            d3_loc.append(Location(s.x-1-i, s.y))
+            d4_loc.append(Location(s.x, s.y+1+i))
+        loc = [d1_loc, d2_loc, d3_loc, d4_loc]
+        for lst in loc:
+            d = DendriteSegment(self, lst)
+            self.dendrites.append(d)    
+        for d in self.dendrites:
+            d.grow()
         
     def initPoints(self):
         self.grid.registerLocation(self.soma_location, self)
@@ -210,7 +261,19 @@ class DendriteSegment(object):
         self.children = []      #The dendrites that branch from the end of this one
         
     def grow(self):
-        pass
+        #remove any negative (off the grid) locations from self.locations
+        i = 0
+        total = len(self.locations)
+        while i < total:
+            loc = self.locations[i]            
+            if (loc.x < 0) or (loc.y < 0) or (loc.x > self.grid.width) or (loc.y > self.grid.width):
+                self.locations.remove(loc)
+                i += 0
+                total -= 1
+            else:
+                i += 1
+#        for loc in self.locations:
+#            print loc.ID
         
     def initPoints(self):
         """Instantiates a DendritePoint object at each location in self.locations.
@@ -237,7 +300,7 @@ class DendriteSegment(object):
                 new_connections = filter(lambda x:  x not in point.inputs, 
                                          connections)            
                 point.inputs.extend(new_connections)
-        for child in self.children():
+        for child in self.children:
             child.estInputs()
             
 
@@ -313,7 +376,9 @@ class Compartment(object):
         self.center = None
         self.nt_accepted = set()
         
+        #Inform your neuron and proximal neighbor of your existence
         self.neuron.compartments.append(self)
+        self.neighbor_proximal.neighbor_distal.append(self)
         
     def addDendritePoint(self, dendrite_point):
         self.points.append(dendrite_point)
@@ -429,7 +494,7 @@ class Compartment(object):
           
 if test:        
     #instantiates a retinal grid 100x100um with 1um spacing
-    r = RetinalGrid(100,100,1)          
+    r = RetinalGrid(R_WIDTH, R_HEIGHT, R_SPACING)          
               
     #This code creates a random set of sequential locations
     def generateLocations(n):
@@ -534,3 +599,117 @@ if test:
     c.updateActivity()
     for nt in NEUROTRANSMITTERS:
         print "c.getOutput for", nt, "is", c.getOutput(nt)   
+        
+if test_estInputs:
+    r = RetinalGrid(R_WIDTH, R_HEIGHT, R_SPACING)
+
+    nl = NeuronLayer(r)
+
+    nl.placeNeurons()
+#    for n in nl.neurons:
+#        print n.soma_location.ID
+    
+    nl.grow()
+    
+    nl.initPoints()
+    
+    nl.estInputs()
+    
+    num_Neurons = 0.0
+    num_Dendrites = 0.0
+    num_DendritePoints = 0.0
+    num_Inputs = 0.0
+    for n in nl.neurons:
+        num_Neurons += 1
+        for d in n.dendrites:
+            num_Dendrites += 1
+            for p in d.points:
+                num_DendritePoints += 1
+                for connections in p.inputs:
+                    num_Inputs += 1
+    print 'Total Neurons =', num_Neurons
+    print 'Total_Dendrites =', num_Dendrites
+    print 'Total_DendritePoints =', num_DendritePoints
+    print 'Total Inputs =', num_Inputs    
+    
+    print 'Dendrites/Neuron =', num_Dendrites/num_Neurons    
+    print 'DendritePoints/Dendrite =', num_DendritePoints/num_Dendrites
+    print 'Inputs/DendritePoint =', num_Inputs/num_DendritePoints
+    print 'Inputs/Dendrite =', num_Inputs/num_Dendrites
+    print 'Inputs/Neuron =', num_Inputs/num_Neurons
+    
+###############    
+## Visualize ##
+###############
+display = pygame.display.set_mode( (DISPLAY_WIDTH, DISPLAY_HEIGHT) )
+
+running = True
+
+color_dict = {'red':    (255,   0,      0),
+              'orange': (255,   200,    0),
+              'yellow': (255,   255,    0),
+              'green':  (0,     255,    0),
+              'cyan':   (0,     255,    255),
+              'blue':   (0,     0,      255),
+              'purple': (255,   0,      255)}
+colors = ('red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple')
+black = (0, 0, 0)
+
+circle_radius = 3
+circle_line_width = 0
+
+line_width = 2
+
+connection_circle_radius = 3
+
+while running:
+    
+    display.fill((255, 255, 255))
+    
+    i = 0
+    for n in nl.neurons:
+        color = color_dict[colors[i % len(colors)]]
+        i += 1
+        pygame.draw.circle(display,
+                           color,
+                           n.soma_location.ID,
+                           circle_radius,
+                           circle_line_width)
+    #for n in nl.neurons:
+        for d in n.dendrites:
+            pygame.draw.line(display,
+                             color,
+                             d.points[0].location.ID,
+                             d.points[-1].location.ID,
+                             line_width)                    
+        
+    #for n in nl.neurons:
+        for d in n.dendrites:
+            for p in d.points:
+                for connection in p.inputs:
+                    pygame.draw.circle(display,
+                                       black,
+                                       connection.location.ID,
+                                       connection_circle_radius,
+                                       circle_line_width)
+        
+    pygame.display.update()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False 
+
+pygame.display.quit()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

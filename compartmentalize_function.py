@@ -44,12 +44,14 @@ def compartmentalize(compartment, num_points_tot, num_points_left,
               
     if num_points_left == 0:
         if index < len(dendrite_segment.points):
-            new_comp = Compartment(comp, comp.neuron, comp.grid)            
+            new_comp = Compartment(comp, comp.neuron, comp.grid) 
+            comp.neighbor_distal.append(new_comp)
             compartmentalize(new_comp, num_points_tot, num_points_tot,
                              dendrite_segment, index)
         else:
             for child in dendrite_segment.children:
-                new_comp = Compartment(comp, comp.neuron, comp.grid)                 
+                new_comp = Compartment(comp, comp.neuron, comp.grid)
+                comp.neighbor_distal.append(new_comp)                
                 compartmentalize(new_comp, num_points_tot, num_points_tot,
                                  child, 0)
         return None
@@ -125,7 +127,7 @@ compartmentalize(c, comp_size, comp_size , d1, 0)
 #############
 ## Display ##
 #############
-running = True
+running = test
 
 color_dict = {'red':    (255,   0,      0),
               'orange': (255,   200,    0),
@@ -168,8 +170,10 @@ while running:
             
     
     pygame.display.update()
+
     for event in pygame.event.get():
         if event.type == QUIT:
+
             running = False
 
 
@@ -181,5 +185,5 @@ for comp1 in n.compartments:
                 if point1 is point2:
                     point_count += 1
 print 'Number of unique compartments =', point_count
-    
+        
     
