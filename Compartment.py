@@ -6,9 +6,10 @@ class Compartment:
     def __init__(self, neuron):
         self.neuron = neuron
         
-        self.neighbors = []
-        self.points = []   
-        self.inputs = []   
+        self.proximal_neighbors = []
+        self.distal_neighbors   = []
+        self.points             = []   
+        self.inputs             = []   
         
         self.index = len(self.neuron.compartments)
         self.neuron.compartments.append(self)

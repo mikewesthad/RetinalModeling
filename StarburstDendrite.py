@@ -52,7 +52,8 @@ class DendriteSegment:
         
         return new_dendrite
     
-    def compartmentalize(self, compartment, compartment_points_needed, compartment_size_goal, index=0):   
+    def compartmentalize(self, compartment, compartment_points_needed, compartment_size_goal,
+                         index=0, prior_compartments=[]):   
         # Calculate the remaining available points left in the current dendrite                             
         points_in_dendrite      = len(self.points)
         points_left_in_dendrite = points_in_dendrite - index
@@ -80,27 +81,32 @@ class DendriteSegment:
                 child1_compartment_size_left += 1
             
             child1.compartmentalize(compartment, child1_compartment_size_left,
-                                    compartment_size_goal, 0)
+                                    compartment_size_goal, 0, prior_compartments)
             child2.compartmentalize(compartment, child2_compartment_size_left,
-                                    compartment_size_goal, 0)
+                                    compartment_size_goal, 0, prior_compartments)
         
         elif not(compartment_needs_points) and dendrite_has_points_left:
             new_compartment = Compartment(self.neuron)
-            compartment.neighbors.append(new_compartment)
+            compartment.proximal_neighbors.extend(prior_compartments)
+            compartment.distal_neighbors.append(new_compartment)
             self.compartmentalize(new_compartment, compartment_size_goal,
-                                  compartment_size_goal, end_index)
+                                  compartment_size_goal, end_index, [compartment])
                                   
         elif not(compartment_needs_points) and not(dendrite_has_points_left) and dendrite_has_children:
             child1, child2      = self.children                  
             child1_compartment  = Compartment(self.neuron)  
             child2_compartment  = Compartment(self.neuron)
             
-            compartment.neighbors = compartment.neighbors + [child1_compartment, child2_compartment]
+            compartment.proximal_neighbors.extend(prior_compartments)
+            compartment.distal_neighbors.extend([child1_compartment, child2_compartment])
             
             child1.compartmentalize(child1_compartment, compartment_size_goal,
-                                    compartment_size_goal, 0)
+                                    compartment_size_goal, 0, [compartment])
             child2.compartmentalize(child2_compartment, compartment_size_goal,
-                                    compartment_size_goal, 0)
+                                    compartment_size_goal, 0, [compartment])
+        
+        else:
+            compartment.proximal_neighbors.extend(prior_compartments)
             
     
     """

@@ -19,32 +19,35 @@ retina = Retina(width, height, grid_size, display)
 unique_starburst = StarburstMorphology(retina, Vector2D(100,100), visualize_growth=True, display=display)
   
 unique_starburst.rescale(3)
-          
-running = True
-while running:
-    display.fill((255,255,255))
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            running = False
-    unique_starburst.draw(display, False)
-    pygame.display.update()
-    
-    
-running = True
-while running:
-    display.fill((255,255,255))
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            running = False
-    unique_starburst.draw(display, True)
-    pygame.display.update()
-    
 
-running = True
-while running:
-    display.fill((255,255,255))
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            running = False
-    unique_starburst.draw(display, draw_compartments=True)
-    pygame.display.update()
+unique_starburst.animateCompartments(display)  
+
+        
+#running = True
+#while running:
+#    display.fill((255,255,255))
+#    for event in pygame.event.get():
+#        if event.type == QUIT:
+#            running = False
+#    unique_starburst.draw(display, False)
+#    pygame.display.update()
+#    
+#    
+#running = True
+#while running:
+#    display.fill((255,255,255))
+#    for event in pygame.event.get():
+#        if event.type == QUIT:
+#            running = False
+#    unique_starburst.draw(display, True)
+#    pygame.display.update()
+#    
+#
+#running = True
+#while running:
+#    display.fill((255,255,255))
+#    for event in pygame.event.get():
+#        if event.type == QUIT:
+#            running = False
+#    unique_starburst.draw(display, draw_compartments=True)
+#    pygame.display.update()

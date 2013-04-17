@@ -1,4 +1,4 @@
-from random import uniform, randint, shuffle
+from random import uniform, randint, shuffle, choice
 import matplotlib.pyplot as plt
 import numpy as np
 import pygame
@@ -60,14 +60,61 @@ class StarburstMorphology(object):
             self.display = display 
             self.background_color = (255,255,255)
             
-        self.grow()
-        
+        self.grow()        
         self.discretize(1.0)
         self.createPoints()
         self.compartmentalize(20)
         
-        for c in self.compartments:
-            print c.getSize()
+    
+    def animateCompartments(self, surface):
+        compartments_to_draw = self.master_compartments[:]
+#        compartments_to_draw = [choice(self.compartments)]
+            
+        
+        running = True
+        next_iteration = False
+        while running:
+            surface.fill((255,255,255))
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    running = False
+                if event.type == KEYDOWN:
+                    next_iteration = True
+        
+            for c in self.compartments:
+                old_color = c.color
+                c.color = (0,0,0)
+                c.draw(surface)
+                c.color = old_color
+            for c in compartments_to_draw:
+                c.draw(surface)
+            
+            pygame.display.update()
+                
+                
+            if next_iteration:
+                
+                print "<<<<<<<<<<<<<<<<<<<"
+                for c in compartments_to_draw:
+                    print c.index,
+                print
+                
+                distal_neighbors = []
+                for c in compartments_to_draw:
+                    distal_neighbors.extend(c.distal_neighbors)
+#                    distal_neighbors.extend(c.proximal_neighbors)
+                compartments_to_draw = distal_neighbors
+                
+                print "==================="
+                for c in compartments_to_draw:
+                    print c.index,
+                print                
+                print ">>>>>>>>>>>>>>>>>>>"
+                
+                next_iteration = False
+
+            
+        
 
 
     def grow(self):
@@ -111,18 +158,25 @@ class StarburstMorphology(object):
     def compartmentalize(self, compartment_size):
         self.compartments = []
         
-        # Build all the compartments recursively
+        # Build the master compartments recursively
         self.master_compartments = []
         for dendrite in self.master_dendrites:            
-            new_compartment = Compartment(self)
-            self.master_compartments.append(new_compartment)            
-            dendrite.compartmentalize(new_compartment, compartment_size, compartment_size)
+            compartment = Compartment(self)
+            self.master_compartments.append(compartment)
+
+        # Recursively compartmentalize starting from the master compartments
+        for index in range(len(self.master_compartments)):
+            compartment = self.master_compartments[index]
+            
+            proximal_compartments = []
+            for other_compartment in self.master_compartments:
+                if compartment != other_compartment: 
+                    proximal_compartments.append(other_compartment)
+            
+            dendrite = self.master_dendrites[index]
+            dendrite.compartmentalize(compartment, compartment_size, compartment_size,
+                                      prior_compartments=proximal_compartments)
         
-        # Connect all the master compartments together
-        for compartment_a in self.master_compartments:
-            for compartment_b in self.master_compartments:
-                if compartment_a != compartment_b:
-                    compartment_a.neighbors.append(compartment_b)
             
     
     def discretize(self, delta):
