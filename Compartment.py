@@ -1,11 +1,9 @@
 from random import randint
 import pygame
-from ConvexHull import convexHull
 from NumpyConvexHull import convex_hull
 import numpy as np
 from Vector2D import Vector2D
 from Constants import *
-from math import pi
 
 class Compartment:
 
@@ -27,15 +25,29 @@ class Compartment:
         
         self.color = (randint(100,255),randint(100,255),randint(100,255))
     
+    
+    def colorCompartments(self, colors, index):
+        self.color = colors[index]
+        index += 1
+        if index >= len(colors): index = 0
+        for child in self.distal_neighbors:
+            child.colorCompartments(colors, index)
+    
+    """
+    Finds the convex hull that bounds the points of the compartment
+    """
     def buildBoundingPolgyon(self):
+        # Create a list of point locations
         points_list = [pt.location.toTuple() for pt in self.points]
         
+        # Calculate the centroid of the points
         centroid = Vector2D(0.0, 0.0)
         for point in self.points:
             centroid += point.location
         centroid /= len(self.points)
         
-        # The convex hull script requires at least 5 points, so let's add plenty
+        # Before creating the convex hull, we need to make sure we have at least
+        # least 5 points
         delta = 0.0
         while len(points_list) <= 5:
             for dx, dy in [(0.0,delta),(delta,0.0),(delta,delta)]:
@@ -49,12 +61,19 @@ class Compartment:
             
         # Create a (2 x m) array to be used by the numpy function        
         points_array    = np.array(points_list).T
+        
+        # Calculate the hull points
         hull_array      = convex_hull(points_array)
         hull_points     = hull_array.tolist()
         
+        # Store the results
         self.bounding_polygon   = hull_points
         self.centroid           = centroid
     
+    """
+    Find the per-point amount of neurotransmitter accepted/released - essentially
+    smearing out the synapse properties of the points in the compartment
+    """
     def buildNeurotransmitterWeights(self):
         for point in self.points:
             for nt in point.neurotransmitters_accepted:
@@ -75,7 +94,7 @@ class Compartment:
         for nt in self.neurotransmitters_output_weights:
             self.neurotransmitters_output_weights[nt] /= number_points
             
-    def draw(self, surface, scale=1.0, draw_bounding_box=False, draw_neurotransmitters=True):
+    def draw(self, surface, scale=1.0, draw_bounding_box=False, draw_neurotransmitters=False):
         if draw_bounding_box:
             if self.bounding_polygon != []:
                 moved_polygon = []

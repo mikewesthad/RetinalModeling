@@ -28,14 +28,14 @@ starburst_morphology = StarburstMorphology(retina, Vector2D(0.0,0.0), visualize_
 
 running = True
 while running:
-    display.fill((255,255,255))
+    display.fill(OCEAN_FIVE[0])
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
             
     scale = 3.0
     loc = Vector2D(1000.0, 1000.0) / (2.0*scale)
-    starburst_morphology.draw(display, scale=scale, draw_compartments=True, draw_bounding_box=True, new_location=loc)
+    starburst_morphology.draw(display, scale=scale, draw_compartments=False, draw_bounding_box=True, new_location=loc)
             
 #    retina.drawGrid(display, 0)
 #    starburst.draw(display, False)

@@ -370,7 +370,7 @@ class DendriteSegment:
     """
     Visualization function
     """
-    def draw(self, surface, draw_grid=False, draw_points=False):
+    def draw(self, surface, scale=1.0, draw_grid=False, draw_points=False):
         if draw_points:
             for pt in self.points:
                 pt.draw(surface)
@@ -380,12 +380,34 @@ class DendriteSegment:
                 pygame.draw.circle(surface, self.color, world_loc.toIntTuple(), 2)   
         else:            
             start_index = 0
-            end_index = len(self.locations) - 2
+            end_index = len(self.locations)-2
             for i in range(start_index, end_index+1): 
-                a = self.neuron.location + self.locations[i]
-                b = self.neuron.location + self.locations[i+1]
-                pygame.draw.line(surface, self.color, a.toIntTuple(), b.toIntTuple(), 1)    
-                
+                a = (self.neuron.location + self.locations[i])*scale
+                b = (self.neuron.location + self.locations[i+1])*scale
+                vertices = self.buildRectangeFromLine(a, b, 2)
+                pygame.draw.polygon(surface, self.color, vertices)  
+      
+    
+    def buildRectangeFromLine(self, a, b, width):
+        angle       = a.angleHeadingTo(b)
+        left_perp   = Vector2D.generateHeadingFromAngle(angle + 90.0)
+        right_perp  = Vector2D.generateHeadingFromAngle(angle - 90.0)
+        
+        v1 = a+left_perp*width
+        v2 = a+right_perp*width
+        v3 = b+left_perp*width
+        v4 = b+right_perp*width
+        
+        vertices = [v1.toTuple(), v2.toTuple(), v4.toTuple(), v3.toTuple()]
+        return vertices
+        
+    
+    def colorDendrites(self, colors, index):
+        self.color = colors[index]
+        index += 1
+        if index >= len(colors): index = 0
+        for child in self.children:
+            child.colorDendrites(colors, index) 
              
              
              

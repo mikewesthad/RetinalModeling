@@ -61,16 +61,36 @@ class StarburstMorphology(object):
             self.display = display 
             self.background_color = (255,255,255)
             
-        self.grow()        
+        self.grow()      
+        self.colorDendrites(GOLDFISH[1:])  
         self.discretize(1.0)
         self.createPoints()
         self.establishPointSynapses()
         self.compartmentalize(30)
+        self.colorCompartments(GOLDFISH[1:])
         self.establishCompartmentSynapses()
         self.buildCompartmentBoundingPolygons()
         
         self.buildGraph()
         self.findShortestPathes()
+        
+    def colorCompartments(self, palette):
+        colors = palette
+        
+        index = 0
+        for compartment in self.master_compartments:
+            compartment.colorCompartments(colors, index)
+            index += 1
+            if index >= len(colors): index = 0
+            
+    def colorDendrites(self, palette):
+        colors = palette[1:]
+        
+        index = 0
+        for dendrite in self.master_dendrites:
+            dendrite.colorDendrites(colors, index)
+            index += 1
+            if index >= len(colors): index = 0
         
         
     def findShortestPathes(self):
@@ -235,9 +255,9 @@ class StarburstMorphology(object):
             
     def draw(self, surface, scale=1.0, new_location=None, draw_grid=False, 
              draw_points=False, draw_compartments=False, draw_bounding_box=False):
+                 
         if new_location == None: 
             new_location = self.location
-
         old_location = self.location
         self.location = new_location        
         

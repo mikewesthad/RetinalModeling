@@ -16,3 +16,8 @@ GABA    = "GABA"
 ACH     = "ACh"
 
 NEUROTRANSMITTERS = set([GLY, GLU, GABA, ACH])
+
+# Color palettes (first color is suggested background color)
+GOLDFISH            = [(224,228,204),(105,210,231),(167,219,216),(243,134,48),(250,105,0)]
+OCEAN_FIVE          = [(255,255,255),(0,160,176),(106,74,60),(204,51,63),(235,104,65),(237,201,81)]
+PAPUA_NEW_GUINEA    = [(252,235,182),(94,65,47),(120,192,168),(240,120,24),(240,168,48)]
