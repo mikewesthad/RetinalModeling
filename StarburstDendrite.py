@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 from copy import deepcopy
 from pygame.locals import *
-from random import random, uniform
+from random import random, uniform, randint
 from math import atan2
 from DendritePoint import DendritePoint
 from Compartment import Compartment
@@ -31,7 +31,7 @@ class DendriteSegment:
         self.step_size          = self.neuron.step_size
         self.heading_deviation  = self.neuron.heading_deviation
         
-        self.color = (0, 0, 0)
+        self.color = (randint(100,255),randint(100,255),randint(100,255))
 
     def createCopy(self, new_starburst, parent_dendrite=None):
         new_dendrite = DendriteSegment(new_starburst, None, self.heading, 

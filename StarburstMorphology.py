@@ -71,7 +71,7 @@ class StarburstMorphology(object):
         self.buildCompartmentBoundingPolygons()
         
         self.buildGraph()
-        self.findShortestPathes()
+        self.pathlengths = self.findShortestPathes()
     
     def grow(self):
         active_dendrites = self.master_dendrites[:]
@@ -106,6 +106,7 @@ class StarburstMorphology(object):
                 # Check for close button signal from pygame window
                 for event in pygame.event.get():
                     if event.type == QUIT: running = False
+                    
     def colorCompartments(self, palette):
         colors = palette
         
