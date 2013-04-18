@@ -1,4 +1,5 @@
 from random import uniform, randint, shuffle, choice
+from igraph import Graph, ADJ_UNDIRECTED
 import matplotlib.pyplot as plt
 import numpy as np
 import pygame
@@ -67,6 +68,28 @@ class StarburstMorphology(object):
         self.compartmentalize(30)
         self.establishCompartmentSynapses()
         self.buildCompartmentBoundingPolygons()
+        
+        self.buildGraph()
+        self.findShortestPathes()
+        
+        
+    def findShortestPathes(self):
+        return self.graph.shortest_paths()
+    
+    def buildGraph(self):
+        adjacency = []
+        for compartment in self.compartments:
+            row = []
+            for other_compartment in self.compartments:
+                proximal_neighbors  = (compartment in other_compartment.proximal_neighbors)
+                distal_neighbors    = (compartment in other_compartment.distal_neighbors)
+                if proximal_neighbors or distal_neighbors:
+                    row.append(1)
+                else:
+                    row.append(0)
+            adjacency.append(row)
+        self.adjacency  = adjacency
+        self.graph      = Graph.Adjacency(adjacency, mode=ADJ_UNDIRECTED)
     
     def buildCompartmentBoundingPolygons(self):
         for compartment in self.compartments:
