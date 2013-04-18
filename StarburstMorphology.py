@@ -15,7 +15,7 @@ class StarburstMorphology(object):
     def __init__(self, retina, location=Vector2D(0.0, 0.0), average_wirelength=150*UM_TO_M, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=10*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
-                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=10*UM_TO_M,
+                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=0.5,
                  decay_rate=0.1, input_strength=0.0, color_palette=GOLDFISH, 
                  draw_location=Vector2D(0.0,0.0), visualize_growth=True, display=None):
         
@@ -74,7 +74,7 @@ class StarburstMorphology(object):
         
         self.decay_rate         = decay_rate
         self.input_strength     = input_strength
-        self.diffusion_width    = diffusion_width/grid_size
+        self.diffusion_width    = diffusion_width #Units
         self.establisthDiffusionWeights()
     
     def grow(self):
@@ -147,7 +147,11 @@ class StarburstMorphology(object):
         self.diffusion_weights = self.diffusion_weights / row_sum
         
     def findShortestPathes(self):
-        return np.array(self.graph.shortest_paths())
+        shortest_pathes = np.array(self.graph.shortest_paths())
+        # Directly connect each compartment with itself (0 distance)
+        for i in range(len(self.compartments)):
+            shortest_pathes[i, i] = 0
+        return shortest_pathes
     
     def buildGraph(self):
         adjacency = []
