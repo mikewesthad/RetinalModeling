@@ -17,7 +17,8 @@ class StarburstMorphology(object):
                  step_size=10*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
                  dendrite_vision_radius=30*UM_TO_M, diffusion_width=0.5,
                  decay_rate=0.1, input_strength=0.0, color_palette=GOLDFISH, 
-                 draw_location=Vector2D(0.0,0.0), visualize_growth=True, display=None):
+                 draw_location=Vector2D(0.0,0.0), visualize_growth=True, scale=1.0,
+                 display=None):
         
         # General neuron variables
         self.retina             = retina
@@ -29,6 +30,7 @@ class StarburstMorphology(object):
         self.display            = display 
         self.background_color   = color_palette[0]
         self.draw_location      = draw_location
+        self.scale              = scale
             
         grid_size               = retina.grid_size
     
@@ -81,6 +83,7 @@ class StarburstMorphology(object):
         active_dendrites = self.master_dendrites[:]
         running = True
         i = 0
+        clock = pygame.time.Clock()
         while running and active_dendrites != []:
             
             # Grab a dendrite and update it
@@ -104,8 +107,10 @@ class StarburstMorphology(object):
             
             if self.visualize_growth:
                 self.display.fill(self.background_color)
-                self.draw(self.display, new_location=self.draw_location)
+                self.draw(self.display, new_location=self.draw_location,
+                          draw_segments=True, scale=self.scale)
                 pygame.display.update()
+                clock.tick(30)
                     
                 # Check for close button signal from pygame window
                 for event in pygame.event.get():
@@ -121,7 +126,7 @@ class StarburstMorphology(object):
             if index >= len(colors): index = 0
             
     def colorDendrites(self, palette):
-        colors = palette[1:]
+        colors = palette
         
         index = 0
         for dendrite in self.master_dendrites:

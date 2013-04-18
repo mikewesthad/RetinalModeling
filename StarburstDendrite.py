@@ -31,7 +31,8 @@ class DendriteSegment:
         self.step_size          = self.neuron.step_size
         self.heading_deviation  = self.neuron.heading_deviation
         
-        self.color = (randint(100,255),randint(100,255),randint(100,255))
+#        self.color = (randint(100,255),randint(100,255),randint(100,255))
+        self.color = (0,0,0)
 
     def createCopy(self, new_starburst, parent_dendrite=None):
         new_dendrite = DendriteSegment(new_starburst, None, self.heading, 

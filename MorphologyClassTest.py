@@ -22,12 +22,14 @@ timestep    = 100 * MS_TO_S
 retina      = Retina(width, height, grid_size, display)
 
 # Build a starburst morphology
-screen_mid = screen_size/2.0
-starburst_morphology = StarburstMorphology(retina, visualize_growth=False, color_palette=palette,
-                                           display=display, draw_location=screen_mid)
+scale = 2.0
+screen_mid = screen_size/(2.0 * scale)
+starburst_morphology = StarburstMorphology(retina, visualize_growth=True, color_palette=palette,
+                                           display=display, draw_location=screen_mid,
+                                           scale=scale)
 
 # Build a unique starburst cell using the morphology
-scale = 3.0
+scale = 2.0
 screen_mid = screen_size/(2.0 * scale)
 starburst = Starburst(retina, None, starburst_morphology, screen_mid, 0, 0)
 starburst.registerWithRetina()
@@ -76,51 +78,51 @@ while running:
     
     
 
-#
-## Investigate the shortest path distances
-## Pick a random compartment and recolor all other compartments based on their 
-## distance from the choosen compartment
-#compartments    = starburst.morphology.compartments
-#pathlengths     = starburst.morphology.distances
-#colors          = [c.color for c in compartments]
-#number_compartments = len(compartments)
-#max_pathlength = 0
-#for i in range(number_compartments):
-#    max_in_row = max(pathlengths[i])
-#    if max_in_row > max_pathlength:
-#        max_pathlength = max_in_row
-#selected_compartment = randint(0, number_compartments-1)
-#        
-#grayscale = False
-#running = True
-#while running:
-#    display.fill(palette[0])
-#    for event in pygame.event.get():
-#        if event.type == QUIT:
-#            running = False
-#        if event.type == MOUSEBUTTONUP:
-#            grayscale = not(grayscale)
-#        if event.type == KEYDOWN:
-#            selected_compartment = randint(0, number_compartments-1)
-#        if event.type in [KEYDOWN, MOUSEBUTTONUP]:
-#            for i in range(number_compartments):
-#                compartment = compartments[i]
-#                pathlength  = pathlengths[selected_compartment][i]
-#                percent     = (max_pathlength-pathlength)/float(max_pathlength)
-#                if grayscale:
-#                    new_color = (int(percent*255),int(percent*255),int(percent*255))
-#                else:
-#                    new_color       = list(colors[i])
-#                    new_color[0]    = int(new_color[0] * percent)
-#                    new_color[1]    = int(new_color[1] * percent)
-#                    new_color[2]    = int(new_color[2] * percent)
-#                    new_color       = tuple(colors[i])
-#                compartment.color = new_color
-#            compartment = compartments[selected_compartment]
-#            compartment.color = (255,255,255)
-#    
-#    starburst.draw(display, scale=scale, draw_compartments=True)   
-#    pygame.display.update()
+
+# Investigate the shortest path distances
+# Pick a random compartment and recolor all other compartments based on their 
+# distance from the choosen compartment
+compartments    = starburst.morphology.compartments
+pathlengths     = starburst.morphology.distances
+colors          = [c.color for c in compartments]
+number_compartments = len(compartments)
+max_pathlength = 0
+for i in range(number_compartments):
+    max_in_row = max(pathlengths[i])
+    if max_in_row > max_pathlength:
+        max_pathlength = max_in_row
+selected_compartment = randint(0, number_compartments-1)
+        
+grayscale = False
+running = True
+while running:
+    display.fill(palette[0])
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            running = False
+        if event.type == MOUSEBUTTONUP:
+            grayscale = not(grayscale)
+        if event.type == KEYDOWN:
+            selected_compartment = randint(0, number_compartments-1)
+        if event.type in [KEYDOWN, MOUSEBUTTONUP]:
+            for i in range(number_compartments):
+                compartment = compartments[i]
+                pathlength  = pathlengths[selected_compartment][i]
+                percent     = (max_pathlength-pathlength)/float(max_pathlength)
+                if grayscale:
+                    new_color = (int(percent*255),int(percent*255),int(percent*255))
+                else:
+                    new_color       = list(colors[i])
+                    new_color[0]    = int(new_color[0] * percent)
+                    new_color[1]    = int(new_color[1] * percent)
+                    new_color[2]    = int(new_color[2] * percent)
+                    new_color       = tuple(colors[i])
+                compartment.color = new_color
+            compartment = compartments[selected_compartment]
+            compartment.color = (255,255,255)
+    
+    starburst.draw(display, scale=scale, draw_compartments=True)   
+    pygame.display.update()
 
 
 
