@@ -94,46 +94,39 @@ class Compartment:
         for nt in self.neurotransmitters_output_weights:
             self.neurotransmitters_output_weights[nt] /= number_points
             
-    def draw(self, surface, scale=1.0, draw_bounding_box=False, draw_neurotransmitters=False):
-        if draw_bounding_box:
-            if self.bounding_polygon != []:
-                moved_polygon = []
-                for point in self.bounding_polygon:
-                    new_x = (point[0] + self.morphology.location.x) * scale
-                    new_y = (point[1] + self.morphology.location.y) * scale
-                    moved_polygon.append([new_x, new_y])
-                pygame.draw.polygon(surface, self.color, moved_polygon)
-                
-                color_key = {GABA:[-2.0, -2.0, (255,0,0)], 
-                             ACH:[0.0, 0.0, (0,255,0)], 
-                             GLU:[-2.0, 0.0, (0,0,255)], 
-                             GLY:[0.0, -2.0, (0,0,0)]}   
-                width   = 2.0   
-                height  = 2.0
-                             
-                if draw_neurotransmitters:
-                        loc  = self.morphology.location + self.centroid
-                                              
-                        for nt in color_key:                        
-                            dx, dy, color = color_key[nt]
-                            nt_rect = pygame.Rect((loc.x+dx)*scale, 
-                                                  (loc.y+dy)*scale, 
-                                                  width*scale, 
-                                                  height*scale) 
-                            if nt in self.neurotransmitters_output_weights:
-                                border = 0
-                            else:
-                                border = 1
-                                color = [color[0]+200,color[1]+200,color[2]+200]
-                                color[0] = min(color[0], 255)
-                                color[1] = min(color[1], 255)
-                                color[2] = min(color[2], 255)
-                            pygame.draw.rect(surface, color, nt_rect, border)
-                        
-        else:
-            for point in self.points:
-                world_location = (self.morphology.location + point.location) * scale
-                pygame.draw.circle(surface, self.color, world_location.toIntTuple(), 2)            
+    def draw(self, surface, scale=1.0, draw_neurotransmitters=False):
+        moved_polygon = []
+        for point in self.bounding_polygon:
+            new_x = (point[0] + self.morphology.location.x) * scale
+            new_y = (point[1] + self.morphology.location.y) * scale
+            moved_polygon.append([new_x, new_y])
+        pygame.draw.polygon(surface, self.color, moved_polygon)
+        
+        color_key = {GABA:[-2.0, -2.0, (255,0,0)], 
+                     ACH:[0.0, 0.0, (0,255,0)], 
+                     GLU:[-2.0, 0.0, (0,0,255)], 
+                     GLY:[0.0, -2.0, (0,0,0)]}   
+        width   = 2.0   
+        height  = 2.0
+                     
+        if draw_neurotransmitters:
+                loc  = self.morphology.location + self.centroid
+                                      
+                for nt in color_key:                        
+                    dx, dy, color = color_key[nt]
+                    nt_rect = pygame.Rect((loc.x+dx)*scale, 
+                                          (loc.y+dy)*scale, 
+                                          width*scale, 
+                                          height*scale) 
+                    if nt in self.neurotransmitters_output_weights:
+                        border = 0
+                    else:
+                        border = 1
+                        color = [color[0]+200,color[1]+200,color[2]+200]
+                        color[0] = min(color[0], 255)
+                        color[1] = min(color[1], 255)
+                        color[2] = min(color[2], 255)
+                    pygame.draw.rect(surface, color, nt_rect, border)       
     
     def registerWithRetina(self, neuron, layer_depth):
         for point in self.points:

@@ -194,21 +194,26 @@ class StarburstMorphology(object):
         for dendrite in self.master_dendrites:
             dendrite.createPoints(self.location, 0.0)
             
-    def draw(self, surface, scale=1.0, new_location=None, draw_grid=False, 
-             draw_points=False, draw_compartments=False, draw_bounding_box=False):
-                 
+    def draw(self, surface, scale=1.0, new_location=None, draw_segments=False,
+             draw_compartments=False, draw_points=False):
+        
+        # Shift the cell's location
         if new_location == None: 
             new_location = self.location
         old_location = self.location
-        self.location = new_location        
+        self.location = new_location   
         
-        if draw_compartments:
-            for compartment in self.compartments:
-                compartment.draw(surface, scale=scale, draw_bounding_box=draw_bounding_box)
-        else:
+        if draw_segments:
             for dendrite in self.dendrites:
-                dendrite.draw(surface, scale=scale, draw_grid=draw_grid, draw_points=draw_points)
+                dendrite.draw(surface, scale=scale)
+        elif draw_compartments:
+            for compartment in self.compartments:
+                compartment.draw(surface, scale=scale)
+        elif draw_points:
+            for point in self.points:
+                point.draw(surface, scale=scale)
                 
+        # Shift the cell's location back to the original
         self.location = old_location
     
     def plotBranchProbability(self):

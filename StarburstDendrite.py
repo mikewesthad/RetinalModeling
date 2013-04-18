@@ -370,22 +370,14 @@ class DendriteSegment:
     """
     Visualization function
     """
-    def draw(self, surface, scale=1.0, draw_grid=False, draw_points=False):
-        if draw_points:
-            for pt in self.points:
-                pt.draw(surface)
-        elif draw_grid:
-            for loc in self.gridded_locations:
-                world_loc = self.neuron.location + loc
-                pygame.draw.circle(surface, self.color, world_loc.toIntTuple(), 2)   
-        else:            
-            start_index = 0
-            end_index = len(self.locations)-2
-            for i in range(start_index, end_index+1): 
-                a = (self.neuron.location + self.locations[i])*scale
-                b = (self.neuron.location + self.locations[i+1])*scale
-                vertices = self.buildRectangeFromLine(a, b, 2.0/3.0 * scale)
-                pygame.draw.polygon(surface, self.color, vertices)  
+    def draw(self, surface, scale=1.0):   
+        start_index = 0
+        end_index = len(self.locations)-2
+        for i in range(start_index, end_index+1): 
+            a = (self.neuron.location + self.locations[i])*scale
+            b = (self.neuron.location + self.locations[i+1])*scale
+            vertices = self.buildRectangeFromLine(a, b, 2.0/3.0 * scale)
+            pygame.draw.polygon(surface, self.color, vertices)  
       
     
     def buildRectangeFromLine(self, a, b, width):
