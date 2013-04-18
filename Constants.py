@@ -8,3 +8,11 @@ M_TO_MM = 1/MM_TO_M
 
 MS_TO_S = 1/1000.0
 S_TO_MS = 1/MS_TO_S
+
+
+GLY     = "Gly"
+GLU     = "Glu"
+GABA    = "GABA"
+ACH     = "ACh"
+
+NEUROTRANSMITTERS = set([GLY, GLU, GABA, ACH])

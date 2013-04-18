@@ -341,11 +341,23 @@ class DendriteSegment:
         for child in self.children:
             child.discretize(delta, range_deltas, self.gridded_locations)
     
-    def createPoints(self):
+    def createPoints(self, last_location, wirelength_to_last):
         self.points = []
         for gridded_location in self.gridded_locations:
-            point = DendritePoint(self.retina, self, gridded_location)
+            
+            additional_wirelength   = last_location.distanceTo(gridded_location)
+            current_wirelength      = wirelength_to_last + additional_wirelength
+            
+            point = DendritePoint(self.retina, self, gridded_location, current_wirelength)
             self.points.append(point)
+            
+            last_location       = gridded_location
+            wirelength_to_last  = current_wirelength
+        
+        if self.children != []:
+            child1, child2 = self.children
+            child1.createPoints(last_location, wirelength_to_last)
+            child2.createPoints(last_location, wirelength_to_last)
             
     def rescale(self, scale_factor):
         for i in range(len(self.locations)):
@@ -358,8 +370,11 @@ class DendriteSegment:
     """
     Visualization function
     """
-    def draw(self, surface, draw_grid=False):
-        if draw_grid:
+    def draw(self, surface, draw_grid=False, draw_points=False):
+        if draw_points:
+            for pt in self.points:
+                pt.draw(surface)
+        elif draw_grid:
             for loc in self.gridded_locations:
                 world_loc = self.neuron.location + loc
                 pygame.draw.circle(surface, self.color, world_loc.toIntTuple(), 2)   

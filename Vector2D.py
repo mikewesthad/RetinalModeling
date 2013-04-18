@@ -103,6 +103,8 @@ class Vector2D(object):
             if self.x == other.x and self.y == other.y: 
                 return True
         return False
+    def __ne__(self, other):
+        return not(self == other)
     
     def roundedIntCopy(self):
         return Vector2D(int(round(self.x)), int(round(self.y)))

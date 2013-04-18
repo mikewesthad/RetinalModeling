@@ -63,7 +63,29 @@ class StarburstMorphology(object):
         self.grow()        
         self.discretize(1.0)
         self.createPoints()
-        self.compartmentalize(20)
+        self.establishPointSynapses()
+        self.compartmentalize(30)
+        self.establishCompartmentSynapses()
+        self.buildCompartmentBoundingPolygons()
+    
+    def buildCompartmentBoundingPolygons(self):
+        for compartment in self.compartments:
+            compartment.buildBoundingPolgyon()
+            
+    def establishCompartmentSynapses(self):
+        for compartment in self.compartments:
+            compartment.buildNeurotransmitterWeights()
+    
+    def establishPointSynapses(self):
+        inputs  = set([GLU])
+        outputs = set([GABA, ACH])
+        
+        output_threshold_wirelength = 2.0/3.0 * self.bounding_radius
+        
+        for point in self.points:
+            if point.wirelength >= output_threshold_wirelength:
+                point.neurotransmitters_released = outputs.copy() # SHALLOW COPY!
+            point.neurotransmitters_accepted = inputs.copy() # SHALLOW COPY!
         
     
     def animateCompartments(self, surface):
@@ -184,10 +206,12 @@ class StarburstMorphology(object):
             dendrite.discretize(delta=delta)
     
     def createPoints(self):
-        for dendrite in self.dendrites:
-            dendrite.createPoints()
+        self.points = []
+        for dendrite in self.master_dendrites:
+            dendrite.createPoints(self.location, 0.0)
             
-    def draw(self, surface, draw_grid=False, draw_compartments=False, new_location=None):
+    def draw(self, surface, scale=1.0, new_location=None, draw_grid=False, 
+             draw_points=False, draw_compartments=False, draw_bounding_box=False):
         if new_location == None: 
             new_location = self.location
 
@@ -196,10 +220,10 @@ class StarburstMorphology(object):
         
         if draw_compartments:
             for compartment in self.compartments:
-                compartment.draw(surface)
+                compartment.draw(surface, scale=scale, draw_bounding_box=draw_bounding_box)
         else:
             for dendrite in self.dendrites:
-                dendrite.draw(surface, draw_grid)
+                dendrite.draw(surface, scale=scale, draw_grid=draw_grid, draw_points=draw_points)
                 
         self.location = old_location
     

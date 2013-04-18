@@ -22,8 +22,8 @@ starburst_morphology = StarburstMorphology(retina, Vector2D(0.0,0.0), visualize_
 #starburst_morphology.rescale(3)
 #starburst_morphology.animateCompartments(display)  
 
-starburst = Starburst(retina, None, starburst_morphology, Vector2D(500.0,500.0), 0, 0)
-starburst.registerWithRetina()
+#starburst = Starburst(retina, None, starburst_morphology, Vector2D(500.0,500.0), 0, 0)
+#starburst.registerWithRetina()
 #starburst.draw(display)
 
 running = True
@@ -33,7 +33,11 @@ while running:
         if event.type == QUIT:
             running = False
             
-    retina.drawGrid(display, 0)
+    scale = 3.0
+    loc = Vector2D(1000.0, 1000.0) / (2.0*scale)
+    starburst_morphology.draw(display, scale=scale, draw_compartments=True, draw_bounding_box=True, new_location=loc)
+            
+#    retina.drawGrid(display, 0)
 #    starburst.draw(display, False)
     pygame.display.update()
 
