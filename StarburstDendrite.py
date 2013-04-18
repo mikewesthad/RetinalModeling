@@ -384,7 +384,7 @@ class DendriteSegment:
             for i in range(start_index, end_index+1): 
                 a = (self.neuron.location + self.locations[i])*scale
                 b = (self.neuron.location + self.locations[i+1])*scale
-                vertices = self.buildRectangeFromLine(a, b, 2)
+                vertices = self.buildRectangeFromLine(a, b, 2.0/3.0 * scale)
                 pygame.draw.polygon(surface, self.color, vertices)  
       
     

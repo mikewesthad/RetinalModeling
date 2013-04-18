@@ -6,69 +6,36 @@ from StarburstMorphology import StarburstMorphology
 from Vector2D import Vector2D
 from Constants import *
 
-screen_size = (1000, 1000)
-display = pygame.display.set_mode(screen_size)
+# Build a display
+palette     = GOLDFISH
+background  = palette[0]
+screen_size = Vector2D(1000, 1000)
+display     = pygame.display.set_mode(screen_size.toIntTuple())
 
 # Build Retina
 width       = 1000 * UM_TO_M
 height      = 1000 * UM_TO_M
 grid_size   = 1 * UM_TO_M
 timestep    = 100 * MS_TO_S
+retina      = Retina(width, height, grid_size, display)
 
-retina = Retina(width, height, grid_size, display)
+# Build a starburst morphology
+screen_mid = screen_size/2.0
+starburst_morphology = StarburstMorphology(retina, visualize_growth=False, color_palette=palette,
+                                           display=display, draw_location=screen_mid)
 
-starburst_morphology = StarburstMorphology(retina, Vector2D(0.0,0.0), visualize_growth=False)
-  
-#starburst_morphology.rescale(3)
-#starburst_morphology.animateCompartments(display)  
-
-#starburst = Starburst(retina, None, starburst_morphology, Vector2D(500.0,500.0), 0, 0)
-#starburst.registerWithRetina()
-#starburst.draw(display)
+# Build a unique starburst cell using the morphology
+scale = 3.0
+screen_mid = screen_size/(2.0 * scale)
+starburst = Starburst(retina, None, starburst_morphology, screen_mid, 0, 0)
+starburst.registerWithRetina()
 
 running = True
 while running:
-    display.fill(OCEAN_FIVE[0])
+    display.fill(GOLDFISH[0])
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
             
-    scale = 3.0
-    loc = Vector2D(1000.0, 1000.0) / (2.0*scale)
-    starburst_morphology.draw(display, scale=scale, draw_compartments=False, draw_bounding_box=True, new_location=loc)
-            
-#    retina.drawGrid(display, 0)
-#    starburst.draw(display, False)
+    starburst.draw(display, scale=scale)   
     pygame.display.update()
-
-
-
-        
-#running = True
-#while running:
-#    display.fill((255,255,255))
-#    for event in pygame.event.get():
-#        if event.type == QUIT:
-#            running = False
-#    unique_starburst.draw(display, False)
-#    pygame.display.update()
-#    
-#    
-#running = True
-#while running:
-#    display.fill((255,255,255))
-#    for event in pygame.event.get():
-#        if event.type == QUIT:
-#            running = False
-#    unique_starburst.draw(display, True)
-#    pygame.display.update()
-#    
-#
-#running = True
-#while running:
-#    display.fill((255,255,255))
-#    for event in pygame.event.get():
-#        if event.type == QUIT:
-#            running = False
-#    unique_starburst.draw(display, draw_compartments=True)
-#    pygame.display.update()

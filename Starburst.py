@@ -21,8 +21,8 @@ class Starburst(object):
         for compartment in self.morphology.compartments:
             compartment.registerWithRetina(self, self.layer_depth)
     
-    def draw(self, surface, draw_grid=False):
-        self.morphology.draw(surface, new_location=self.location)
+    def draw(self, surface, scale=1.0, draw_grid=False):
+        self.morphology.draw(surface, scale=scale, new_location=self.location)
 
        
         
