@@ -1,4 +1,5 @@
 from random import randint
+import numpy as np
 import pygame
 from pygame.locals import *
 from Retina import Retina
@@ -37,7 +38,7 @@ draw_segments       = True
 draw_compartments   = False
 draw_points         = False
 while running:
-    display.fill(GOLDFISH[0])
+    display.fill(palette[0])
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
@@ -80,7 +81,7 @@ while running:
 # Pick a random compartment and recolor all other compartments based on their 
 # distance from the choosen compartment
 compartments    = starburst.morphology.compartments
-pathlengths     = starburst.morphology.pathlengths
+pathlengths     = starburst.morphology.distances
 colors          = [c.color for c in compartments]
 number_compartments = len(compartments)
 max_pathlength = 0
@@ -93,7 +94,7 @@ selected_compartment = randint(0, number_compartments-1)
 grayscale = False
 running = True
 while running:
-    display.fill(GOLDFISH[0])
+    display.fill(palette[0])
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
@@ -106,6 +107,51 @@ while running:
                 compartment = compartments[i]
                 pathlength  = pathlengths[selected_compartment][i]
                 percent     = (max_pathlength-pathlength)/float(max_pathlength)
+                if grayscale:
+                    new_color = (int(percent*255),int(percent*255),int(percent*255))
+                else:
+                    new_color       = list(colors[i])
+                    new_color[0]    = int(new_color[0] * percent)
+                    new_color[1]    = int(new_color[1] * percent)
+                    new_color[2]    = int(new_color[2] * percent)
+                    new_color       = tuple(colors[i])
+                compartment.color = new_color
+            compartment = compartments[selected_compartment]
+            compartment.color = (255,255,255)
+    
+    starburst.draw(display, scale=scale, draw_compartments=True)   
+    pygame.display.update()
+
+
+
+# Investigate the diffusion weight
+# Pick a random compartment and recolor all other compartments based on their 
+# weights from the choosen compartment
+compartments        = starburst.morphology.compartments
+weights             = starburst.morphology.diffusion_weights
+colors              = [c.color for c in compartments]
+number_compartments = len(compartments)
+max_weight = np.max(np.max(weights))
+print max_weight
+
+selected_compartment = randint(0, number_compartments-1)
+        
+grayscale = False
+running = True
+while running:
+    display.fill(palette[0])
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            running = False
+        if event.type == MOUSEBUTTONUP:
+            grayscale = not(grayscale)
+        if event.type == KEYDOWN:
+            selected_compartment = randint(0, number_compartments-1)
+        if event.type in [KEYDOWN, MOUSEBUTTONUP]:
+            for i in range(number_compartments):
+                compartment = compartments[i]
+                weight      = weights[selected_compartment][i]
+                percent     = weight/float(max_weight)
                 if grayscale:
                     new_color = (int(percent*255),int(percent*255),int(percent*255))
                 else:

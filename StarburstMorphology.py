@@ -15,7 +15,8 @@ class StarburstMorphology(object):
     def __init__(self, retina, location=Vector2D(0.0, 0.0), average_wirelength=150*UM_TO_M, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=10*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
-                 dendrite_vision_radius=30*UM_TO_M, color_palette=GOLDFISH, 
+                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=10*UM_TO_M,
+                 decay_rate=0.1, input_strength=0.0, color_palette=GOLDFISH, 
                  draw_location=Vector2D(0.0,0.0), visualize_growth=True, display=None):
         
         # General neuron variables
@@ -61,17 +62,20 @@ class StarburstMorphology(object):
         self.master_dendrites = self.dendrites[:]  
             
         self.grow()      
-        self.colorDendrites(GOLDFISH[1:])  
+        self.colorDendrites(color_palette[1:])  
         self.discretize(1.0)
         self.createPoints()
         self.establishPointSynapses()
         self.compartmentalize(30)
-        self.colorCompartments(GOLDFISH[1:])
+        self.colorCompartments(color_palette[1:])
         self.establishCompartmentSynapses()
         self.buildCompartmentBoundingPolygons()
         
-        self.buildGraph()
-        self.pathlengths = self.findShortestPathes()
+        
+        self.decay_rate         = decay_rate
+        self.input_strength     = input_strength
+        self.diffusion_width    = diffusion_width/grid_size
+        self.establisthDiffusionWeights()
     
     def grow(self):
         active_dendrites = self.master_dendrites[:]
@@ -124,9 +128,26 @@ class StarburstMorphology(object):
             dendrite.colorDendrites(colors, index)
             index += 1
             if index >= len(colors): index = 0
+            
+    def establisthDiffusionWeights(self):
+        self.buildGraph()
+        self.distances = self.findShortestPathes()
+        
+        # Perform e^(-distance**2/width) on each element in the distance matrix
+        sigma = self.diffusion_width
+        self.diffusion_weights = np.exp(-(self.distances)**2/(2.0*sigma**2.0))
+        
+        # Get the sum of each row
+        row_sum = np.sum(self.diffusion_weights, 1)
+        
+        # Reshape the rowSum into a column vector since sum removes a dimension
+        row_sum.shape = (len(self.compartments), 1)
+        
+        # Normalize the weight matrix
+        self.diffusion_weights = self.diffusion_weights / row_sum
         
     def findShortestPathes(self):
-        return self.graph.shortest_paths()
+        return np.array(self.graph.shortest_paths())
     
     def buildGraph(self):
         adjacency = []
