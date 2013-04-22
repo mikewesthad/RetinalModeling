@@ -49,7 +49,6 @@ class Retina:
             for (other_neuron, other_compartment) in self.layers[depth][key]:
                 if neuron != other_neuron:
                     overlap.append((other_neuron, other_compartment))
-                    
         return []
         
         
