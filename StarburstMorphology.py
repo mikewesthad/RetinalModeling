@@ -110,7 +110,7 @@ class StarburstMorphology(object):
                 self.draw(self.display, new_location=self.draw_location,
                           draw_segments=True, scale=self.scale)
                 pygame.display.update()
-                clock.tick(30)
+                clock.tick(0) #Can enforce a delay in visualizing
                     
                 # Check for close button signal from pygame window
                 for event in pygame.event.get():
