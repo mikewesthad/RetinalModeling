@@ -51,7 +51,8 @@ SACs = [starburst1, starburst2]
 for sac in SACs:
     sac.registerWithRegina()
 
-
+for sac in SACs:
+    sac.initInputs()
 
 
 

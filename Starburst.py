@@ -1,6 +1,6 @@
 import numpy as np
 from Constants import *
-
+import collections
 
 class Starburst(object):
     
@@ -21,10 +21,24 @@ class Starburst(object):
         self.decay_rate             = self.morphology.decay_rate
         self.diffusion_weights      = self.morphology.diffusion_weights
         self.initializeActivties()
+        
+        self.inputs = {}
 
     def registerWithRetina(self):
         for compartment in self.morphology.compartments:
             compartment.registerWithRetina(self, self.layer_depth)
+    
+    def initInputs(self):
+        inputs = []
+        isAppropriateToConnect = True
+        for compartment in self.morphology.compartments:
+            for point in compartment.points:
+                compartments_present = self.retina.getOverlappingNeurons(self, self.location)
+                for compartment in compartments_present: #tuples = (neuron, comp)
+                    if isAppropriateToConnect:
+                        inputs.append(compartment[1])   #appends the compartment
+        self.inputs = collections.Counter(inputs)               
+                        
     
     def draw(self, surface, scale=1.0, draw_segments=False, draw_points=False, 
              draw_compartments=False):
