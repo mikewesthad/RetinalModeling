@@ -338,9 +338,12 @@ class DendriteSegment:
                 p = p.roundedIntCopy()
                 if (p not in self.gridded_locations) and (p not in parent_locations): 
                     self.gridded_locations.append(p)
-                    
-        for child in self.children:
-            child.discretize(delta, range_deltas, self.gridded_locations)
+        
+        if len(self.children) == 2:  
+            child1, child2 = self.children
+            child1.discretize(delta, range_deltas, self.gridded_locations)
+            excluded_locations = self.gridded_locations + child1.gridded_locations
+            child2.discretize(delta, range_deltas, excluded_locations)
     
     def createPoints(self, last_location, wirelength_to_last):
         self.points = []

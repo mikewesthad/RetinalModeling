@@ -14,6 +14,7 @@ class Compartment:
         self.proximal_neighbors = []
         self.distal_neighbors   = []
         self.points             = [] 
+        self.inputs             = {}
         
         self.neurotransmitters_input_weights    = {}
         self.neurotransmitters_output_weights   = {}

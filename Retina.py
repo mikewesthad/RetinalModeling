@@ -44,12 +44,13 @@ class Retina:
             
     def getOverlappingNeurons(self, neuron, location):
         key = location.toIntTuple()
+        depth = neuron.layer_depth
+        overlap = []        
         if key in self.layers[depth]:
-            overlap = []
             for (other_neuron, other_compartment) in self.layers[depth][key]:
                 if neuron != other_neuron:
                     overlap.append((other_neuron, other_compartment))
-        return []
+        return overlap
         
         
     

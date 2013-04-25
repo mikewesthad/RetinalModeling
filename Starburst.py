@@ -22,22 +22,22 @@ class Starburst(object):
         self.diffusion_weights      = self.morphology.diffusion_weights
         self.initializeActivties()
         
-        self.inputs = {}
-
+        
     def registerWithRetina(self):
         for compartment in self.morphology.compartments:
             compartment.registerWithRetina(self, self.layer_depth)
     
     def initInputs(self):
-        inputs = []
         isAppropriateToConnect = True
         for compartment in self.morphology.compartments:
+            inputs = []            
             for point in compartment.points:
-                compartments_present = self.retina.getOverlappingNeurons(self, self.location)
-                for compartment in compartments_present: #tuples = (neuron, comp)
+                location = self.location + point.location #abs = abs + rel
+                neurons_comps = self.retina.getOverlappingNeurons(self, location)
+                for neuron_comp in neurons_comps: #tuples = (neuron, comp)
                     if isAppropriateToConnect:
-                        inputs.append(compartment[1])   #appends the compartment
-        self.inputs = collections.Counter(inputs)               
+                        inputs.append(neuron_comp[1])   #appends the compartment
+            compartment.inputs = collections.Counter(inputs)               
                         
     
     def draw(self, surface, scale=1.0, draw_segments=False, draw_points=False, 
