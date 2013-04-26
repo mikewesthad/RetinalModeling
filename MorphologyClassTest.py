@@ -19,7 +19,7 @@ width       = 1000 * UM_TO_M
 height      = 1000 * UM_TO_M
 grid_size   = 1 * UM_TO_M
 timestep    = 100 * MS_TO_S
-retina      = Retina(width, height, grid_size, display)
+retina      = Retina(width, height, grid_size, None, None, display)
 
 # Build a starburst morphology
 scale = 2.0
@@ -101,33 +101,33 @@ starburst = Starburst(retina, None, starburst_morphology, screen_mid, 0, 0)
 
 
 # Watch activity propagate
-starburst.history_size  = 50
+starburst.history_size  = 200
 starburst.decay_rate    = 0.0
 starburst.input_stength = 0.0
 starburst.initializeActivties()
 
 starburst.activities[0][0, 0] = 1.0
-starburst.activities[0][0, 300] = 1.0
-starburst.activities[0][0, 301] = 1.0
-starburst.activities[0][0, 302] = 1.0
-starburst.activities[0][0, 303] = 1.0
-starburst.activities[0][0, 400] = 1.0
-starburst.activities[0][0, 401] = 1.0
-starburst.activities[0][0, 402] = 1.0
-starburst.activities[0][0, 403] = 1.0
+#starburst.activities[0][0, 300] = 1.0
+#starburst.activities[0][0, 301] = 1.0
+#starburst.activities[0][0, 302] = 1.0
+#starburst.activities[0][0, 303] = 1.0
+#starburst.activities[0][0, 400] = 1.0
+#starburst.activities[0][0, 401] = 1.0
+#starburst.activities[0][0, 402] = 1.0
+#starburst.activities[0][0, 403] = 1.0
 
 for i in range(starburst.history_size-1):
     starburst.updateActivity()
     
     starburst.activities[0][0, 0] = 1.0
-    starburst.activities[0][0, 300] = 1.0
-    starburst.activities[0][0, 301] = 1.0
-    starburst.activities[0][0, 302] = 1.0
-    starburst.activities[0][0, 303] = 1.0
-    starburst.activities[0][0, 400] = 1.0
-    starburst.activities[0][0, 401] = 1.0
-    starburst.activities[0][0, 402] = 1.0
-    starburst.activities[0][0, 403] = 1.0
+#    starburst.activities[0][0, 300] = 1.0
+#    starburst.activities[0][0, 301] = 1.0
+#    starburst.activities[0][0, 302] = 1.0
+#    starburst.activities[0][0, 303] = 1.0
+#    starburst.activities[0][0, 400] = 1.0
+#    starburst.activities[0][0, 401] = 1.0
+#    starburst.activities[0][0, 402] = 1.0
+#    starburst.activities[0][0, 403] = 1.0
     
     
 max_time = starburst.history_size - 1
