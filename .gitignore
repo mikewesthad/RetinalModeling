@@ -132,6 +132,7 @@ Desktop.ini
 #############
 
 *.py[co]
+*.p
 
 # Packages
 *.egg
@@ -163,8 +164,15 @@ pip-log.txt
 .DS_Store
 
 
+<<<<<<< HEAD
 ###################
 ## My Added Ignores
 ###################
 
 Saved Retinas\
+=======
+#############
+## Saved Retinas
+#############
+Saved Retinas/
+>>>>>>> origin/master
