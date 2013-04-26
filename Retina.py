@@ -13,7 +13,7 @@ from Constants import *
 Retina class
 """
 class Retina:
-    def __init__(self, retina_width, retina_height, grid_size, timestep, simtulus, display):
+    def __init__(self, retina_width, retina_height, grid_size, timestep, stimulus, display):
         self.display = display
         
         self.width  = float(retina_width)
