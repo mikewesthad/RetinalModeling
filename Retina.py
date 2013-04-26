@@ -1,13 +1,18 @@
 from time import clock
 import numpy as np
-from Constants import *
+import pygame
+from pygame.locals import *
+from ConeLayer import ConeLayer
+from HorizontalLayer import HorizontalLayer
+from BipolarLayer import BipolarLayer
 from StarburstLayer import StarburstLayer
+from Constants import *
 
 """
 Retina class
 """
 class Retina:
-    def __init__(self, retina_width, retina_height, grid_size, display):
+    def __init__(self, retina_width, retina_height, grid_size, timestep, simtulus, display):
         self.display = display        
         
         self.width  = float(retina_width)
@@ -17,10 +22,15 @@ class Retina:
         self.grid_size      = float(grid_size)
         self.grid_width     = int(self.width / self.grid_size)
         self.grid_height    = int(self.height / self.grid_size)
+            
+        self.stimulus = stimulus
         
-        self.density_area = 1 * MM_TO_M * MM_TO_M
+        self.time       = 0.0
+        self.timestep   = timestep
         
         self.history_size = 3
+        
+        self.density_area = 1 * MM_TO_M * MM_TO_M
         
         self.layers = []
         grid = {}
