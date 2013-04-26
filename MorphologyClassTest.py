@@ -79,12 +79,14 @@ starburst = Starburst(retina, None, starburst_morphology, screen_mid, 0, 0)
 #    
 #
 #
+
 ## Investigate the shortest path distances
 ## Pick a random compartment and recolor all other compartments based on their 
-## distance from the choosen compartment55
+## distance from the choosen compartment
+#display.fill(palette[0])
 #number_compartments     = len(starburst.morphology.compartments)
 #selected_compartment    = randint(0, number_compartments-1)
-#starburst.morphology.drawDiffusion(display, selected_compartment, new_location=starburst.location, scale=scale)
+#starburst.morphology.drawDiffusionWeights(display, selected_compartment, new_location=starburst.location, scale=scale)
 #        
 #running = True
 #while running:
@@ -93,17 +95,18 @@ starburst = Starburst(retina, None, starburst_morphology, screen_mid, 0, 0)
 #            running = False
 #        if event.type == KEYDOWN:
 #            selected_compartment = randint(0, number_compartments-1)
-#            starburst.morphology.drawDiffusion(display, selected_compartment, new_location=starburst.location, scale=scale)
-#    
+#            display.fill(palette[0])
+#            starburst.morphology.drawDiffusionWeights(display, selected_compartment, new_location=starburst.location, scale=scale)
 #    pygame.display.update()
 
 
 # Watch activity propagate
-starburst.history_size = 50
-starburst.decay_rate = 0.0
+starburst.history_size  = 50
+starburst.decay_rate    = 0.0
 starburst.input_stength = 0.0
 starburst.initializeActivties()
-#starburst.activities[0][0, 0] = 1.0
+
+starburst.activities[0][0, 0] = 1.0
 starburst.activities[0][0, 300] = 1.0
 starburst.activities[0][0, 301] = 1.0
 starburst.activities[0][0, 302] = 1.0
@@ -115,7 +118,8 @@ starburst.activities[0][0, 403] = 1.0
 
 for i in range(starburst.history_size-1):
     starburst.updateActivity()
-#    starburst.activities[0][0, 0] = 1.0
+    
+    starburst.activities[0][0, 0] = 1.0
     starburst.activities[0][0, 300] = 1.0
     starburst.activities[0][0, 301] = 1.0
     starburst.activities[0][0, 302] = 1.0
@@ -142,7 +146,10 @@ while running:
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
-        if event.type == KEYDOWN:
+        elif event.type == MOUSEMOTION:
+            mouse_x, mouse_y = event.pos
+            
+        elif event.type == KEYDOWN:
             if event.key == K_LEFT:
                 time += 1
                 if time > max_time: time = 0
@@ -157,6 +164,7 @@ while running:
                 percent     = activity/float(max_activity)
                 new_color = (int(percent*255),int(percent*255),int(percent*255))
                 compartment.color = new_color
+        
                 
     if auto:
         print "Timestep\t{0}\n".format(max_time-time),

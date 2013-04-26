@@ -16,8 +16,8 @@ class StarburstMorphology(object):
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=10*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
                  dendrite_vision_radius=30*UM_TO_M, diffusion_width=50*UM_TO_M,
-                 decay_rate=0.1, input_strength=0.0, color_palette=GOLDFISH, 
-                 draw_location=Vector2D(0.0,0.0), visualize_growth=True, scale=1.0,
+                 decay_rate=0.1, input_strength=0.0, compartments_as_line_segments=True,
+                 color_palette=GOLDFISH, draw_location=Vector2D(0.0,0.0), visualize_growth=True, scale=1.0,
                  display=None):
         
         # General neuron variables
@@ -61,34 +61,42 @@ class StarburstMorphology(object):
         
         # Slicing needed to force a copy of the elements (instead of creating a reference to a list)
         # Note: this only works if the lists are not nested (if they are, use deepcopy)
-        self.master_dendrites = self.dendrites[:]  
-        self.number_master_dendrites = len(self.master_dendrites)
-            
+        self.master_dendrites           = self.dendrites[:]  
+        self.number_master_dendrites    = len(self.master_dendrites)
+        
+        # Grow and color the dendrites
         self.grow()              
-        self.number_dendrites = len(self.dendrites)
+        self.number_dendrites = len(self.dendrites)        
         self.colorDendrites(color_palette[1:])  
+        
+        # Break the dendrite into points on the grid
         self.discretize(1.0)
         self.createPoints()
         self.establishPointSynapses()
-        self.compartmentalizeLineSegments()
-        self.buildLineSegmentShortestPaths()
-        self.colorCompartments(color_palette[1:])
         
+        # Build compartments
+        self.compartments_as_line_segments = compartments_as_line_segments
+        if compartments_as_line_segments:
+            self.compartmentalizeLineSegments()
+            self.buildLineSegmentShortestPaths()
+            self.colorCompartments(color_palette[1:])
+        
+        # Establish variables needed for activity
         self.decay_rate         = decay_rate
         self.input_strength     = input_strength
         self.diffusion_width    = diffusion_width / retina.grid_size
         self.establisthLineSegmentDiffusionWeights()
         
-        
-#        self.buildCompartmentBoundingPolygons()
-#        self.establishCompartmentSynapses()
+        # Old compartmentalization functions
+        # self.buildCompartmentBoundingPolygons()
+        # self.establishCompartmentSynapses()
     
     def grow(self):
         
         active_dendrites = self.master_dendrites[:]
+        
         running = True
-        i = 0
-        clock = pygame.time.Clock()
+        i       = 0
         while running and active_dendrites != []:
             
             # Grab a dendrite and update it
@@ -114,33 +122,28 @@ class StarburstMorphology(object):
                 self.draw(self.display, new_location=self.draw_location,
                           draw_segments=True, scale=self.scale)
                 pygame.display.update()
-#                clock.tick(30)
                     
                 # Check for close button signal from pygame window
                 for event in pygame.event.get():
                     if event.type == QUIT: running = False
-                    
+    
+            
     def colorCompartments(self, palette):
-        colors = palette
-        
-        index = 0
+        colors  = palette
+        index   = 0
         for compartment in self.master_compartments:
             compartment.colorCompartments(colors, index)
             index += 1
             if index >= len(colors): index = 0
             
     def colorDendrites(self, palette):
-        colors = palette
-        
-        index = 0
+        colors  = palette
+        index   = 0
         for dendrite in self.master_dendrites:
             dendrite.colorDendrites(colors, index)
             index += 1
             if index >= len(colors): index = 0
     
-    def buildCompartmentBoundingPolygons(self):
-        for compartment in self.compartments:
-            compartment.buildBoundingPolgyon()
             
     def establishCompartmentSynapses(self):
         for compartment in self.compartments:
@@ -202,68 +205,63 @@ class StarburstMorphology(object):
                 distance_adjacency[neighbor.index][compartment.index] = self.step_size
                 
         self.distance_adjacency = distance_adjacency
-        self.distance_graph = Graph.Weighted_Adjacency(distance_adjacency, mode=ADJ_UNDIRECTED)
-        
-        
-        self.distance_shortest_paths = np.array(self.distance_graph.shortest_paths(weights="weight"))
-        self.distances = self.distance_shortest_paths
+        self.distance_graph     = Graph.Weighted_Adjacency(distance_adjacency, mode=ADJ_UNDIRECTED)
+        self.distances          = np.array(self.distance_graph.shortest_paths(weights="weight"))
         
         for row in range(number_segments):
             col = row
             self.distances[row][col] = 0.0
             
-        
-    
     def establisthLineSegmentDiffusionWeights(self, diffusion_method="Gaussian Volume"):
+        number_segments         = len(self.compartments)
+        self.diffusion_weights  = np.zeros((number_segments, number_segments))
+        sigma                   = self.diffusion_width
         
-        if diffusion_method == "Gaussian Volume":
-            
-            number_segments         = len(self.compartments)
-            self.diffusion_weights  = np.zeros((number_segments, number_segments))
-            sigma                   = self.diffusion_width
-            
-            np_distances    = np.array(self.distances)
-            np_lengths      = np.array(np.ones((1, number_segments))) * self.step_size
-            
-            for row in range(number_segments):
-                for col in range(number_segments):
-                    distance = float(self.distances[row][col])
-                    volume = 0.0
-                    np_distance_row = np_distances[row,:]
-                    matching_cols, = np.where(np_distance_row<=distance)
-                    volume += np.sum(np_lengths[0, matching_cols])
-                    self.diffusion_weights[row, col] = volume
-
-#                    self.diffusion_weights[row, col] = distance
-
-#                    self.diffusion_weights[row, col] = 1.0
-
-#                    if distance <= self.step_size: self.diffusion_weights[row, col] = 1.0
-#                    else: self.diffusion_weights[row, col] = 0.0
-                    
-            self.diffusion_weights = np.exp(-self.diffusion_weights**2.0/(2.0*sigma**2.0))
+        np_distances    = np.array(self.distances)
+        np_lengths      = np.array(np.ones((1, number_segments))) * self.step_size
+        
+        for row in range(number_segments):
+            for col in range(number_segments):
+                distance = float(self.distances[row][col])
+                volume = 0.0
+                np_distance_row = np_distances[row,:]
+                matching_cols, = np.where(np_distance_row<=distance)
+                volume += np.sum(np_lengths[0, matching_cols])
                 
-            # Get the sum of each row
-            row_sum = np.sum(self.diffusion_weights, 1)
+                if diffusion_method == "Gaussian Volume":
+                    self.diffusion_weights[row, col] = volume
+                elif diffusion_method == "Gaussian Distance":
+                    self.diffusion_weights[row, col] = distance
+                elif diffusion_method == "Average Everyone":
+                    self.diffusion_weights[row, col] = 1.0
+                elif diffusion_method == "Nearest Neighbor Average":
+                    if distance <= self.step_size: 
+                        self.diffusion_weights[row, col] = 1.0
+                    else: 
+                        self.diffusion_weights[row, col] = 0.0
+        
+        if (diffusion_method == "Gaussian Volume") or (diffusion_method == "Gaussian Distance"): 
+            self.diffusion_weights = np.exp(-self.diffusion_weights**2.0/(2.0*sigma**2.0))
             
-            # Reshape the rowSum into a column vector since sum removes a dimension
-            row_sum.shape = (len(self.compartments), 1)
-            
-            # Normalize the weight matrix
-            self.diffusion_weights = self.diffusion_weights / row_sum
+        # Get the sum of each row
+        row_sum = np.sum(self.diffusion_weights, 1)
+        
+        # Reshape the rowSum into a column vector since sum removes a dimension
+        row_sum.shape = (len(self.compartments), 1)
+        
+        # Normalize the weight matrix
+        self.diffusion_weights = self.diffusion_weights / row_sum
             
     def branchProbability(self, segment_length):
         return 1.05**(segment_length-self.max_segment_length)
         
-    def drawDiffusion(self, surface, index, new_location=None, scale=1.0):
-        max_diffusion = np.max(self.diffusion_weights)
+    def drawDiffusionWeights(self, surface, index, new_location=None, scale=1.0):
+        max_diffusion           = np.max(self.diffusion_weights)
+        selected_compartment    = index   
         
-        np.set_printoptions(precision=3, suppress=True, linewidth=200)
-        selected_compartment = index   
-        
-        np.set_printoptions(precision=3, suppress=True, linewidth=200)
+        np.set_printoptions(precision=3, suppress=True, linewidth=300)
         print self.diffusion_weights[selected_compartment,:]
-        surface.fill(self.background_color)
+        
         for i in range(len(self.compartments)):
             compartment = self.compartments[i]
             diffusion   = self.diffusion_weights[selected_compartment,i]
@@ -275,7 +273,7 @@ class StarburstMorphology(object):
             
         self.draw(surface, scale=scale, new_location=new_location, 
                   draw_compartments=True, draw_text=True) 
-        
+    
         
     def draw(self, surface, scale=1.0, new_location=None, draw_segments=False,
              draw_compartments=False, draw_points=False, draw_text=False):
@@ -408,6 +406,10 @@ class StarburstMorphology(object):
 #        self.distance_adjacency     = distance_adjacency
 #        self.distance_graph         = Graph.Weighted_Adjacency(distance_adjacency, mode=ADJ_UNDIRECTED)
 
+    def buildCompartmentBoundingPolygons(self):
+        for compartment in self.compartments:
+            compartment.buildBoundingPolgyon()
+            
     def compartmentalizePoints(self, compartment_size):
         self.compartments = []
         
