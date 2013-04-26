@@ -12,7 +12,7 @@ from Vector2D import Vector2D
 class DendriteSegment:
             
     def __init__(self, neuron, location, heading, resources, original_resources,
-                 children_deviation, vision_radius):
+                 children_deviation, vision_radius, master_branch_ID):
         self.neuron             = neuron
         self.retina             = neuron.retina
         self.heading            = heading
@@ -26,6 +26,7 @@ class DendriteSegment:
         self.is_growing         = True
         self.vision_radius      = vision_radius
         self.children_deviation = children_deviation
+        self.master_branch_ID   = master_branch_ID
         
         self.length             = 0.0
         self.step_size          = self.neuron.step_size
@@ -33,6 +34,11 @@ class DendriteSegment:
         
 #        self.color = (randint(100,255),randint(100,255),randint(100,255))
         self.color = (0,0,0)
+        
+    def registerDendriteWithNeuron(self):
+        self.index = len(self.neuron.dendrites)
+        self.neuron.dendrites.append(self)
+        
 
     def createCopy(self, new_starburst, parent_dendrite=None):
         new_dendrite = DendriteSegment(new_starburst, None, self.heading, 
@@ -52,8 +58,33 @@ class DendriteSegment:
                 child.createCopy(new_starburst, new_dendrite)
         
         return new_dendrite
+
+    def compartmentalizeLineSegments(self, compartment, index=0, prior_compartments=[]): 
+        
+        # Compartment takes 1 line segment and then it is full
+        compartment.points = [self.locations[index], self.locations[index+1]]
+        compartment.proximal_neighbors.extend(prior_compartments)
+        
+        # Increment index and check flags
+        index += 1
+        number_segments_left    = len(self.locations[index:]) - 1
+        segments_left           = number_segments_left > 0      
+        has_children            = self.children != []
+        
+        if segments_left:
+            new_compartment = Compartment(self.neuron)
+            self.compartmentalizeLineSegments(new_compartment, index, [compartment])
+            compartment.distal_neighbors.append(new_compartment)
+        elif not(segments_left) and has_children:
+            child1, child2      = self.children
+            new_compartment1    = Compartment(self.neuron)
+            new_compartment2    = Compartment(self.neuron)
+            child1.compartmentalizeLineSegments(new_compartment1, 0, [compartment, new_compartment2])
+            child2.compartmentalizeLineSegments(new_compartment2, 0, [compartment, new_compartment1]) 
+            compartment.distal_neighbors.extend([new_compartment1, new_compartment2])
+            
     
-    def compartmentalize(self, compartment, compartment_points_needed, compartment_size_goal,
+    def compartmentalizePoints(self, compartment, compartment_points_needed, compartment_size_goal,
                          index=0, prior_compartments=[]):   
         # Calculate the remaining available points left in the current dendrite                             
         points_in_dendrite      = len(self.points)
@@ -81,17 +112,17 @@ class DendriteSegment:
             if (compartment_points_needed % 2) == 1:               
                 child1_compartment_size_left += 1
             
-            child1.compartmentalize(compartment, child1_compartment_size_left,
-                                    compartment_size_goal, 0, prior_compartments)
-            child2.compartmentalize(compartment, child2_compartment_size_left,
-                                    compartment_size_goal, 0, prior_compartments)
+            child1.compartmentalizePoints(compartment, child1_compartment_size_left,
+                                          compartment_size_goal, 0, prior_compartments)
+            child2.compartmentalizePoints(compartment, child2_compartment_size_left,
+                                          compartment_size_goal, 0, prior_compartments)
         
         elif not(compartment_needs_points) and dendrite_has_points_left:
             new_compartment = Compartment(self.neuron)
             compartment.proximal_neighbors.extend(prior_compartments)
             compartment.distal_neighbors.append(new_compartment)
-            self.compartmentalize(new_compartment, compartment_size_goal,
-                                  compartment_size_goal, end_index, [compartment])
+            self.compartmentalizePoints(new_compartment, compartment_size_goal,
+                                        compartment_size_goal, end_index, [compartment])
                                   
         elif not(compartment_needs_points) and not(dendrite_has_points_left) and dendrite_has_children:
             child1, child2      = self.children                  
@@ -101,10 +132,10 @@ class DendriteSegment:
             compartment.proximal_neighbors.extend(prior_compartments)
             compartment.distal_neighbors.extend([child1_compartment, child2_compartment])
             
-            child1.compartmentalize(child1_compartment, compartment_size_goal,
-                                    compartment_size_goal, 0, [compartment])
-            child2.compartmentalize(child2_compartment, compartment_size_goal,
-                                    compartment_size_goal, 0, [compartment])
+            child1.compartmentalizePoints(child1_compartment, compartment_size_goal,
+                                          compartment_size_goal, 0, [compartment])
+            child2.compartmentalizePoints(child2_compartment, compartment_size_goal,
+                                          compartment_size_goal, 0, [compartment])
         
         else:
             compartment.proximal_neighbors.extend(prior_compartments)
@@ -288,7 +319,8 @@ class DendriteSegment:
         if child_1_heading < 0:     child_1_heading += 360.0
         
         child_1 = DendriteSegment(self.neuron, location, child_1_heading, self.resources, 
-                                  self.original_resources, self.children_deviation, self.vision_radius)
+                                  self.original_resources, self.children_deviation, 
+                                  self.vision_radius, self.master_branch_ID)
         child_1.color = self.color                
         # Have the first child take its first step
         is_growing, children = child_1.grow()
@@ -304,7 +336,8 @@ class DendriteSegment:
         if child_2_heading < 0:     child_2_heading += 360.0        
         
         child_2 = DendriteSegment(self.neuron, location, child_2_heading, self.resources, 
-                                  self.original_resources, self.children_deviation, self.vision_radius)
+                                  self.original_resources, self.children_deviation, 
+                                  self.vision_radius, self.master_branch_ID)
         child_2.color = self.color
         # Have the second child take its first step
         is_growing, children = child_2.grow()     
@@ -313,15 +346,16 @@ class DendriteSegment:
             return []
             
         # Babies R Us
+        child_1.registerDendriteWithNeuron()
+        child_2.registerDendriteWithNeuron()
         return [child_1, child_2]
-        
         
 
     """
     Sample the continuous-regime line segments onto the retinal grid
     Recursively move from dendrite to children to children's children...
     """
-    def discretize(self, delta=1.0, range_deltas=[], parent_locations=[]):   
+    def discretize(self, delta=1.0, range_deltas=[], parent_locations=[]):  
         self.gridded_locations = []
         
         if range_deltas == []:

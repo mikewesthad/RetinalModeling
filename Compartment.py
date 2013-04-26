@@ -93,40 +93,73 @@ class Compartment:
             self.neurotransmitters_input_weights[nt] /= number_points
         for nt in self.neurotransmitters_output_weights:
             self.neurotransmitters_output_weights[nt] /= number_points
-            
-    def draw(self, surface, scale=1.0, draw_neurotransmitters=False):
-        moved_polygon = []
-        for point in self.bounding_polygon:
-            new_x = (point[0] + self.morphology.location.x) * scale
-            new_y = (point[1] + self.morphology.location.y) * scale
-            moved_polygon.append([new_x, new_y])
-        pygame.draw.polygon(surface, self.color, moved_polygon)
+    
+    def buildRectangeFromLine(self, a, b, width):
+        angle       = a.angleHeadingTo(b)
+        left_perp   = Vector2D.generateHeadingFromAngle(angle + 90.0)
+        right_perp  = Vector2D.generateHeadingFromAngle(angle - 90.0)
         
-        color_key = {GABA:[-2.0, -2.0, (255,0,0)], 
-                     ACH:[0.0, 0.0, (0,255,0)], 
-                     GLU:[-2.0, 0.0, (0,0,255)], 
-                     GLY:[0.0, -2.0, (0,0,0)]}   
-        width   = 2.0   
-        height  = 2.0
-                     
-        if draw_neurotransmitters:
-                loc  = self.morphology.location + self.centroid
-                                      
-                for nt in color_key:                        
-                    dx, dy, color = color_key[nt]
-                    nt_rect = pygame.Rect((loc.x+dx)*scale, 
-                                          (loc.y+dy)*scale, 
-                                          width*scale, 
-                                          height*scale) 
-                    if nt in self.neurotransmitters_output_weights:
-                        border = 0
-                    else:
-                        border = 1
-                        color = [color[0]+200,color[1]+200,color[2]+200]
-                        color[0] = min(color[0], 255)
-                        color[1] = min(color[1], 255)
-                        color[2] = min(color[2], 255)
-                    pygame.draw.rect(surface, color, nt_rect, border)       
+        v1 = a+left_perp*width
+        v2 = a+right_perp*width
+        v3 = b+left_perp*width
+        v4 = b+right_perp*width
+        
+        vertices = [v1.toTuple(), v2.toTuple(), v4.toTuple(), v3.toTuple()]
+        return vertices
+    
+    def draw(self, surface, scale=1.0, draw_neurotransmitters=False, draw_text=False):
+        if len(self.points) == 2:
+            # Draw quads
+            start_index = 0
+            end_index = len(self.points)-2
+            for i in range(start_index, end_index+1): 
+                a = (self.morphology.location + self.points[i])*scale
+                b = (self.morphology.location + self.points[i+1])*scale
+                vertices = self.buildRectangeFromLine(a, b, 2.0/3.0 * scale)
+                pygame.draw.polygon(surface, self.color, vertices)  
+                
+            if draw_text:
+                pygame.init()
+                fontObj = pygame.font.Font(None, 18)
+                fontSurfObj = fontObj.render(str(self.index), False, (0,0,0))
+                fontSurfRect = fontSurfObj.get_rect()
+                fontSurfRect.center = ((a+b)/2.0).toIntTuple()
+                surface.blit(fontSurfObj, fontSurfRect)
+            
+        else:
+            # Draw convex hull
+            moved_polygon = []
+            for point in self.bounding_polygon:
+                new_x = (point[0] + self.morphology.location.x) * scale
+                new_y = (point[1] + self.morphology.location.y) * scale
+                moved_polygon.append([new_x, new_y])
+            pygame.draw.polygon(surface, self.color, moved_polygon)
+            
+            color_key = {GABA:[-2.0, -2.0, (255,0,0)], 
+                         ACH:[0.0, 0.0, (0,255,0)], 
+                         GLU:[-2.0, 0.0, (0,0,255)], 
+                         GLY:[0.0, -2.0, (0,0,0)]}   
+            width   = 2.0   
+            height  = 2.0
+                         
+            if draw_neurotransmitters:
+                    loc  = self.morphology.location + self.centroid
+                                          
+                    for nt in color_key:                        
+                        dx, dy, color = color_key[nt]
+                        nt_rect = pygame.Rect((loc.x+dx)*scale, 
+                                              (loc.y+dy)*scale, 
+                                              width*scale, 
+                                              height*scale) 
+                        if nt in self.neurotransmitters_output_weights:
+                            border = 0
+                        else:
+                            border = 1
+                            color = [color[0]+200,color[1]+200,color[2]+200]
+                            color[0] = min(color[0], 255)
+                            color[1] = min(color[1], 255)
+                            color[2] = min(color[2], 255)
+                        pygame.draw.rect(surface, color, nt_rect, border)       
     
     def registerWithRetina(self, neuron, layer_depth):
         for point in self.points:

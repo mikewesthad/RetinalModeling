@@ -15,7 +15,7 @@ class StarburstMorphology(object):
     def __init__(self, retina, location=Vector2D(0.0, 0.0), average_wirelength=150*UM_TO_M, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=10*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
-                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=0.5,
+                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=50*UM_TO_M,
                  decay_rate=0.1, input_strength=0.0, color_palette=GOLDFISH, 
                  draw_location=Vector2D(0.0,0.0), visualize_growth=True, scale=1.0,
                  display=None):
@@ -55,31 +55,36 @@ class StarburstMorphology(object):
         for i in range(number_dendrites):
             wirelength = uniform(min_wirelength, max_wirelength)
             dendrite = DendriteSegment(self, self.location, heading, wirelength, wirelength,
-                                       children_deviation, self.dendrite_vision_radius)
-            self.dendrites.append(dendrite)
+                                       children_deviation, self.dendrite_vision_radius, i)
+            dendrite.registerDendriteWithNeuron()                                                                       
             heading += heading_spacing
         
         # Slicing needed to force a copy of the elements (instead of creating a reference to a list)
         # Note: this only works if the lists are not nested (if they are, use deepcopy)
         self.master_dendrites = self.dendrites[:]  
+        self.number_master_dendrites = len(self.master_dendrites)
             
-        self.grow()      
+        self.grow()              
+        self.number_dendrites = len(self.dendrites)
         self.colorDendrites(color_palette[1:])  
         self.discretize(1.0)
         self.createPoints()
         self.establishPointSynapses()
-        self.compartmentalize(30)
+        self.compartmentalizeLineSegments()
+        self.buildLineSegmentShortestPaths()
         self.colorCompartments(color_palette[1:])
-        self.establishCompartmentSynapses()
-        self.buildCompartmentBoundingPolygons()
-        
         
         self.decay_rate         = decay_rate
         self.input_strength     = input_strength
-        self.diffusion_width    = diffusion_width #Units
-        self.establisthDiffusionWeights()
+        self.diffusion_width    = diffusion_width / retina.grid_size
+        self.establisthLineSegmentDiffusionWeights()
+        
+        
+#        self.buildCompartmentBoundingPolygons()
+#        self.establishCompartmentSynapses()
     
     def grow(self):
+        
         active_dendrites = self.master_dendrites[:]
         running = True
         i = 0
@@ -99,7 +104,6 @@ class StarburstMorphology(object):
             if children != []:
                 for child in children: 
                     active_dendrites.insert(0, child)
-                    self.dendrites.append(child)
             
             # Increment index
             i += 1
@@ -110,7 +114,7 @@ class StarburstMorphology(object):
                 self.draw(self.display, new_location=self.draw_location,
                           draw_segments=True, scale=self.scale)
                 pygame.display.update()
-                clock.tick(30)
+#                clock.tick(30)
                     
                 # Check for close button signal from pygame window
                 for event in pygame.event.get():
@@ -133,45 +137,6 @@ class StarburstMorphology(object):
             dendrite.colorDendrites(colors, index)
             index += 1
             if index >= len(colors): index = 0
-            
-    def establisthDiffusionWeights(self):
-        self.buildGraph()
-        self.distances = self.findShortestPathes()
-        
-        # Perform e^(-distance**2/width) on each element in the distance matrix
-        sigma = self.diffusion_width
-        self.diffusion_weights = np.exp(-(self.distances)**2/(2.0*sigma**2.0))
-        
-        # Get the sum of each row
-        row_sum = np.sum(self.diffusion_weights, 1)
-        
-        # Reshape the rowSum into a column vector since sum removes a dimension
-        row_sum.shape = (len(self.compartments), 1)
-        
-        # Normalize the weight matrix
-        self.diffusion_weights = self.diffusion_weights / row_sum
-        
-    def findShortestPathes(self):
-        shortest_pathes = np.array(self.graph.shortest_paths())
-        # Directly connect each compartment with itself (0 distance)
-        for i in range(len(self.compartments)):
-            shortest_pathes[i, i] = 0
-        return shortest_pathes
-    
-    def buildGraph(self):
-        adjacency = []
-        for compartment in self.compartments:
-            row = []
-            for other_compartment in self.compartments:
-                proximal_neighbors  = (compartment in other_compartment.proximal_neighbors)
-                distal_neighbors    = (compartment in other_compartment.distal_neighbors)
-                if proximal_neighbors or distal_neighbors:
-                    row.append(1)
-                else:
-                    row.append(0)
-            adjacency.append(row)
-        self.adjacency  = adjacency
-        self.graph      = Graph.Adjacency(adjacency, mode=ADJ_UNDIRECTED)
     
     def buildCompartmentBoundingPolygons(self):
         for compartment in self.compartments:
@@ -191,10 +156,8 @@ class StarburstMorphology(object):
             if point.wirelength >= output_threshold_wirelength:
                 point.neurotransmitters_released = outputs.copy() # SHALLOW COPY!
             point.neurotransmitters_accepted = inputs.copy() # SHALLOW COPY!
-        
-    
 
-    def compartmentalize(self, compartment_size):
+    def compartmentalizeLineSegments(self):
         self.compartments = []
         
         # Build the master compartments recursively
@@ -213,8 +176,7 @@ class StarburstMorphology(object):
                     proximal_compartments.append(other_compartment)
             
             dendrite = self.master_dendrites[index]
-            dendrite.compartmentalize(compartment, compartment_size, compartment_size,
-                                      prior_compartments=proximal_compartments)
+            dendrite.compartmentalizeLineSegments(compartment, prior_compartments=proximal_compartments)
     
     def discretize(self, delta):
         for dendrite in self.master_dendrites:
@@ -224,9 +186,99 @@ class StarburstMorphology(object):
         self.points = []
         for dendrite in self.master_dendrites:
             dendrite.createPoints(self.location, 0.0)
+    
+    def buildLineSegmentShortestPaths(self):
+        distance_adjacency = []
+        number_segments = len(self.compartments)
+        for row_num in range(number_segments): 
+            distance_row    = []
+            for element_num in range(number_segments):
+                distance_row.append(0.0)
+            distance_adjacency.append(distance_row)
             
+        for compartment in self.compartments:
+            for neighbor in compartment.distal_neighbors + compartment.proximal_neighbors:
+                distance_adjacency[compartment.index][neighbor.index] = self.step_size
+                distance_adjacency[neighbor.index][compartment.index] = self.step_size
+                
+        self.distance_adjacency = distance_adjacency
+        self.distance_graph = Graph.Weighted_Adjacency(distance_adjacency, mode=ADJ_UNDIRECTED)
+        
+        
+        self.distance_shortest_paths = np.array(self.distance_graph.shortest_paths(weights="weight"))
+        self.distances = self.distance_shortest_paths
+        
+        for row in range(number_segments):
+            col = row
+            self.distances[row][col] = 0.0
+            
+        
+    
+    def establisthLineSegmentDiffusionWeights(self, diffusion_method="Gaussian Volume"):
+        
+        if diffusion_method == "Gaussian Volume":
+            
+            number_segments         = len(self.compartments)
+            self.diffusion_weights  = np.zeros((number_segments, number_segments))
+            sigma                   = self.diffusion_width
+            
+            np_distances    = np.array(self.distances)
+            np_lengths      = np.array(np.ones((1, number_segments))) * self.step_size
+            
+            for row in range(number_segments):
+                for col in range(number_segments):
+                    distance = float(self.distances[row][col])
+                    volume = 0.0
+                    np_distance_row = np_distances[row,:]
+                    matching_cols, = np.where(np_distance_row<=distance)
+                    volume += np.sum(np_lengths[0, matching_cols])
+                    self.diffusion_weights[row, col] = volume
+
+#                    self.diffusion_weights[row, col] = distance
+
+#                    self.diffusion_weights[row, col] = 1.0
+
+#                    if distance <= self.step_size: self.diffusion_weights[row, col] = 1.0
+#                    else: self.diffusion_weights[row, col] = 0.0
+                    
+            self.diffusion_weights = np.exp(-self.diffusion_weights**2.0/(2.0*sigma**2.0))
+                
+            # Get the sum of each row
+            row_sum = np.sum(self.diffusion_weights, 1)
+            
+            # Reshape the rowSum into a column vector since sum removes a dimension
+            row_sum.shape = (len(self.compartments), 1)
+            
+            # Normalize the weight matrix
+            self.diffusion_weights = self.diffusion_weights / row_sum
+            
+    def branchProbability(self, segment_length):
+        return 1.05**(segment_length-self.max_segment_length)
+        
+    def drawDiffusion(self, surface, index, new_location=None, scale=1.0):
+        max_diffusion = np.max(self.diffusion_weights)
+        
+        np.set_printoptions(precision=3, suppress=True, linewidth=200)
+        selected_compartment = index   
+        
+        np.set_printoptions(precision=3, suppress=True, linewidth=200)
+        print self.diffusion_weights[selected_compartment,:]
+        surface.fill(self.background_color)
+        for i in range(len(self.compartments)):
+            compartment = self.compartments[i]
+            diffusion   = self.diffusion_weights[selected_compartment,i]
+            max_diffusion = np.sum(self.diffusion_weights[selected_compartment,:])
+            percent     = diffusion/float(max_diffusion)
+            
+            new_color = (int(percent*255),int(percent*255),int(percent*255))
+            compartment.color = new_color
+            
+        self.draw(surface, scale=scale, new_location=new_location, 
+                  draw_compartments=True, draw_text=True) 
+        
+        
     def draw(self, surface, scale=1.0, new_location=None, draw_segments=False,
-             draw_compartments=False, draw_points=False):
+             draw_compartments=False, draw_points=False, draw_text=False):
         
         # Shift the cell's location
         if new_location == None: 
@@ -239,13 +291,144 @@ class StarburstMorphology(object):
                 dendrite.draw(surface, scale=scale)
         elif draw_compartments:
             for compartment in self.compartments:
-                compartment.draw(surface, scale=scale)
+                compartment.draw(surface, scale=scale, draw_text=draw_text)
         elif draw_points:
             for point in self.points:
                 point.draw(surface, scale=scale)
                 
         # Shift the cell's location back to the original
         self.location = old_location
+        
+  
+
+
+
+# .............................................................................
+# Old functions that may not be used?
+# .............................................................................
+
+#    def establisthDiffusionWeights(self):
+#        self.buildGraph()
+#        self.distances = self.findShortestPathes()
+##        
+##        # Perform e^(-distance**2/width) on each element in the distance matrix
+##        sigma = self.diffusion_width
+##        self.diffusion_weights = np.exp(-(self.distances)**2/(2.0*sigma**2.0))
+##        
+##        # Get the sum of each row
+##        row_sum = np.sum(self.diffusion_weights, 1)
+##        
+##        # Reshape the rowSum into a column vector since sum removes a dimension
+##        row_sum.shape = (len(self.compartments), 1)
+##        
+##        # Normalize the weight matrix
+##        self.diffusion_weights = self.diffusion_weights / row_sum
+#        
+#    def findShortestPathes(self):
+#        branching_shortest_paths    = np.array(self.branching_graph.shortest_paths(weights="weight"))
+#        distance_shortest_paths     = np.array(self.distance_graph.shortest_paths(weights="weight"))
+#        
+#        
+#        for a in range(self.number_dendrites):
+#            for b in range(a, self.number_dendrites):
+#                if a == b:
+#                    # There is no effect of branching on youself
+#                    branching_shortest_paths[a][a] = 1.0
+#                else:
+#                    dendrite_a = self.dendrites[a]
+#                    dendrite_b = self.dendrites[b]
+#                    
+#                    if dendrite_a.master_branch_ID == dendrite_b.master_branch_ID:
+#                        power           = branching_shortest_paths[a][b]
+#                        branch_factor   = 1.0/(2.0**power)
+#                    else:
+#                        power           = branching_shortest_paths[a][b] - 1.0
+#                        branch_factor   = 1.0/(2.0**power * (self.number_master_dendrites - 1.0)) 
+#                        
+#                    branching_shortest_paths[a][b] = branch_factor
+#                    branching_shortest_paths[b][a] = branch_factor
+#    
+#    def buildGraph(self):
+#        branching_adjacency = []
+#        distance_adjacency  = []
+#        for row_num in range(self.number_dendrites): 
+#            branching_row   = []
+#            distance_row    = []
+#            for element_num in range(self.number_dendrites):
+#                branching_row.append(0.0)
+#                distance_row.append(0.0)
+#            branching_adjacency.append(branching_row)
+#            distance_adjacency.append(distance_row)
+#        
+#        for master_number in range(self.number_master_dendrites):
+#            for other_master_number in range(master_number+1, self.number_master_dendrites):
+#                master          = self.master_dendrites[master_number]
+#                other_master    = self.master_dendrites[other_master_number]
+#                
+#                master_index        = master.index
+#                other_index         = other_master.index
+#                dist_master_other   = master.length/2.0 + other_master.length/2.0
+#                
+#                branching_adjacency[master_index][other_index]  = 1.0
+#                branching_adjacency[other_index][master_index]  = 1.0
+#                
+#                distance_adjacency[master_index][other_index]   = dist_master_other
+#                distance_adjacency[other_index][master_index]   = dist_master_other
+#            
+#            
+#        
+#        for dendrite in self.dendrites:
+#            if dendrite.children != []:
+#                child1, child2 = dendrite.children
+#                
+#                dendrite_index  = dendrite.index
+#                child1_index    = child1.index
+#                child2_index    = child2.index 
+#                
+#                dist_dendrite_child1    = dendrite.length/2.0 + child1.length/2.0
+#                dist_dendrite_child2    = dendrite.length/2.0 + child2.length/2.0
+#                dist_child1_child2      = child1.length/2.0 + child2.length/2.0
+#               
+#                branching_adjacency[dendrite_index][child1_index]   = 1.0
+#                branching_adjacency[child1_index][dendrite_index]   = 1.0
+#                branching_adjacency[dendrite_index][child2_index]   = 1.0
+#                branching_adjacency[child2_index][dendrite_index]   = 1.0
+#                branching_adjacency[child1_index][child2_index]     = 1.0
+#                branching_adjacency[child2_index][child1_index]     = 1.0
+#                
+#                distance_adjacency[dendrite_index][child1_index]    = dist_dendrite_child1
+#                distance_adjacency[child1_index][dendrite_index]    = dist_dendrite_child1
+#                distance_adjacency[dendrite_index][child2_index]    = dist_dendrite_child2
+#                distance_adjacency[child2_index][dendrite_index]    = dist_dendrite_child2
+#                distance_adjacency[child1_index][child2_index]      = dist_child1_child2
+#                distance_adjacency[child2_index][child1_index]      = dist_child1_child2
+#         
+#        self.branching_adjacency    = branching_adjacency
+#        self.branching_graph        = Graph.Weighted_Adjacency(branching_adjacency, mode=ADJ_UNDIRECTED)
+#        self.distance_adjacency     = distance_adjacency
+#        self.distance_graph         = Graph.Weighted_Adjacency(distance_adjacency, mode=ADJ_UNDIRECTED)
+
+    def compartmentalizePoints(self, compartment_size):
+        self.compartments = []
+        
+        # Build the master compartments recursively
+        self.master_compartments = []
+        for dendrite in self.master_dendrites:            
+            compartment = Compartment(self)
+            self.master_compartments.append(compartment)
+
+        # Recursively compartmentalize starting from the master compartments
+        for index in range(len(self.master_compartments)):
+            compartment = self.master_compartments[index]
+            
+            proximal_compartments = []
+            for other_compartment in self.master_compartments:
+                if compartment != other_compartment: 
+                    proximal_compartments.append(other_compartment)
+            
+            dendrite = self.master_dendrites[index]
+            dendrite.compartmentalizePoints(compartment, compartment_size, compartment_size,
+                                            prior_compartments=proximal_compartments)
     
     def plotBranchProbability(self):
         xs = np.arange(0, self.max_segment_length, 0.1)
@@ -256,17 +439,7 @@ class StarburstMorphology(object):
         plt.ylabel("Branch Probability")
         plt.grid(True)
         plt.show()
-    
-    def branchProbability(self, segment_length):
-        return 1.05**(segment_length-self.max_segment_length)
-        
-  
 
-
-
-# .............................................................................
-# Old functions that may not be used?
-# .............................................................................
     def rescale(self, scale_factor):
         for dendrite in self.dendrites:
             dendrite.rescale(scale_factor)
