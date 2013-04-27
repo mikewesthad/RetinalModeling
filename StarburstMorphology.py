@@ -212,7 +212,7 @@ class StarburstMorphology(object):
             col = row
             self.distances[row][col] = 0.0
             
-    def establisthLineSegmentDiffusionWeights(self, diffusion_method="Gaussian Volume"):
+    def establisthLineSegmentDiffusionWeights(self, diffusion_method="Nearest Neighbor Average"):
         number_segments         = len(self.compartments)
         self.diffusion_weights  = np.zeros((number_segments, number_segments))
         sigma                   = self.diffusion_width
