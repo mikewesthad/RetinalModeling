@@ -446,10 +446,6 @@ class StarburstMorphology(object):
         plt.ylabel("Branch Probability")
         plt.grid(True)
         plt.show()
-
-    def rescale(self, scale_factor):
-        for dendrite in self.dendrites:
-            dendrite.rescale(scale_factor)
             
     def findCentroid(self):
         average_location = Vector2D(0.0, 0.0)
