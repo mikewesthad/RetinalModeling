@@ -20,6 +20,7 @@ class Starburst(object):
         self.input_strength         = self.morphology.input_strength
         self.decay_rate             = self.morphology.decay_rate
         self.diffusion_weights      = self.morphology.diffusion_weights
+        self.diffusion_strength     = self.morphology.diffusion_strength
         self.initializeActivties()
 
     def registerWithRetina(self):
@@ -44,15 +45,40 @@ class Starburst(object):
         del self.activities[-1]
         last_activity = self.activities[0]
         
-        # Calculate the diffusion
-        d = self.decay_rate
-        diffusionActivity = (1.0-d) * np.dot(last_activity, self.diffusion_weights)
+        new_activities = np.zeros(last_activity.shape)
+        for compartment in range(self.number_compartments):
+            
+            # Current component's activity
+            compartment_activity = last_activity[0,compartment]
+            
+            # Difference in activity between current component and everyone else
+            differences = (compartment_activity - last_activity) 
+            differences *= self.diffusion_strength            
+            differences *= self.diffusion_weights[compartment, :]      
+                        
+            # Zero out negative differences
+            negative_difference_indicies = differences < 0
+            differences[negative_difference_indicies] = 0
+            
+            # Update the activity values
+            total_differences = np.sum(differences)
+            if (total_differences > 0):            
+                new_activities += differences
+                new_activities[0,compartment] += compartment_activity - total_differences
+            else:
+                new_activities[0,compartment] += compartment_activity
+            
+        new_activity = new_activities
         
-        # Get the bipolar activity
-        
-        # Find the new activity
-        i = self.input_strength
-        new_activity = (1.0-i) * diffusionActivity #+ i * bipolar_inputs
+#        # Calculate the diffusion
+#        d = self.decay_rate
+#        diffusionActivity = (1.0-d) * np.dot(last_activity, self.diffusion_weights)
+#        
+#        # Get the bipolar activity
+#        
+#        # Find the new activity
+#        i = self.input_strength
+#        new_activity = (1.0-i) * diffusionActivity #+ i * bipolar_inputs
         
         # Add the most recent activity to the front of the list
         self.activities.insert(0, new_activity)

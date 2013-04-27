@@ -15,8 +15,8 @@ class StarburstMorphology(object):
     def __init__(self, retina, location=Vector2D(0.0, 0.0), average_wirelength=150*UM_TO_M, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=10*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
-                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=50*UM_TO_M,
-                 decay_rate=0.1, input_strength=0.0, compartments_as_line_segments=True,
+                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=10*UM_TO_M,
+                 diffusion_strength=0.5, decay_rate=0.1, input_strength=0.0, compartments_as_line_segments=True,
                  color_palette=GOLDFISH, draw_location=Vector2D(0.0,0.0), visualize_growth=True, scale=1.0,
                  display=None):
         
@@ -85,6 +85,7 @@ class StarburstMorphology(object):
         self.decay_rate         = decay_rate
         self.input_strength     = input_strength
         self.diffusion_width    = diffusion_width / retina.grid_size
+        self.diffusion_strength = diffusion_strength
         self.establisthLineSegmentDiffusionWeights()
         
         # Old compartmentalization functions
@@ -212,7 +213,7 @@ class StarburstMorphology(object):
             col = row
             self.distances[row][col] = 0.0
             
-    def establisthLineSegmentDiffusionWeights(self, diffusion_method="Nearest Neighbor Average"):
+    def establisthLineSegmentDiffusionWeights(self, diffusion_method="Gaussian Distance"):
         number_segments         = len(self.compartments)
         self.diffusion_weights  = np.zeros((number_segments, number_segments))
         sigma                   = self.diffusion_width

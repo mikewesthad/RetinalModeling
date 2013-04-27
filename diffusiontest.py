@@ -43,7 +43,7 @@ for x in range(10):
         differences[negative_difference_indicies] = 0
         
         # Update the activity values
-        total_differences = sum(differences)
+        total_differences = np.sum(differences)
         if (total_differences > 0):            
             new_activities += differences
             new_activities[component] += component_activity - total_differences
