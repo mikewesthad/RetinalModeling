@@ -14,9 +14,9 @@ class StarburstMorphology(object):
     
     def __init__(self, retina, location=Vector2D(0.0, 0.0), average_wirelength=150*UM_TO_M, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
-                 step_size=10*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
+                 step_size=15*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
                  dendrite_vision_radius=30*UM_TO_M, diffusion_width=10*UM_TO_M,
-                 diffusion_strength=0.5, decay_rate=0.1, input_strength=0.0, compartments_as_line_segments=True,
+                 diffusion_strength=1.0, decay_rate=0.1, input_strength=0.0,
                  color_palette=GOLDFISH, draw_location=Vector2D(0.0,0.0), visualize_growth=True, scale=1.0,
                  display=None):
         
@@ -69,17 +69,14 @@ class StarburstMorphology(object):
         self.number_dendrites = len(self.dendrites)        
         self.colorDendrites(color_palette[1:])  
         
-        # Break the dendrite into points on the grid
-        self.discretize(1.0)
-        self.createPoints()
+        # Build compartments (this assumes compartments are line segments)
+        self.compartmentalizeLineSegments()
+        self.buildLineSegmentShortestPaths()
+        self.colorCompartments(color_palette[1:])
+        self.discretizeCompartments(1.0)
+        self.createPointsOnCompartments()
         self.establishPointSynapses()
-        
-        # Build compartments
-        self.compartments_as_line_segments = compartments_as_line_segments
-        if compartments_as_line_segments:
-            self.compartmentalizeLineSegments()
-            self.buildLineSegmentShortestPaths()
-            self.colorCompartments(color_palette[1:])
+        self.establishCompartmentSynapses()
         
         # Establish variables needed for activity
         self.decay_rate         = decay_rate
@@ -88,9 +85,6 @@ class StarburstMorphology(object):
         self.diffusion_strength = diffusion_strength
         self.establisthLineSegmentDiffusionWeights()
         
-        # Old compartmentalization functions
-        # self.buildCompartmentBoundingPolygons()
-        # self.establishCompartmentSynapses()
     
     def grow(self):
         
@@ -185,11 +179,21 @@ class StarburstMorphology(object):
     def discretize(self, delta):
         for dendrite in self.master_dendrites:
             dendrite.discretize(delta=delta)
+            
+    def discretizeCompartments(self, delta):
+        for compartment in self.master_compartments:
+            compartment.discretize(delta=delta)
     
     def createPoints(self):
         self.points = []
         for dendrite in self.master_dendrites:
             dendrite.createPoints(self.location, 0.0)
+            
+    def createPointsOnCompartments(self):
+        self.points = []
+        for compartment in self.master_compartments:
+            compartment.createPoints(self.location, 0.0)
+    
     
     def buildLineSegmentShortestPaths(self):
         distance_adjacency = []
@@ -462,6 +466,23 @@ class StarburstMorphology(object):
         print "Linear Distance from Soma to Centroid:\t\t\t{0:.3f}".format(soma_to_average)
         print "Linear Distance from Soma to Centroid Normalized by Radius:\t{0:.3%}".format(soma_to_average_fraction)
         print
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###############################################################################
+# Old functions that may get retired soon
+###############################################################################
 
     def animateCompartments(self, surface):
         compartments_to_draw = self.master_compartments[:]

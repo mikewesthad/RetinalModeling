@@ -27,7 +27,7 @@ screen_mid = screen_size/(2.0 * scale)
 starburst_morphology = StarburstMorphology(retina, visualize_growth=False, color_palette=palette,
                                            display=display, draw_location=screen_mid,
                                            scale=scale,
-                                           average_wirelength=150*UM_TO_M)
+                                           average_wirelength=100*UM_TO_M)
 
 # Build a unique starburst cell using the morphology
 scale = 2.0
@@ -108,10 +108,10 @@ starburst.initializeActivties()
 
 compartments = starburst.morphology.compartments
 number_compartments = len(compartments)
-for i in range(number_compartments):
-    starburst.activities[0][0, i] = 1.0
+#for i in range(number_compartments):
+#    starburst.activities[0][0, i] = 1.0
     
-#starburst.activities[0][0, 0] = 1.0
+starburst.activities[0][0, 0] = 1.0
 #starburst.activities[0][0, 300] = 1.0
 #starburst.activities[0][0, 301] = 1.0
 #starburst.activities[0][0, 302] = 1.0
@@ -124,7 +124,7 @@ for i in range(number_compartments):
 for i in range(starburst.history_size-1):
     starburst.updateActivity()
     
-#    starburst.activities[0][0, 0] = 1.0
+    starburst.activities[0][0, 0] = 1.0
 #    starburst.activities[0][0, 300] = 1.0
 #    starburst.activities[0][0, 301] = 1.0
 #    starburst.activities[0][0, 302] = 1.0
@@ -145,6 +145,10 @@ max_activity = np.amax(starburst.activities)
         
 running = True
 auto = True
+frame_change = True
+scale = 2.0
+screen_mid = screen_size/(2.0 * scale)
+starburst.location = screen_mid
 clock = pygame.time.Clock()
 while running:
     display.fill((0,0,255))
@@ -158,35 +162,39 @@ while running:
             if event.key == K_LEFT:
                 time += 1
                 if time > max_time: time = 0
+                frame_change = True
             if event.key == K_RIGHT:
                 time -= 1
                 if time < 0: time = max_time
+                frame_change = True
             if event.key == K_SPACE:
                 auto = not(auto)
-            for i in range(number_compartments):
-                compartment = compartments[i]
-                activity    = starburst.activities[time][0, i]
-                percent     = activity/float(max_activity)
-                new_color = (int(percent*255),int(percent*255),int(percent*255))
-                compartment.color = new_color
-        
+            elif event.key == K_DOWN:
+                scale -= 1.0
+                screen_mid = screen_size/(2.0 * scale)
+                starburst.location = screen_mid
+            elif event.key == K_UP:
+                scale += 1.0
+                screen_mid = screen_size/(2.0 * scale)
+                starburst.location = screen_mid
                 
-    if auto:
+    if frame_change == True:
         print "Timestep\t{0}\n".format(max_time-time),
         print "Total Activity\t{0:.3f}\n".format(np.sum(starburst.activities[time])),
         print "Max Activity\t{0:.3f}\n".format(max_activity)
-        
         for i in range(number_compartments):
-            compartment = compartments[i]
-            activity    = starburst.activities[time][0, i]
-            percent     = activity/float(max_activity)
-            new_color = (int(percent*255),int(percent*255),int(percent*255))
-            compartment.color = new_color
-        
+            compartment         = compartments[i]
+            activity            = starburst.activities[time][0, i]
+            percent             = activity/float(max_activity)
+            new_color           = (int(percent*255),int(percent*255),int(percent*255))
+            compartment.color   = new_color
+        frame_change = False
+                
+    if auto:        
         time -= 1
         if time < 0: time = max_time
-        
-        clock.tick(5)
+        frame_change = True
+        clock.tick(10)
         
     
     starburst.draw(display, scale=scale, draw_compartments=True)   

@@ -62,7 +62,7 @@ class DendriteSegment:
     def compartmentalizeLineSegments(self, compartment, index=0, prior_compartments=[]): 
         
         # Compartment takes 1 line segment and then it is full
-        compartment.points = [self.locations[index], self.locations[index+1]]
+        compartment.line_points = [self.locations[index], self.locations[index+1]]
         compartment.proximal_neighbors.extend(prior_compartments)
         
         # Increment index and check flags
@@ -393,14 +393,6 @@ class DendriteSegment:
             child1, child2 = self.children
             child1.createPoints(last_location, wirelength_to_last)
             child2.createPoints(last_location, wirelength_to_last)
-            
-    def rescale(self, scale_factor):
-        for i in range(len(self.locations)):
-            self.locations[i] *= scale_factor
-        for i in range(len(self.gridded_locations)):
-            self.gridded_locations[i] *= scale_factor
-        for i in range(len(self.points)):
-            self.points[i].location = self.points[i].location * scale_factor
     
     """
     Visualization function
