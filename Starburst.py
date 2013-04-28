@@ -53,7 +53,7 @@ class Starburst(object):
             
             # Difference in activity between current component and everyone else
             differences = (compartment_activity - last_activity) 
-            differences *= self.diffusion_strength            
+#            differences *= self.diffusion_strength            
             differences *= self.diffusion_weights[compartment, :]      
                         
             # Zero out negative differences

@@ -1,57 +1,93 @@
 import numpy as np
 
-activities  = np.array([0, 0, 0, 0, 10, 0, 0, 0], dtype=np.float64)
-components  = np.shape(activities)[0]
 
-# Create a distance matrix where nearest neighbors have a distance of 0
+# Generate a larger activities list for time testing
+components = 1000
+lst = []
+import random
+for x in range(components):
+    lst.append(random.randint(0,1))
+activities = np.array(lst, dtype=np.float64)
+activities.shape = (1, components)
+initial_activities = activities
+
+#initial_activities = np.array([[0, 0, 0, 0, 10, 0, 0, 0]], dtype=np.float64)
+#components  = np.shape(initial_activities)[1]
+
+# Create a distance matrix
 distance = np.zeros((components, components))
 for x in range(components):
     for y in range(components):
-        distance[x,y] = abs(x-y) - 1
+        distance[x,y] = abs(x-y)
 
 # Create a weight matrix...
 #   Each row represents a components output weights
 #   Each row is a gaussian over distance where the nearest neighbor has a distance of 0
 #   The guassian is normalized so that the sum is 1.0
-width           = 0.25
+width           = 1
 weights         = np.exp(-distance**2.0/(2.0*width**2.0))
 row_sum         = np.sum(weights, 1)
 row_sum.shape   = (components, 1)
 weights         /= row_sum
 
 np.set_printoptions(precision=3, suppress=True, linewidth=300)
-print weights
-print activities, np.sum(activities)
+#print weights
+#print initial_activities, np.sum(initial_activities)
 
-diffusion_strength = 0.5
-debug = False
-for x in range(10):
+timesteps = 1000
+
+import time
+start = time.clock()
+activities = initial_activities
+for x in range(timesteps):
     
     new_activities = np.zeros(activities.shape)
     for component in range(components):
         
         # Current component's activity
-        component_activity = activities[component]
+        component_activity = activities[0, component]
         
         # Difference in activity between current component and everyone else
         differences = (component_activity - activities) 
-        differences *= diffusion_strength  
-        differences *= weights[component, :]          
+#        differences *= diffusion_strength  
+        differences *= weights[component, :]    
         
         # Zero out negative differences
         negative_difference_indicies = differences < 0
-        differences[negative_difference_indicies] = 0
+        differences[negative_difference_indicies] = 0  
+        
+#        print differences
         
         # Update the activity values
         total_differences = np.sum(differences)
         if (total_differences > 0):            
             new_activities += differences
-            new_activities[component] += component_activity - total_differences
+            new_activities[0, component] += component_activity - total_differences
         else:
-            new_activities[component] += component_activity
+            new_activities[0, component] += component_activity
         
     activities = new_activities
-    print activities, sum(activities)
+#    print x+1, activities, np.sum(activities)
+
+print time.clock() - start
+print np.sum(activities)
+
+
+activities = initial_activities
+
+start = time.clock()
+for x in range(timesteps):
+    differences = activities.T - activities
+    differences = differences * weights
+    negative_difference_indicies = differences < 0
+    differences[negative_difference_indicies] = 0
+    self_activities = activities - np.sum(differences, 1)
+    activities = np.sum(differences, 0) + self_activities
+    activities.shape = (1, components) 
+#    print x+1, activities, np.sum(activities)
+
+print time.clock() - start
+print np.sum(activities)
             
 
 
