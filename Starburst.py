@@ -45,30 +45,39 @@ class Starburst(object):
         del self.activities[-1]
         last_activity = self.activities[0]
         
-        new_activities = np.zeros(last_activity.shape)
-        for compartment in range(self.number_compartments):
-            
-            # Current component's activity
-            compartment_activity = last_activity[0,compartment]
-            
-            # Difference in activity between current component and everyone else
-            differences = (compartment_activity - last_activity) 
-#            differences *= self.diffusion_strength            
-            differences *= self.diffusion_weights[compartment, :]      
-                        
-            # Zero out negative differences
-            negative_difference_indicies = differences < 0
-            differences[negative_difference_indicies] = 0
-            
-            # Update the activity values
-            total_differences = np.sum(differences)
-            if (total_differences > 0):            
-                new_activities += differences
-                new_activities[0,compartment] += compartment_activity - total_differences
-            else:
-                new_activities[0,compartment] += compartment_activity
-            
-        new_activity = new_activities
+        
+        differences = last_activity.T - last_activity
+        differences = differences * self.diffusion_weights
+        negative_difference_indicies = differences < 0
+        differences[negative_difference_indicies] = 0
+        self_activities = last_activity - np.sum(differences, 1)
+        new_activity = np.sum(differences, 0) + self_activities
+        new_activity.shape = (1, self.number_compartments) 
+        
+#        new_activities = np.zeros(last_activity.shape)
+#        for compartment in range(self.number_compartments):
+#            
+#            # Current component's activity
+#            compartment_activity = last_activity[0,compartment]
+#            
+#            # Difference in activity between current component and everyone else
+#            differences = (compartment_activity - last_activity) 
+##            differences *= self.diffusion_strength            
+#            differences *= self.diffusion_weights[compartment, :]      
+#                        
+#            # Zero out negative differences
+#            negative_difference_indicies = differences < 0
+#            differences[negative_difference_indicies] = 0
+#            
+#            # Update the activity values
+#            total_differences = np.sum(differences)
+#            if (total_differences > 0):            
+#                new_activities += differences
+#                new_activities[0,compartment] += compartment_activity - total_differences
+#            else:
+#                new_activities[0,compartment] += compartment_activity
+#            
+#        new_activity = new_activities
         
 #        # Calculate the diffusion
 #        d = self.decay_rate
