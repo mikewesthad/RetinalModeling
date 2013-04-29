@@ -15,7 +15,7 @@ class StarburstMorphology(object):
     def __init__(self, retina, location=Vector2D(0.0, 0.0), average_wirelength=150*UM_TO_M, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=15*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
-                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=10*UM_TO_M,
+                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=45*UM_TO_M,
                  diffusion_strength=1.0, decay_rate=0.1, input_strength=0.0,
                  color_palette=GOLDFISH, draw_location=Vector2D(0.0,0.0), visualize_growth=True, scale=1.0,
                  display=None):
@@ -270,7 +270,7 @@ class StarburstMorphology(object):
         for i in range(len(self.compartments)):
             compartment = self.compartments[i]
             diffusion   = self.diffusion_weights[selected_compartment,i]
-            max_diffusion = np.sum(self.diffusion_weights[selected_compartment,:])
+            max_diffusion = np.max(self.diffusion_weights[selected_compartment,:])
             percent     = diffusion/float(max_diffusion)
             
             new_color = (int(percent*255),int(percent*255),int(percent*255))

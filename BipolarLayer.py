@@ -2,7 +2,7 @@ import random
 import math as m
 import numpy as np
 from Constants import *
-
+from Vector2D import Vector2D
 
 class BipolarLayer:
     
@@ -36,11 +36,30 @@ class BipolarLayer:
         # Hack to keep the structure of IDs = "x.y" (current visualization needs IDs of this structure)
         self.triad_locations = {}
         
-        
+#        self.calculateReceptiveFieldPoints()
+#        print len(self.receptive_field_points)
+#        dfs
         self.initializeActivties()
         self.establishInputs()
-        
-        
+    
+    
+    def calculateReceptiveFieldPoints(self):
+        self.receptive_field_points = set()
+        center = Vector2D(0.0, 0.0)
+        radius = self.output_field_radius_gridded
+        for dx in range(int(radius)):
+            for dy in range(int(radius)):
+                new_position = Vector2D(dx, dy)
+                if center.distanceTo(new_position) < radius:
+                    self.receptive_field_points.add(new_position.toTuple())
+                    
+                    
+    
+    def registerWithRetina(self):
+        for loc_ID in self.triad_locations:
+            neuron_x, neuron_y = map(float, loc_ID.split("."))
+            compartment.registerWithRetina(self, self.layer_depth)
+            
     def __str__(self):
         string = ""
         string += "Bipolar " + self.bipolar_type + " Layer\n"
