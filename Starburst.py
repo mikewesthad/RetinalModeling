@@ -45,49 +45,44 @@ class Starburst(object):
         del self.activities[-1]
         last_activity = self.activities[0]
         
-        
+        # Create the activity difference matrix where:
+        #   Dij = compartment i activity - compartment j activity
+        #   This matrix describes the concentration gradient
         differences = last_activity.T - last_activity
+        
+        # Weight the difference matrix according to the distance between compartments
+        # This amounts to multiplying each compartment's differences with a 
+        # gaussian defined by distance between compartments.  The gaussian has 
+        # been normalized so that its integral is 1.0.  This ensures that each 
+        # compartment can only send as much concentration as it currently has.
         differences = differences * self.diffusion_weights
+        
+        # Zero out any elements in the difference matrix that are less than zero.
+        # The upper triangle of the matrix is equal to the negative of the lower
+        # triangle, so we only need to worry about the positive half of the matrix.
         negative_difference_indicies = differences < 0
         differences[negative_difference_indicies] = 0
-        self_activities = last_activity - np.sum(differences, 1)
-        new_activity = np.sum(differences, 0) + self_activities
-        new_activity.shape = (1, self.number_compartments) 
         
-#        new_activities = np.zeros(last_activity.shape)
-#        for compartment in range(self.number_compartments):
-#            
-#            # Current component's activity
-#            compartment_activity = last_activity[0,compartment]
-#            
-#            # Difference in activity between current component and everyone else
-#            differences = (compartment_activity - last_activity) 
-##            differences *= self.diffusion_strength            
-#            differences *= self.diffusion_weights[compartment, :]      
-#                        
-#            # Zero out negative differences
-#            negative_difference_indicies = differences < 0
-#            differences[negative_difference_indicies] = 0
-#            
-#            # Update the activity values
-#            total_differences = np.sum(differences)
-#            if (total_differences > 0):            
-#                new_activities += differences
-#                new_activities[0,compartment] += compartment_activity - total_differences
-#            else:
-#                new_activities[0,compartment] += compartment_activity
-#            
-#        new_activity = new_activities
+        # Find the amount of concentration that each compartment has left after
+        # this step of diffusion
+        self_activities = last_activity - np.sum(differences, 1)
+        
+        # Add the up the concentration passed to each compartment and the amount 
+        # of charge left after diffusion 
+        diffusionActivity = np.sum(differences, 0) + self_activities
+        
+        # np.sum removes a dimension, so let's restore it.
+        diffusionActivity.shape = (1, self.number_compartments) 
         
 #        # Calculate the diffusion
-#        d = self.decay_rate
-#        diffusionActivity = (1.0-d) * np.dot(last_activity, self.diffusion_weights)
+        d = self.decay_rate
+        diffusionActivity = (1.0-d) * diffusionActivity
 #        
 #        # Get the bipolar activity
 #        
 #        # Find the new activity
-#        i = self.input_strength
-#        new_activity = (1.0-i) * diffusionActivity #+ i * bipolar_inputs
+        i = self.input_strength
+        new_activity = (1.0-i) * diffusionActivity #+ i * bipolar_inputs
         
         # Add the most recent activity to the front of the list
         self.activities.insert(0, new_activity)
