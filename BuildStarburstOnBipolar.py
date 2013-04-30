@@ -65,7 +65,7 @@ output_field_radius = 10 * UM_TO_M
 
 retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius, 
                          output_field_radius)
-
+retina.on_bipolar_layer.updateActivity()
 
 # Build a display
 palette     = OCEAN_FIVE

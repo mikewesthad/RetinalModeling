@@ -13,20 +13,28 @@ class Compartment:
         self.retina     = neuron.retina
         
         self.gridded_locations  = []
-        self.points             = [] 
         
         self.neurotransmitters_input_weights    = {}
         self.neurotransmitters_output_weights   = {}
         
-        self.bounding_polygon = []
-        
         self.index = len(self.neuron.compartments)
         self.neuron.compartments.append(self)
         
+        self.potential                  = 0.0
+        self.neurotransmitter_outputs   = {}        
+        
         self.color = (randint(100,255),randint(100,255),randint(100,255))
         
-    def updateActivity(self):
+    def updatePotential(self):
         pass
+    
+    def updateNeurotransmitterOutputs(self):
+        self.neurotransmitter_outputs = {}
+        for nt in self.neurotransmitters_output_weights:
+            weight = self.neurotransmitters_output_weights[nt]
+            output = weight * self.neuron.potentialToNeurotransmitter(self.potential)
+            self.neurotransmitter_outputs = {nt:output}
+            
     
     """
     Find the per-point amount of neurotransmitter accepted/released - essentially
@@ -73,6 +81,7 @@ class GrowingCompartment(Compartment):
         self.proximal_neighbors = []
         self.distal_neighbors   = []
         self.line_points        = []
+        self.points             = [] 
         
     def discretize(self, delta=1.0, range_deltas=[], parent_locations=[]):        
         if range_deltas == []:

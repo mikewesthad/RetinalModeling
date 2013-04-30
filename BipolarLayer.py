@@ -70,12 +70,6 @@ class BipolarLayer:
     def draw(self, surface, scale=1.0):
         for compartment in self.compartments:
             compartment.draw(surface, scale=scale)
-                
-    
-    def registerWithRetina(self):
-        for loc_ID in self.triad_locations:
-            neuron_x, neuron_y = map(float, loc_ID.split("."))
-            compartment.registerWithRetina(self, self.layer_depth)
             
     def __str__(self):
         string = ""
@@ -85,7 +79,16 @@ class BipolarLayer:
         string += "\nMinimum Required Density (cells/mm^2)\t"+str(self.minimum_required_density)
         string += "\nNumber of Neurons\t\t\t"+str(self.neurons)
         string += "\nInput Delay (timesteps)\t\t\t"+str(self.input_delay)
-        return string    
+        return string
+        
+    def neurotransmitterToPotential(self, nt):
+        if nt < 0: return -1.0
+        if nt > 1: return 1.0
+        return (nt*2.0)-1.0
+    def potentialToNeurotransmitter(self, pt):
+        if pt < -1: return 0.0
+        if pt > 1: return 1.0
+        return (pt+1.0)/2.0
             
     def updateActivity(self):
 
@@ -115,6 +118,8 @@ class BipolarLayer:
                 bipolar_activity += triad_weight * triad_activity
             
             currentActivities[0, n] = bipolar_activity
+            self.compartments[n].potential = bipolar_activity
+            self.compartments[n].updateNeurotransmitterOutputs()
         
         self.activities.insert(0, currentActivities)
         
