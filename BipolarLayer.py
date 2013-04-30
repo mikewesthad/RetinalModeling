@@ -2,12 +2,13 @@ import random
 import math as m
 import numpy as np
 from Constants import *
+from Compartment import Compartment
 from Vector2D import Vector2D
 
 class BipolarLayer:
     
     def __init__(self, retina, bipolar_type, cone_layer, horizontal_layer, history_size,
-                 input_delay, nearest_neighbor_distance, minimum_required_density,
+                 input_delay, layer_depth, nearest_neighbor_distance, minimum_required_density,
                  input_field_radius, output_field_radius):
                      
         self.retina             = retina
@@ -17,6 +18,7 @@ class BipolarLayer:
 
         self.history_size   = history_size
         self.input_delay    = input_delay
+        self.layer_depth    = layer_depth
     
         self.nearest_neighbor_distance          = nearest_neighbor_distance
         self.nearest_neighbor_distance_gridded  = nearest_neighbor_distance / retina.grid_size
@@ -36,9 +38,8 @@ class BipolarLayer:
         # Hack to keep the structure of IDs = "x.y" (current visualization needs IDs of this structure)
         self.triad_locations = {}
         
-#        self.calculateReceptiveFieldPoints()
-#        print len(self.receptive_field_points)
-#        dfs
+        self.calculateReceptiveFieldPoints()
+        self.compartmentalize()
         self.initializeActivties()
         self.establishInputs()
     
@@ -47,13 +48,29 @@ class BipolarLayer:
         self.receptive_field_points = set()
         center = Vector2D(0.0, 0.0)
         radius = self.output_field_radius_gridded
-        for dx in range(int(radius)):
-            for dy in range(int(radius)):
+        for dx in range(-int(radius),int(radius)+1):
+            for dy in range(-int(radius),int(radius)+1):
                 new_position = Vector2D(dx, dy)
                 if center.distanceTo(new_position) < radius:
-                    self.receptive_field_points.add(new_position.toTuple())
+                    self.receptive_field_points.add(new_position)
                     
-                    
+    def compartmentalize(self):
+        self.compartments = []
+        for neuron in range(self.neurons):
+            neuron_x, neuron_y = self.locations[neuron]
+            neuron_center = Vector2D(neuron_x, neuron_y)
+            compartment = Compartment(self)
+            compartment.neurotransmitters_output_weights = {GLU:1.0}
+            for point in self.receptive_field_points:
+                point = point + neuron_center
+                if self.retina.isPointWithinBounds(point):
+                    compartment.gridded_locations.append(point)
+            compartment.registerWithRetina(self, self.layer_depth)
+            
+    def draw(self, surface, scale=1.0):
+        for compartment in self.compartments:
+            compartment.draw(surface, scale=scale)
+                
     
     def registerWithRetina(self):
         for loc_ID in self.triad_locations:

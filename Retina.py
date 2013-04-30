@@ -53,15 +53,13 @@ class Retina:
         self.layers = []
         grid = {}
         self.layers.append(grid)
-    
-    def drawGrid(self, surface, depth):
-        for x in range(self.grid_width):
-            for y in range(self.grid_width):
-                key = (x, y)
-                if key in self.layers[depth]:
-                    elements = self.layers[depth][key]
-                    for neuron, compartment in elements:
-                        surface.set_at(key, compartment.color)        
+        
+    def isPointWithinBounds(self, point):
+        if point.x < 0: return False
+        if point.y < 0: return False
+        if point.x > self.grid_width: return False
+        if point.y > self.grid_height: return False
+        return True      
     
     def register(self, neuron, compartment, depth, location):
         key = location.toIntTuple()
@@ -221,13 +219,14 @@ class Retina:
     """
     def buildBipolarLayer(self, minimum_distance, minimum_density, input_field_radius, output_field_radius):
         input_delay = 1
+        layer_depth = 0
         start_time = clock()
         self.on_bipolar_layer = BipolarLayer(self, "On", self.cone_layer, self.horizontal_layer,
-                                             self.history_size, input_delay,
+                                             self.history_size, input_delay, layer_depth,
                                              minimum_distance, minimum_density,
                                              input_field_radius, output_field_radius)
         self.off_bipolar_layer = BipolarLayer(self, "Off", self.cone_layer, self.horizontal_layer,
-                                              self.history_size, input_delay,
+                                              self.history_size, input_delay, layer_depth,
                                               minimum_distance, minimum_density,
                                               input_field_radius, output_field_radius)
         print "On and Off Bipolar Layers Construction Time:", clock() - start_time

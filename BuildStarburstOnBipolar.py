@@ -1,6 +1,9 @@
+import pygame
+from pygame.locals import *
 from BarStimulus import BarStimulus
 from RuntimeBarGenerator import RuntimeBarGenerator
 from Retina import Retina
+from Vector2D import Vector2D
 from Constants import *
 
 
@@ -63,3 +66,17 @@ output_field_radius = 10 * UM_TO_M
 retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius, 
                          output_field_radius)
 
+
+# Build a display
+palette     = OCEAN_FIVE
+background  = palette[0]
+screen_size = Vector2D(800, 800)
+display     = pygame.display.set_mode(screen_size.toIntTuple())
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            running = False
+    display.fill(palette[0])
+    retina.on_bipolar_layer.draw(display, scale=2.0)
+    pygame.display.update()
