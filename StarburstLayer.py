@@ -4,6 +4,7 @@ import math as m
 import numpy as np
 import pygame
 from pygame import *
+from StarburstMorphology import StarburstMorphology
 from Starburst import Starburst
 from Constants import *
 from Vector2D import *
@@ -11,17 +12,15 @@ from Vector2D import *
 
 class StarburstLayer:
     
-    def __init__(self, retina, starburst_type, bipolar_layer, layer_depth, history_size,
+    def __init__(self, retina, starburst_type, layer_depth, history_size,
                  input_delay, nearest_neighbor_distance, minimum_required_density,
-                 number_morphologies=3, visualize_growth=True, display=None):
+                 number_morphologies=3, visualize_growth=False, display=None):
                      
         self.retina             = retina
-        self.bipolar_layer      = bipolar_layer
         self.starburst_type     = starburst_type
         self.layer_depth        = layer_depth
-
-        self.history_size   = history_size
-        self.input_delay    = input_delay
+        self.history_size       = history_size
+        self.input_delay        = input_delay
     
         self.nearest_neighbor_distance = nearest_neighbor_distance / retina.grid_size
         
@@ -31,33 +30,24 @@ class StarburstLayer:
         print "Placing somas..."
         self.placeNeurons()
         self.neurons = len(self.locations)
-        print "Placed"
+        print "Done"
         
-        print "Growing cells..."
-        unique_morphologies = []
+        print "Growing morpholgies..."
+        morphologies = []
         for i in range(number_morphologies):
-            unique_starburst = Starburst(retina, self.locations[i], layer=self, 
-                                         visualize_growth=visualize_growth,
-                                         display=display)
-            unique_morphologies.append(unique_starburst)
-            print "Generated {0} of {1} unique cells".format(i+1, number_morphologies)
-        print "Grown"
+            morphology = StarburstMorphology(retina, history_size=history_size,
+                                             visualize_growth=visualize_growth,
+                                             display=display)
+            morphologies.append(morphology)
+            print "Generated {0} of {1} morpholgies".format(i+1, number_morphologies)
+        print "Done"
         
-        print "Copying cells..."
+        print "Intantiating starbursts..."
         self.starburst_cells = set()
         for i in range(self.neurons):
-            start_time = clock()
-            unique_starburst = choice(unique_morphologies)
-            starburst_copy = unique_starburst.createCopy()
-            new_location = self.locations[i]
-            starburst_copy.moveTo(new_location)
-            self.starburst_cells.add(starburst_copy)
-            if visualize_growth: 
-                self.draw(display)
-                pygame.display.update()
-            elapsed_time = clock() - start_time
-            print "Copied {0} of {1} unique cells in {2} seconds".format(i+1, self.neurons, elapsed_time)
-        print "Copied"
+#            starburst = 
+            print "Created {0} of {1} unique starbursts".format(i+1, self.neurons)
+        print "Done"
         
         
         self.inputs = {}

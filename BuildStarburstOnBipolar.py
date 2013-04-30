@@ -66,38 +66,43 @@ output_field_radius = 10 * UM_TO_M
 
 retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius, 
                          output_field_radius)
-                        
-                        
-# Build a display
-palette     = OCEAN_FIVE
-background  = palette[0]
-screen_size = Vector2D(800, 800)
-display     = pygame.display.set_mode(screen_size.toIntTuple()) 
-    
-s = retina.addStarburst()
-s.drawInputs(display, 0)
 
-running = True
-next_frame = True
-while running:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            running = False  
-        if event.type == KEYDOWN:
-            next_frame = True
-            
-    if next_frame:
-        scale = 2.0
-        display.fill(background)
-        retina.on_bipolar_layer.draw(display)
-        for i in s.morphology.compartments:
-            i.color = (0,0,0)
-        s.draw(display, draw_compartments=True)
-        s.drawInputs(display, randint(0, len(s.morphology.compartments)-1))
-        next_frame = False
-        
-    
-    pygame.display.update()
+# Build the starburst layer
+starburst_distance = 50 * UM_TO_M
+starburst_density  = 1000.0
+
+retina.buildStarburstLayer(starburst_distance, starburst_density)
+                        
+## Build a display
+#palette     = OCEAN_FIVE
+#background  = palette[0]
+#screen_size = Vector2D(800, 800)
+#display     = pygame.display.set_mode(screen_size.toIntTuple()) 
+#    
+#s = retina.addStarburst()
+#s.drawInputs(display, 0)
+#
+#running = True
+#next_frame = True
+#while running:
+#    for event in pygame.event.get():
+#        if event.type == QUIT:
+#            running = False  
+#        if event.type == KEYDOWN:
+#            next_frame = True
+#            
+#    if next_frame:
+#        scale = 2.0
+#        display.fill(background)
+#        retina.on_bipolar_layer.draw(display)
+#        for i in s.morphology.compartments:
+#            i.color = (0,0,0)
+#        s.draw(display, draw_compartments=True)
+#        s.drawInputs(display, randint(0, len(s.morphology.compartments)-1))
+#        next_frame = False
+#        
+#    
+#    pygame.display.update()
 
                      
 #    

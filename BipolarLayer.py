@@ -4,6 +4,7 @@ import numpy as np
 import pygame
 from Constants import *
 from Compartment import Compartment
+from Bipolar import Bipolar
 from Vector2D import Vector2D
 
 class BipolarLayer:
@@ -32,19 +33,33 @@ class BipolarLayer:
         self.input_field_radius_gridded     = input_field_radius / retina.grid_size
         self.output_field_radius            = output_field_radius
         self.output_field_radius_gridded    = output_field_radius / retina.grid_size
-        
+                
         self.placeNeurons()
-        self.neurons = len(self.locations)
-        
-        # Hack to keep the structure of IDs = "x.y" (current visualization needs IDs of this structure)
-        self.triad_locations = {}
+        self.number_neurons = len(self.locations)
+        self.neurons = []
+        for location in self.locations:
+            neuron = Bipolar(self, Vector2D(location[0], location[1]))            
+            self.neurons.append(neuron)
         
         self.calculateReceptiveFieldPoints()
         self.compartmentalize()
-        self.initializeActivties()
+        
+        # Hack to keep the structure of IDs = "x.y" (current visualization needs IDs of this structure)
+        self.triad_locations = {}
+        self.number_triads = len(self.cone_layer.locations)        
+        for triad_number in range(self.number_triads):                
+            triad_x, triad_y    = self.cone_layer.locations[triad_number]
+            triad_ID            = str(triad_x)+"."+str(triad_y)
+            self.triad_locations[triad_ID] = triad_number 
+        
+        self.compartmentalize()
         self.establishInputs()
     
     
+    def establishInputs(self):
+        for neuron in self.neurons:
+            neuron.establishInputs()
+            
     def calculateReceptiveFieldPoints(self):
         self.receptive_field_points = set()
         center = Vector2D(0.0, 0.0)
@@ -56,17 +71,11 @@ class BipolarLayer:
                     self.receptive_field_points.add(new_position)
                     
     def compartmentalize(self):
-        self.compartments = []
-        for neuron in range(self.neurons):
-            neuron_x, neuron_y = self.locations[neuron]
-            neuron_center = Vector2D(neuron_x, neuron_y)
-            compartment = Compartment(self)
-            compartment.neurotransmitters_output_weights = {GLU:1.0}
-            for point in self.receptive_field_points:
-                point = point + neuron_center
-                if self.retina.isPointWithinBounds(point):
-                    compartment.gridded_locations.append(point)
-            compartment.registerWithRetina(self, self.layer_depth)
+        self.compartment = Compartment(self)
+        self.compartment.neurotransmitters_output_weights = {GLU:1.0}
+        self.compartment.gridded_locations = self.receptive_field_points
+        for neuron in self.neurons:
+            neuron.compartmentalize(self.compartment)
             
     def draw(self, surface, scale=1.0):
         for neuron in range(self.neurons):
@@ -94,84 +103,12 @@ class BipolarLayer:
         if pt > 1: return 1.0
         return (pt+1.0)/2.0
             
-    def updateActivity(self):
-
-        del self.activities[-1]
-        currentActivities = np.zeros((1, self.neurons))
-        
+    def update(self):
         cone_activities         = self.cone_layer.activities[self.input_delay]
         horizontal_activities   = self.horizontal_layer.activities[self.input_delay]
         
-        for n in range(self.neurons):
-            x, y                = self.locations[n]
-            loc_ID              = str(x)+"."+str(y)
-            connected_triads    = self.inputs[loc_ID]
-            bipolar_activity    = 0.0
-            
-            for triad in connected_triads:
-                triad_ID, triad_weight  = triad
-                triad_number            = self.triad_locations[triad_ID]
-                cone_activity           = cone_activities[0, triad_number]
-                horizontal_activity     = horizontal_activities[0, triad_number]
-                
-                if self.bipolar_type == "On":
-                    triad_activity = -(cone_activity - horizontal_activity)/2.0  
-                else: 
-                    triad_activity = (cone_activity - horizontal_activity)/2.0
-                
-                bipolar_activity += triad_weight * triad_activity
-            
-            currentActivities[0, n] = bipolar_activity
-            self.compartments[n].updatePotential(bipolar_activity)
-            self.compartments[n].updateNeurotransmitterOutputs()
-        
-        self.activities.insert(0, currentActivities)
-        
-        return currentActivities
-    
-    """
-    Hacked
-    """
-    def establishInputs(self):
-        self.inputs = {}
-        radius = self.input_field_radius_gridded
-        number_triads = len(self.cone_layer.locations)
-        for x, y in self.locations:
-            
-            connected_triads = []
-            for triad_number in range(number_triads):                
-                triad_x, triad_y = self.cone_layer.locations[triad_number]
-                if linearDistance(x, y, triad_x, triad_y) < radius:
-                    triad_ID        = str(triad_x)+"."+str(triad_y)
-                    triad_weight    = 1.0
-                    self.triad_locations[triad_ID] = triad_number                    
-                    connected_triads.append([triad_ID, triad_weight])
-            
-            loc_ID = str(x)+"."+str(y)
-            if connected_triads == []: 
-                self.inputs[loc_ID] = []
-            else:
-                connected_triads    = self.inputWeightingFunction(connected_triads)
-                self.inputs[loc_ID] = connected_triads
-
-    def inputWeightingFunction(self, inputs):
-        weight_sum = 0.0
-        
-        for i in range(len(inputs)):
-            input_ID, input_weight = inputs[i]
-            weight_sum += input_weight
-            
-        for i in range(len(inputs)):
-            input_weight = inputs[i][1]
-            input_weight /= weight_sum
-            inputs[i][1] = input_weight
-        return inputs
-        
-        
-    def initializeActivties(self):
-        self.activities = []
-        for i in range(self.history_size):
-            self.activities.append(np.zeros((1, self.neurons)))   
+        for neuron in self.neurons:
+            neuron.update(cone_activities, horizontal_activities)
         
     """
     Nearest neighbor distance constrained placement of points

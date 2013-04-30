@@ -18,9 +18,6 @@ class Compartment:
         self.neurotransmitters_input_weights    = {}
         self.neurotransmitters_output_weights   = {}
         
-        self.index = len(self.neuron.compartments)
-        self.neuron.compartments.append(self)
-        
         self.potentials                 = []
         self.neurotransmitter_outputs   = []
         for history in range(self.history_size):
@@ -33,22 +30,22 @@ class Compartment:
         del self.potentials[-1]
         self.potentials.insert(0, new_potential)
     
-    def updateNeurotransmitterOutputs(self):
-        del self.neurotransmitter_outputs[-1]
-        
-        neurotransmitter_output = {}
+    def calculateNeurotransmitterOutputs(self, new_potential):
+        neurotransmitter_outputs = {}
         for nt in self.neurotransmitters_output_weights:
             weight = self.neurotransmitters_output_weights[nt]
-            output = weight * self.neuron.potentialToNeurotransmitter(self.potentials[0])
-            neurotransmitter_output[nt] = output
-        self.neurotransmitter_outputs.insert(0, neurotransmitter_output)
+            output = weight * self.neuron.layer.potentialToNeurotransmitter(new_potential)
+            neurotransmitter_outputs[nt] = output
+        return neurotransmitter_outputs
     
-    def draw(self, surface, scale=1.0):
-        for pt in self.gridded_locations:
-            pygame.draw.circle(surface, self.color, (pt*scale).toIntTuple(), 1)
+    def draw(self, neuron_location, surface, scale=1.0):
+        for point in self.gridded_locations:
+            point = (point + neuron_location) * scale
+            pygame.draw.circle(surface, self.color, point.toIntTuple(), 1)
     
     def registerWithRetina(self, neuron, layer_depth):
         for point in self.gridded_locations:
+            point = neuron.location + point
             self.retina.register(neuron, self, layer_depth, point)
     
     def getSize(self):
@@ -64,6 +61,9 @@ class GrowingCompartment(Compartment):
         self.distal_neighbors   = []
         self.line_points        = []
         self.points             = [] 
+        
+        self.index = len(self.neuron.compartments)
+        self.neuron.compartments.append(self)
         
     def discretize(self, delta=1.0, range_deltas=[], parent_locations=[]):        
         if range_deltas == []:

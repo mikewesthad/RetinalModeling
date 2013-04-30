@@ -64,6 +64,9 @@ class Retina:
         return True      
     
     def register(self, neuron, compartment, depth, location):
+        if not(self.isPointWithinBounds(location)):
+            return
+            
         key = location.toIntTuple()
         if key in self.layers[depth]:
             self.layers[depth][key].append((neuron, compartment))
@@ -81,27 +84,6 @@ class Retina:
             return overlap 
         return []
         
-        
-    
-    def buildStarburstLayer(self, nearest_neighbor_distance, minimum_required_density):
-        input_delay = 1
-        layer_depth = 0
-        start_time = clock()
-        self.on_starburst_layer = StarburstLayer(self, "On", None, layer_depth, 
-                                                 self.history_size, input_delay, 
-                                                 nearest_neighbor_distance,
-                                                 minimum_required_density,
-                                                 visualize_growth = True,
-                                                 display=self.display)
-                                                 
-        
-#        self.off_starburst_layer = StarburstLayer(self, "Off", None, layer_depth, 
-#                                                 self.history_size, input_delay,  
-#                                                 nearest_neighbor_distance,
-#                                                 minimum_required_density,
-#                                                 visualize_growth = False,
-#                                                 display=None)
-        print "On and Off Starburst Layers Construction Time", clock() - start_time
         
     def __str__(self):
         string = ""
@@ -205,19 +187,12 @@ class Retina:
             off_bipolar_activity = self.off_bipolar_layer.updateActivity()
             self.off_bipolar_activities.append(off_bipolar_activity)
 
-    """
-    Build the cone layer 
-    """
     def buildConeLayer(self, minimum_distance, minimum_density, input_field_size):
         start_time = clock()
         self.cone_layer = ConeLayer(self, minimum_distance, minimum_density,
                                     input_field_size, self.history_size, self.stimulus)
         print "Cone Layer Construction Time:", clock() - start_time
 
-
-    """
-    Build the horizontal layer 
-    """
     def buildHorizontalLayer(self, input_strength, decay_rate, diffusion_radius):
         input_delay = 1
         start_time = clock()
@@ -226,9 +201,6 @@ class Retina:
                                                 decay_rate, diffusion_radius)
         print "Horizontal Layer Construction Time:", clock() - start_time
 
-    """
-    Build the bipolar layer 
-    """
     def buildBipolarLayer(self, minimum_distance, minimum_density, input_field_radius, output_field_radius):
         input_delay = 1
         layer_depth = 0
@@ -242,3 +214,20 @@ class Retina:
                                               minimum_distance, minimum_density,
                                               input_field_radius, output_field_radius)
         print "On and Off Bipolar Layers Construction Time:", clock() - start_time
+    
+    def buildStarburstLayer(self, minimum_distance, minimum_density):
+        input_delay = 1
+        layer_depth = 0
+        start_time = clock()
+        self.on_starburst_layer = StarburstLayer(self, "On", layer_depth, 
+                                                 self.history_size, input_delay, 
+                                                 minimum_distance, minimum_density)
+                                                 
+        
+#        self.off_starburst_layer = StarburstLayer(self, "Off", None, layer_depth, 
+#                                                 self.history_size, input_delay,  
+#                                                 minimum_distance,
+#                                                 minimum_density,
+#                                                 visualize_growth = False,
+#                                                 display=None)
+        print "On and Off Starburst Layers Construction Time", clock() - start_time
