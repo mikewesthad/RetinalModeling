@@ -8,13 +8,10 @@ from Constants import *
 
 class Compartment:
 
-    def __init__(self, morphology):
-        self.morphology = morphology
-        self.retina     = morphology.retina
+    def __init__(self, neuron):
+        self.neuron     = neuron
+        self.retina     = neuron.retina
         
-        self.proximal_neighbors = []
-        self.distal_neighbors   = []
-        self.line_points        = []
         self.gridded_locations  = []
         self.points             = [] 
         
@@ -23,14 +20,116 @@ class Compartment:
         
         self.bounding_polygon = []
         
-        self.index = len(self.morphology.compartments)
-        self.morphology.compartments.append(self)
+        self.index = len(self.neuron.compartments)
+        self.neuron.compartments.append(self)
         
         self.color = (randint(100,255),randint(100,255),randint(100,255))
         
+    def updateActivity(self):
+        pass
+    
+    """
+    Finds the convex hull that bounds the points of the compartment
+    """
+    def buildBoundingPolgyon(self):
+        # Create a list of point locations
+        points_list = [pt.location.toTuple() for pt in self.points]
+        
+        # Calculate the centroid of the points
+        centroid = Vector2D(0.0, 0.0)
+        for point in self.points:
+            centroid += point.location
+        centroid /= len(self.points)
+        
+        # Before creating the convex hull, we need to make sure we have at least
+        # least 5 points
+        delta = 0.0
+        while len(points_list) <= 5:
+            for dx, dy in [(0.0,delta),(delta,0.0),(delta,delta)]:
+                for xsign, ysign in [(1.0,1.0),(-1.0,1.0),(1.0,-1.0),(-1.0,-1.0)]:
+                    new_point = centroid + Vector2D(dx*xsign, dy*ysign)
+                    if new_point.toTuple() not in points_list:
+                        points_list.append(new_point.toTuple())
+                        if len(points_list) > 5: break
+                if len(points_list) > 5: break
+            delta += 1.0
+            
+        # Create a (2 x m) array to be used by the numpy function        
+        points_array    = np.array(points_list).T
+        
+        # Calculate the hull points
+        hull_array      = convex_hull(points_array)
+        hull_points     = hull_array.tolist()
+        
+        # Store the results
+        self.bounding_polygon   = hull_points
+        self.centroid           = centroid   
+        
+    
+    """
+    Find the per-point amount of neurotransmitter accepted/released - essentially
+    smearing out the synapse properties of the points in the compartment
+    """
+    def buildNeurotransmitterWeights(self):
+        for point in self.points:
+            for nt in point.neurotransmitters_accepted:
+                if nt in self.neurotransmitters_input_weights:
+                    self.neurotransmitters_input_weights[nt] += 1.0
+                else:
+                    self.neurotransmitters_input_weights[nt] = 1.0
+                    
+            for nt in point.neurotransmitters_released:
+                if nt in self.neurotransmitters_output_weights:
+                    self.neurotransmitters_output_weights[nt] += 1.0
+                else:
+                    self.neurotransmitters_output_weights[nt] = 1.0
+        
+        number_points = len(self.points)
+        for nt in self.neurotransmitters_input_weights:
+            self.neurotransmitters_input_weights[nt] /= number_points
+        for nt in self.neurotransmitters_output_weights:
+            self.neurotransmitters_output_weights[nt] /= number_points
+
+    
+    def draw(self, surface, scale=1.0, draw_points=False, draw_text=False):
+        # This function assumes compartments are 1 line segment - check bottom 
+        # of file for old draw command
+        
+        if draw_points:
+            for point in self.points:
+                point.draw(surface, scale=scale)
+            return        
+            
+        # Draw convex hull
+        moved_polygon = []
+        for point in self.bounding_polygon:
+            new_x = (point[0] + self.morphology.location.x) * scale
+            new_y = (point[1] + self.morphology.location.y) * scale
+            moved_polygon.append([new_x, new_y])
+        pygame.draw.polygon(surface, self.color, moved_polygon)
+              
+    
+    def registerWithRetina(self, neuron, layer_depth):
+        for point in self.points:
+            location = point.location + neuron.location
+            self.retina.register(neuron, self, layer_depth, location)
+    
+    def getSize(self):
+        return len(self.points)
+        
+    
+
+class GrowingCompartment(Compartment):
+    def __init__(self, neuron):
+        Compartment.__init__(self, neuron)
+        
+        self.proximal_neighbors = []
+        self.distal_neighbors   = []
+        self.line_points        = []
+        
     def discretize(self, delta=1.0, range_deltas=[], parent_locations=[]):        
         if range_deltas == []:
-            range_deltas = np.arange(0.0, self.morphology.step_size, delta) 
+            range_deltas = np.arange(0.0, self.neuron.step_size, delta) 
             
         for i in range(len(self.line_points)-1):
             p1 = self.line_points[i]
@@ -59,38 +158,13 @@ class Compartment:
         for child in self.distal_neighbors:
             child.createPoints(last_location, wirelength_to_last)
             
-    
     def colorCompartments(self, colors, index):
         self.color = colors[index]
         index += 1
         if index >= len(colors): index = 0
         for child in self.distal_neighbors:
             child.colorCompartments(colors, index)
-    
-    """
-    Find the per-point amount of neurotransmitter accepted/released - essentially
-    smearing out the synapse properties of the points in the compartment
-    """
-    def buildNeurotransmitterWeights(self):
-        for point in self.points:
-            for nt in point.neurotransmitters_accepted:
-                if nt in self.neurotransmitters_input_weights:
-                    self.neurotransmitters_input_weights[nt] += 1.0
-                else:
-                    self.neurotransmitters_input_weights[nt] = 1.0
-                    
-            for nt in point.neurotransmitters_released:
-                if nt in self.neurotransmitters_output_weights:
-                    self.neurotransmitters_output_weights[nt] += 1.0
-                else:
-                    self.neurotransmitters_output_weights[nt] = 1.0
-        
-        number_points = len(self.points)
-        for nt in self.neurotransmitters_input_weights:
-            self.neurotransmitters_input_weights[nt] /= number_points
-        for nt in self.neurotransmitters_output_weights:
-            self.neurotransmitters_output_weights[nt] /= number_points
-    
+            
     def buildQuadFromLine(self, a, b, width):
         angle       = a.angleHeadingTo(b)
         left_perp   = Vector2D.generateHeadingFromAngle(angle + 90.0)
@@ -103,7 +177,7 @@ class Compartment:
         
         vertices = [v1.toTuple(), v2.toTuple(), v4.toTuple(), v3.toTuple()]
         return vertices
-    
+        
     def draw(self, surface, scale=1.0, draw_points=False, draw_text=False):
         # This function assumes compartments are 1 line segment - check bottom 
         # of file for old draw command
@@ -113,8 +187,8 @@ class Compartment:
                 point.draw(surface, scale=scale)
             return        
         
-        a           = (self.morphology.location + self.line_points[0]) * scale
-        b           = (self.morphology.location + self.line_points[1]) * scale
+        a           = (self.neuron.location + self.line_points[0]) * scale
+        b           = (self.neuron.location + self.line_points[1]) * scale
         vertices    = self.buildQuadFromLine(a, b, 2.0/3.0 * scale)
         pygame.draw.polygon(surface, self.color, vertices)  
             
@@ -125,18 +199,14 @@ class Compartment:
             fontSurfRect = fontSurfObj.get_rect()
             fontSurfRect.center = ((a+b)/2.0).toIntTuple()
             surface.blit(fontSurfObj, fontSurfRect)
-              
-    
-    def registerWithRetina(self, neuron, layer_depth):
-        for point in self.points:
-            location = point.location + neuron.location
-            self.retina.register(neuron, self, layer_depth, location)
-    
-    def getSize(self):
-        return len(self.points)
-        
-        
-        
+            
+            
+            
+            
+            
+            
+            
+  
 ###############################################################################
 # Old code that might get retired
 ###############################################################################  
@@ -193,41 +263,4 @@ class Compartment:
 #                        color[0] = min(color[0], 255)
 #                        color[1] = min(color[1], 255)
 #                        color[2] = min(color[2], 255)
-#                    pygame.draw.rect(surface, color, nt_rect, border)    
-    
-"""
-Finds the convex hull that bounds the points of the compartment
-"""
-def buildBoundingPolgyon(self):
-    # Create a list of point locations
-    points_list = [pt.location.toTuple() for pt in self.points]
-    
-    # Calculate the centroid of the points
-    centroid = Vector2D(0.0, 0.0)
-    for point in self.points:
-        centroid += point.location
-    centroid /= len(self.points)
-    
-    # Before creating the convex hull, we need to make sure we have at least
-    # least 5 points
-    delta = 0.0
-    while len(points_list) <= 5:
-        for dx, dy in [(0.0,delta),(delta,0.0),(delta,delta)]:
-            for xsign, ysign in [(1.0,1.0),(-1.0,1.0),(1.0,-1.0),(-1.0,-1.0)]:
-                new_point = centroid + Vector2D(dx*xsign, dy*ysign)
-                if new_point.toTuple() not in points_list:
-                    points_list.append(new_point.toTuple())
-                    if len(points_list) > 5: break
-            if len(points_list) > 5: break
-        delta += 1.0
-        
-    # Create a (2 x m) array to be used by the numpy function        
-    points_array    = np.array(points_list).T
-    
-    # Calculate the hull points
-    hull_array      = convex_hull(points_array)
-    hull_points     = hull_array.tolist()
-    
-    # Store the results
-    self.bounding_polygon   = hull_points
-    self.centroid           = centroid
+#                    pygame.draw.rect(surface, color, nt_rect, border)

@@ -6,7 +6,7 @@ import pygame
 from pygame.locals import *
 from Vector2D import Vector2D
 from StarburstDendrite import DendriteSegment
-from Compartment import Compartment
+from Compartment import GrowingCompartment
 from Constants import *
 
 
@@ -161,7 +161,7 @@ class StarburstMorphology(object):
         # Build the master compartments recursively
         self.master_compartments = []
         for dendrite in self.master_dendrites:            
-            compartment = Compartment(self)
+            compartment = GrowingCompartment(self)
             self.master_compartments.append(compartment)
 
         # Recursively compartmentalize starting from the master compartments
@@ -421,7 +421,7 @@ class StarburstMorphology(object):
         # Build the master compartments recursively
         self.master_compartments = []
         for dendrite in self.master_dendrites:            
-            compartment = Compartment(self)
+            compartment = GrowingCompartment(self)
             self.master_compartments.append(compartment)
 
         # Recursively compartmentalize starting from the master compartments

@@ -5,7 +5,7 @@ from pygame.locals import *
 from random import random, uniform, randint
 from math import atan2
 from DendritePoint import DendritePoint
-from Compartment import Compartment
+from Compartment import GrowingCompartment
 from Vector2D import Vector2D
 
 
@@ -72,13 +72,13 @@ class DendriteSegment:
         has_children            = self.children != []
         
         if segments_left:
-            new_compartment = Compartment(self.neuron)
+            new_compartment = GrowingCompartment(self.neuron)
             self.compartmentalizeLineSegments(new_compartment, index, [compartment])
             compartment.distal_neighbors.append(new_compartment)
         elif not(segments_left) and has_children:
             child1, child2      = self.children
-            new_compartment1    = Compartment(self.neuron)
-            new_compartment2    = Compartment(self.neuron)
+            new_compartment1    = GrowingCompartment(self.neuron)
+            new_compartment2    = GrowingCompartment(self.neuron)
             child1.compartmentalizeLineSegments(new_compartment1, 0, [compartment, new_compartment2])
             child2.compartmentalizeLineSegments(new_compartment2, 0, [compartment, new_compartment1]) 
             compartment.distal_neighbors.extend([new_compartment1, new_compartment2])
@@ -118,7 +118,7 @@ class DendriteSegment:
                                           compartment_size_goal, 0, prior_compartments)
         
         elif not(compartment_needs_points) and dendrite_has_points_left:
-            new_compartment = Compartment(self.neuron)
+            new_compartment = GrowingCompartment(self.neuron)
             compartment.proximal_neighbors.extend(prior_compartments)
             compartment.distal_neighbors.append(new_compartment)
             self.compartmentalizePoints(new_compartment, compartment_size_goal,
@@ -126,8 +126,8 @@ class DendriteSegment:
                                   
         elif not(compartment_needs_points) and not(dendrite_has_points_left) and dendrite_has_children:
             child1, child2      = self.children                  
-            child1_compartment  = Compartment(self.neuron)  
-            child2_compartment  = Compartment(self.neuron)
+            child1_compartment  = GrowingCompartment(self.neuron)  
+            child2_compartment  = GrowingCompartment(self.neuron)
             
             compartment.proximal_neighbors.extend(prior_compartments)
             compartment.distal_neighbors.extend([child1_compartment, child2_compartment])

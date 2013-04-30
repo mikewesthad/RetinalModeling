@@ -108,8 +108,8 @@ starburst.initializeActivties()
 
 compartments = starburst.morphology.compartments
 number_compartments = len(compartments)
-#for i in range(number_compartments):
-#    starburst.activities[0][0, i] = 1.0
+for i in range(number_compartments):
+    starburst.activities[0][0, i] = 1.0
     
 #starburst.activities[0][0, 0] = 1.0
 #starburst.activities[0][0, 300] = 1.0
