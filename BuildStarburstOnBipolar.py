@@ -46,7 +46,7 @@ retina = Retina(width, height, grid_size, timestep, bar_stimulus, None)
                          
 # Build the cone Layer
 cone_distance       = 10 * UM_TO_M
-cone_density        = 100.0
+cone_density        = 1000.0
 cone_input_size     = 10 * UM_TO_M
 retina.buildConeLayer(cone_distance, cone_density, cone_input_size)
 
@@ -59,24 +59,45 @@ retina.buildHorizontalLayer(input_strength, decay_rate, diffusion_radius)
 
 # Build the bipolar layer
 bipolar_distance    = 20 * UM_TO_M
-bipolar_density     = 100.0
+bipolar_density     = 1000.0
 input_field_radius  = 50 * UM_TO_M
 output_field_radius = 10 * UM_TO_M
 
 retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius, 
                          output_field_radius)
-retina.on_bipolar_layer.updateActivity()
-
+                         
+                         
 # Build a display
 palette     = OCEAN_FIVE
 background  = palette[0]
 screen_size = Vector2D(800, 800)
 display     = pygame.display.set_mode(screen_size.toIntTuple())
+    
+compartments = retina.on_bipolar_layer.compartments
+number_compartments = len(compartments)
+time = 0
 running = True
+next_frame = True
 while running:
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
-    display.fill(palette[0])
-    retina.on_bipolar_layer.draw(display, scale=2.0)
+        if event.type == KEYDOWN:
+            next_frame = True
+    if next_frame:    
+        retina.runModel(timestep)
+        display.fill((0,0,0))
+        time+=1
+        print "Timestep\t{0}\n".format(time)
+        for i in range(number_compartments):
+            compartment         = compartments[i]
+            activity            = compartment.potentials[0]
+            percent             = (activity+1.0)/2.0
+            new_color           = (int(percent*255),int(percent*255),int(percent*255))
+            compartment.color   = new_color
+        
+        retina.on_bipolar_layer.draw(display, scale=2.0)  
+        next_frame = False
+        
+     
     pygame.display.update()

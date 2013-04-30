@@ -9,8 +9,9 @@ from Constants import *
 class Compartment:
 
     def __init__(self, neuron):
-        self.neuron     = neuron
-        self.retina     = neuron.retina
+        self.neuron         = neuron
+        self.retina         = neuron.retina
+        self.history_size   = neuron.history_size 
         
         self.gridded_locations  = []
         
@@ -20,20 +21,28 @@ class Compartment:
         self.index = len(self.neuron.compartments)
         self.neuron.compartments.append(self)
         
-        self.potential                  = 0.0
-        self.neurotransmitter_outputs   = {}        
+        self.potentials                 = []
+        self.neurotransmitter_outputs   = []
+        for history in range(self.history_size):
+            self.potentials.append(0.0)
+            self.neurotransmitter_outputs.append({})
+            
         
         self.color = (randint(100,255),randint(100,255),randint(100,255))
         
-    def updatePotential(self):
-        pass
+    def updatePotential(self, new_potential):
+        del self.potentials[-1]
+        self.potentials.insert(0, new_potential)
     
     def updateNeurotransmitterOutputs(self):
-        self.neurotransmitter_outputs = {}
+        del self.neurotransmitter_outputs[-1]
+        
+        neurotransmitter_output = {}
         for nt in self.neurotransmitters_output_weights:
             weight = self.neurotransmitters_output_weights[nt]
-            output = weight * self.neuron.potentialToNeurotransmitter(self.potential)
-            self.neurotransmitter_outputs = {nt:output}
+            output = weight * self.neuron.potentialToNeurotransmitter(self.potentials[0])
+            neurotransmitter_output[nt] = output
+        self.neurotransmitter_outputs.insert(0, neurotransmitter_output)
             
     
     """

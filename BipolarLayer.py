@@ -118,7 +118,7 @@ class BipolarLayer:
                 bipolar_activity += triad_weight * triad_activity
             
             currentActivities[0, n] = bipolar_activity
-            self.compartments[n].potential = bipolar_activity
+            self.compartments[n].updatePotential(bipolar_activity)
             self.compartments[n].updateNeurotransmitterOutputs()
         
         self.activities.insert(0, currentActivities)
