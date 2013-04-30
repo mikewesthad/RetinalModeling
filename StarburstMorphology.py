@@ -7,23 +7,25 @@ from pygame.locals import *
 from Vector2D import Vector2D
 from StarburstDendrite import DendriteSegment
 from Compartment import GrowingCompartment
+from BipolarLayer import BipolarLayer
 from Constants import *
 
 
 class StarburstMorphology(object):
     
-    def __init__(self, retina, location=Vector2D(0.0, 0.0), average_wirelength=150*UM_TO_M, 
+    def __init__(self, retina, history_size=4, location=Vector2D(0.0, 0.0), average_wirelength=150*UM_TO_M, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=15*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
                  dendrite_vision_radius=30*UM_TO_M, diffusion_width=45*UM_TO_M,
                  diffusion_strength=1.0, decay_rate=0.1, input_strength=0.0,
-                 color_palette=GOLDFISH, draw_location=Vector2D(0.0,0.0), visualize_growth=True, scale=1.0,
+                 color_palette=GOLDFISH, draw_location=Vector2D(0.0,0.0), visualize_growth=False, scale=1.0,
                  display=None):
         
         # General neuron variables
         self.retina             = retina
         self.display            = display
         self.location           = location
+        self.history_size       = history_size
         
         # Visualization variables
         self.visualize_growth   = visualize_growth
@@ -85,7 +87,6 @@ class StarburstMorphology(object):
         self.diffusion_strength = diffusion_strength
         self.establisthLineSegmentDiffusionWeights()
         
-    
     def grow(self):
         
         active_dendrites = self.master_dendrites[:]

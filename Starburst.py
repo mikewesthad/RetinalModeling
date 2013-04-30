@@ -1,20 +1,21 @@
 import numpy as np
+from BipolarLayer import BipolarLayer
 from Constants import *
-
+from Vector2D import Vector2D
 
 class Starburst(object):
     
-    def __init__(self, retina, layer, morphology, location, input_delay, 
-                 layer_depth, history_size=4):
-        
+    def __init__(self, layer, morphology, location, starburst_type="On", input_delay=1, layer_depth=0):
+    
         # General neuron variables
-        self.retina             = retina
         self.layer              = layer
         self.morphology         = morphology
         self.location           = location
         self.input_delay        = input_delay
         self.layer_depth        = layer_depth
-        self.history_size       = history_size
+        self.retina             = morphology.retina
+        self.history_size       = morphology.history_size
+        self.starburst_type     = starburst_type
         
         self.number_compartments    = len(self.morphology.compartments)
         self.input_strength         = self.morphology.input_strength
@@ -22,7 +23,40 @@ class Starburst(object):
         self.diffusion_weights      = self.morphology.diffusion_weights
         self.diffusion_strength     = self.morphology.diffusion_strength
         self.initializeActivties()
-
+        
+        self.compartment_inputs = []
+        
+    
+    def drawInputs(self, surface, selected_compartment, scale=1.0):
+        for (info, weight) in self.compartment_inputs[selected_compartment]:
+            neuron, compartment = info
+            compartment.draw(surface, scale=scale)
+        
+        self.morphology.location = self.location * scale
+        self.morphology.compartments[selected_compartment].color = (255,255,255)
+        self.morphology.compartments[selected_compartment].draw(surface, scale=scale)
+        self.morphology.location = Vector2D(0.0,0.0)
+    
+    def initializeInputs(self):
+        self.compartment_inputs = []        
+        for compartment in self.morphology.compartments:
+            self.compartment_inputs.append([])
+            for location in compartment.gridded_locations:
+                location = location + self.location
+                for neuron, compartment in self.retina.getOverlappingNeurons(self, location):
+                    if self.isAppropriateInput(neuron, compartment):
+                        booleans = [(neuron, compartment) == i[0] for i in self.compartment_inputs[-1]]
+                        if any(booleans):
+                            index = booleans.index(True)
+                            self.compartment_inputs[-1][index][1] += 1
+                        else:
+                            self.compartment_inputs[-1].append([(neuron, compartment), 1.0])
+                        
+    def isAppropriateInput(self, neuron, compartment):
+        if isinstance(neuron, BipolarLayer) and neuron.bipolar_type == self.starburst_type:
+            return True
+        return False
+            
     def registerWithRetina(self):
         for compartment in self.morphology.compartments:
             compartment.registerWithRetina(self, self.layer_depth)
@@ -38,7 +72,6 @@ class Starburst(object):
         for i in range(self.history_size):
             blank_activity = np.zeros((1, self.number_compartments))
             self.activities.append(blank_activity)
-
 
     def updateActivity(self):
         # Delete the oldest activity and get the current activity

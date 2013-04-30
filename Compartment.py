@@ -25,9 +25,8 @@ class Compartment:
         self.neurotransmitter_outputs   = []
         for history in range(self.history_size):
             self.potentials.append(0.0)
-            self.neurotransmitter_outputs.append({})
+            self.neurotransmitter_outputs.append({}) 
             
-        
         self.color = (randint(100,255),randint(100,255),randint(100,255))
         
     def updatePotential(self, new_potential):
@@ -43,32 +42,6 @@ class Compartment:
             output = weight * self.neuron.potentialToNeurotransmitter(self.potentials[0])
             neurotransmitter_output[nt] = output
         self.neurotransmitter_outputs.insert(0, neurotransmitter_output)
-            
-    
-    """
-    Find the per-point amount of neurotransmitter accepted/released - essentially
-    smearing out the synapse properties of the points in the compartment
-    """
-    def buildNeurotransmitterWeights(self):
-        for point in self.points:
-            for nt in point.neurotransmitters_accepted:
-                if nt in self.neurotransmitters_input_weights:
-                    self.neurotransmitters_input_weights[nt] += 1.0
-                else:
-                    self.neurotransmitters_input_weights[nt] = 1.0
-                    
-            for nt in point.neurotransmitters_released:
-                if nt in self.neurotransmitters_output_weights:
-                    self.neurotransmitters_output_weights[nt] += 1.0
-                else:
-                    self.neurotransmitters_output_weights[nt] = 1.0
-        
-        number_points = len(self.points)
-        for nt in self.neurotransmitters_input_weights:
-            self.neurotransmitters_input_weights[nt] /= number_points
-        for nt in self.neurotransmitters_output_weights:
-            self.neurotransmitters_output_weights[nt] /= number_points
-
     
     def draw(self, surface, scale=1.0):
         for pt in self.gridded_locations:
@@ -121,7 +94,31 @@ class GrowingCompartment(Compartment):
             wirelength_to_last  = current_wirelength
         
         for child in self.distal_neighbors:
-            child.createPoints(last_location, wirelength_to_last)
+            child.createPoints(last_location, wirelength_to_last)            
+    
+    """
+    Find the per-point amount of neurotransmitter accepted/released - essentially
+    smearing out the synapse properties of the points in the compartment
+    """
+    def buildNeurotransmitterWeights(self):
+        for point in self.points:
+            for nt in point.neurotransmitters_accepted:
+                if nt in self.neurotransmitters_input_weights:
+                    self.neurotransmitters_input_weights[nt] += 1.0
+                else:
+                    self.neurotransmitters_input_weights[nt] = 1.0
+                    
+            for nt in point.neurotransmitters_released:
+                if nt in self.neurotransmitters_output_weights:
+                    self.neurotransmitters_output_weights[nt] += 1.0
+                else:
+                    self.neurotransmitters_output_weights[nt] = 1.0
+        
+        number_points = len(self.points)
+        for nt in self.neurotransmitters_input_weights:
+            self.neurotransmitters_input_weights[nt] /= number_points
+        for nt in self.neurotransmitters_output_weights:
+            self.neurotransmitters_output_weights[nt] /= number_points
                 
     def registerWithRetina(self, neuron, layer_depth):
         for point in self.points:

@@ -6,6 +6,7 @@ from ConeLayer import ConeLayer
 from HorizontalLayer import HorizontalLayer
 from BipolarLayer import BipolarLayer
 from StarburstLayer import StarburstLayer
+from Vector2D import *
 from Constants import *
 
 
@@ -51,8 +52,9 @@ class Retina:
         self.off_bipolar_color  = pygame.Color("#007DFF")
         
         self.layers = []
-        grid = {}
-        self.layers.append(grid)
+        for depth in range(1):
+            grid = {}
+            self.layers.append(grid)
         
     def isPointWithinBounds(self, point):
         if point.x < 0: return False
@@ -70,6 +72,7 @@ class Retina:
             
     def getOverlappingNeurons(self, neuron, location):
         key = location.toIntTuple()
+        depth = neuron.layer_depth
         if key in self.layers[depth]:
             overlap = []
             for (other_neuron, other_compartment) in self.layers[depth][key]:
@@ -157,6 +160,15 @@ class Retina:
         parameterFile = open(parameterPath, "w")
         parameterFile.write(str(self))
         parameterFile.close()
+
+    def addStarburst(self):       
+        from StarburstMorphology import StarburstMorphology
+        from Starburst import Starburst
+        starburst_morphology = StarburstMorphology(self)
+        starburst = Starburst(None, starburst_morphology, Vector2D(200.0,200.0))
+        starburst.registerWithRetina()
+        starburst.initializeInputs()
+        return starburst
 
     """
     This function runs the retina model for a specified duration

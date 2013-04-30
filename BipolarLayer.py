@@ -1,6 +1,7 @@
 import random
 import math as m
 import numpy as np
+import pygame
 from Constants import *
 from Compartment import Compartment
 from Vector2D import Vector2D
@@ -68,8 +69,11 @@ class BipolarLayer:
             compartment.registerWithRetina(self, self.layer_depth)
             
     def draw(self, surface, scale=1.0):
-        for compartment in self.compartments:
-            compartment.draw(surface, scale=scale)
+        for neuron in range(self.neurons):
+            loc = self.locations[neuron]
+            pygame.draw.circle(surface, (100,0,0), loc, int(self.nearest_neighbor_distance_gridded/2.0))
+#        for compartment in self.compartments:
+#            compartment.draw(surface, scale=scale)
             
     def __str__(self):
         string = ""
