@@ -1,10 +1,6 @@
 import random
 import math as m
-import numpy as np
-import pygame
 from Constants import *
-from Compartment import Compartment
-from Vector2D import Vector2D
 
 class Bipolar:
     
@@ -23,6 +19,10 @@ class Bipolar:
             self.neurotransmitter_ouputs.append({})
             
         self.inputs = []
+        
+        
+    def draw(self, surface, scale=1.0):
+        self.compartment.draw(surface, self, scale=scale)
         
     def update(self, cone_activities, horizontal_activities):
         # Delete the oldest history
@@ -53,8 +53,8 @@ class Bipolar:
         return new_activity
         
     def compartmentalize(self, compartment):
-        self.compartment = compartment       
-        compartment.registerWithRetina(self, self.layer.layer_depth)
+        self.compartment = compartment
+        self.compartment.registerWithRetina(self, self.layer.layer_depth)
         
     def establishInputs(self):
         radius = self.layer.input_field_radius_gridded

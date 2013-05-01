@@ -1,13 +1,6 @@
 from random import uniform, randint, shuffle, choice
 from igraph import Graph, ADJ_UNDIRECTED
 import matplotlib.pyplot as plt
-import numpy as np
-import pygame
-from pygame.locals import *
-from Vector2D import Vector2D
-from StarburstDendrite import DendriteSegment
-from Compartment import GrowingCompartment
-from BipolarLayer import BipolarLayer
 from Constants import *
 
 

@@ -1,9 +1,5 @@
 from random import randint
-import pygame
 from NumpyConvexHull import convex_hull
-import numpy as np
-from Vector2D import Vector2D
-from DendritePoint import DendritePoint
 from Constants import *
 
 class Compartment:
@@ -38,10 +34,12 @@ class Compartment:
             neurotransmitter_outputs[nt] = output
         return neurotransmitter_outputs
     
-    def draw(self, neuron_location, surface, scale=1.0):
+    def draw(self, surface, neuron, color=None, scale=1.0):
+        if color == None: color = self.color        
+        
         for point in self.gridded_locations:
-            point = (point + neuron_location) * scale
-            pygame.draw.circle(surface, self.color, point.toIntTuple(), 1)
+            point = (point + neuron.location) * scale
+            pygame.draw.circle(surface, color, point.toIntTuple(), 1)
     
     def registerWithRetina(self, neuron, layer_depth):
         for point in self.gridded_locations:

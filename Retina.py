@@ -1,12 +1,4 @@
 from time import clock
-import numpy as np
-import pygame
-from pygame.locals import *
-from ConeLayer import ConeLayer
-from HorizontalLayer import HorizontalLayer
-from BipolarLayer import BipolarLayer
-from StarburstLayer import StarburstLayer
-from Vector2D import *
 from Constants import *
 
 
@@ -209,10 +201,10 @@ class Retina:
                                              self.history_size, input_delay, layer_depth,
                                              minimum_distance, minimum_density,
                                              input_field_radius, output_field_radius)
-        self.off_bipolar_layer = BipolarLayer(self, "Off", self.cone_layer, self.horizontal_layer,
-                                              self.history_size, input_delay, layer_depth,
-                                              minimum_distance, minimum_density,
-                                              input_field_radius, output_field_radius)
+#        self.off_bipolar_layer = BipolarLayer(self, "Off", self.cone_layer, self.horizontal_layer,
+#                                              self.history_size, input_delay, layer_depth,
+#                                              minimum_distance, minimum_density,
+#                                              input_field_radius, output_field_radius)
         print "On and Off Bipolar Layers Construction Time:", clock() - start_time
     
     def buildStarburstLayer(self, minimum_distance, minimum_density):

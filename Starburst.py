@@ -1,7 +1,4 @@
-import numpy as np
-from BipolarLayer import BipolarLayer
 from Constants import *
-from Vector2D import Vector2D
 
 class Starburst(object):
     
@@ -25,14 +22,15 @@ class Starburst(object):
         self.initializeActivties()
         
         self.compartment_inputs = []
+        self.initializeInputs()
         
     
     def drawInputs(self, surface, selected_compartment, scale=1.0):
         for (info, weight) in self.compartment_inputs[selected_compartment]:
             neuron, compartment = info
-            compartment.draw(surface, scale=scale)
+            compartment.draw(surface, neuron, color=(0,0,0), scale=scale)
         
-        self.morphology.location = self.location * scale
+        self.morphology.location = self.location
         self.morphology.compartments[selected_compartment].color = (255,255,255)
         self.morphology.compartments[selected_compartment].draw(surface, scale=scale)
         self.morphology.location = Vector2D(0.0,0.0)
@@ -53,7 +51,7 @@ class Starburst(object):
                             self.compartment_inputs[-1].append([(neuron, compartment), 1.0])
                         
     def isAppropriateInput(self, neuron, compartment):
-        if isinstance(neuron, BipolarLayer) and neuron.bipolar_type == self.starburst_type:
+        if isinstance(neuron, Bipolar) and neuron.layer.bipolar_type == self.starburst_type:
             return True
         return False
             
