@@ -107,8 +107,15 @@ class BipolarLayer:
         cone_activities         = self.cone_layer.activities[self.input_delay]
         horizontal_activities   = self.horizontal_layer.activities[self.input_delay]
         
-        for neuron in self.neurons:
-            neuron.update(cone_activities, horizontal_activities)
+        new_activities = np.zeros((1, self.number_neurons))
+        for neuron_number in range(self.number_neurons):
+            neuron          = self.neurons[neuron_number]
+            new_activity    = neuron.update(cone_activities, horizontal_activities)
+            
+            new_activities[0, neuron_number] = new_activity
+            
+        return new_activities
+            
         
     """
     Nearest neighbor distance constrained placement of points

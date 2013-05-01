@@ -36,7 +36,7 @@ class Bipolar:
             cone_activity           = cone_activities[0, triad_number]
             horizontal_activity     = horizontal_activities[0, triad_number]
             
-            if self.bipolar_type == "On":
+            if self.layer.bipolar_type == "On":
                 triad_activity = -(cone_activity - horizontal_activity)/2.0  
             else: 
                 triad_activity = (cone_activity - horizontal_activity)/2.0
@@ -49,6 +49,8 @@ class Bipolar:
         # Store the new activity and nt output
         self.activities.insert(0, new_activity)
         self.neurotransmitter_ouputs.insert(0, new_neurotransmitter_outputs)
+        
+        return new_activity
         
     def compartmentalize(self, compartment):
         self.compartment = compartment       

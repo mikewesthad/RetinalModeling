@@ -180,11 +180,11 @@ class Retina:
             self.horizontal_activities.append(horizontal_activity)
         
         if self.on_bipolar_layer != None:
-            on_bipolar_activity = self.on_bipolar_layer.updateActivity()
+            on_bipolar_activity = self.on_bipolar_layer.update()
             self.on_bipolar_activities.append(on_bipolar_activity)
         
         if self.off_bipolar_layer != None:
-            off_bipolar_activity = self.off_bipolar_layer.updateActivity()
+            off_bipolar_activity = self.off_bipolar_layer.update()
             self.off_bipolar_activities.append(off_bipolar_activity)
 
     def buildConeLayer(self, minimum_distance, minimum_density, input_field_size):

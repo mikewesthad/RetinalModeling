@@ -34,7 +34,7 @@ class Compartment:
         neurotransmitter_outputs = {}
         for nt in self.neurotransmitters_output_weights:
             weight = self.neurotransmitters_output_weights[nt]
-            output = weight * self.neuron.layer.potentialToNeurotransmitter(new_potential)
+            output = weight * self.neuron.potentialToNeurotransmitter(new_potential)
             neurotransmitter_outputs[nt] = output
         return neurotransmitter_outputs
     
