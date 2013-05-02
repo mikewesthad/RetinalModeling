@@ -1,13 +1,7 @@
 from random import randint, choice
 from time import clock
 import math as m
-import numpy as np
-import pygame
-from pygame import *
-from StarburstMorphology import StarburstMorphology
-from Starburst import Starburst
 from Constants import *
-from Vector2D import *
 
 
 class StarburstLayer:
@@ -22,56 +16,55 @@ class StarburstLayer:
         self.history_size       = history_size
         self.input_delay        = input_delay
     
-        self.nearest_neighbor_distance = nearest_neighbor_distance / retina.grid_size
-        
-        self.minimum_required_density   = minimum_required_density
-        self.minimum_required_cells     = int(minimum_required_density * (retina.area/retina.density_area))
-        
-        print "Placing somas..."
-        self.placeNeurons()
-        self.neurons = len(self.locations)
-        print "Done"
-        
-        print "Growing morpholgies..."
-        morphologies = []
+        # Generate unique morphologies
+        self.morphologies = []
         for i in range(number_morphologies):
             morphology = StarburstMorphology(retina, history_size=history_size,
                                              visualize_growth=visualize_growth,
                                              display=display)
-            morphologies.append(morphology)
-            print "Generated {0} of {1} morpholgies".format(i+1, number_morphologies)
-        print "Done"
+            self.morphologies.append(morphology)    
         
-        print "Intantiating starbursts..."
-        self.starburst_cells = set()
-        for i in range(self.neurons):
-#            starburst = 
-            print "Created {0} of {1} unique starbursts".format(i+1, self.neurons)
-        print "Done"
+        # Generate soma locations
+        self.nearest_neighbor_distance  = nearest_neighbor_distance / retina.grid_size
+        self.minimum_required_density   = minimum_required_density
+        self.minimum_required_cells     = int(minimum_required_density * (retina.area/retina.density_area))
+        self.placeNeurons()
+        self.number_neurons = len(self.locations)
         
-        
+        # Instantiate starbursts
+        self.neurons = []
+        for i in range(self.number_neurons):
+            location    = self.locations[i]
+            morphology  = choice(self.morphologies)
+            starburst   = Starburst(self, morphology, location, starburst_type, input_delay, layer_depth)
+            self.neurons.append(starburst)
+    
         self.inputs = {}
-        
-        self.initializeActivties()
+    
         self.establishInputs()
     
     def draw(self, display):
         for starburst in self.starburst_cells:
             starburst.draw(display)
-    
-    def initializeActivties(self):
-        self.activities = []
-        for i in range(self.history_size):
-            self.activities.append(np.zeros((1, self.neurons)))   
             
-    def updateActivity(self):
+    def update(self):
         pass
     
     def establishInputs(self):
-        pass
+        for neuron in self.neurons:
+            neuron.establishInputs()
 
     def inputWeightingFunction(self, inputs):
         pass
+    
+    def neurotransmitterToPotential(self, nt):
+        if nt < 0: return -1.0
+        if nt > 1: return 1.0
+        return (nt*2.0)-1.0
+    def potentialToNeurotransmitter(self, pt):
+        if pt < -1: return 0.0
+        if pt > 1: return 1.0
+        return (pt+1.0)/2.0
         
     """
     Nearest neighbor distance constrained placement of points

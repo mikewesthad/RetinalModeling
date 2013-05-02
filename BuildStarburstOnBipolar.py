@@ -73,36 +73,36 @@ retina.buildStarburstLayer(starburst_distance, starburst_density)
 #v = Visualizer(retina)
 
                         
-# Build a display
-palette     = OCEAN_FIVE
-background  = palette[0]
-screen_size = Vector2D(800, 800)
-display     = pygame.display.set_mode(screen_size.toIntTuple()) 
-    
-s = retina.addStarburst()
-s.drawInputs(display, 0, scale=2.0)
-
-running = True
-next_frame = True
-while running:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            running = False  
-        if event.type == KEYDOWN:
-            next_frame = True
-            
-    if next_frame:
-        scale = 2.0
-        display.fill(background)
-        retina.on_bipolar_layer.draw(display, scale=2.0)
-        for i in s.morphology.compartments:
-            i.color = (0,0,0)
-        s.draw(display, draw_compartments=True, scale=2.0)
-        s.drawInputs(display, randint(0, len(s.morphology.compartments)-1), scale=2.0)
-        next_frame = False
-        
-    
-    pygame.display.update()
+## Build a display
+#palette     = OCEAN_FIVE
+#background  = palette[0]
+#screen_size = Vector2D(800, 800)
+#display     = pygame.display.set_mode(screen_size.toIntTuple()) 
+#    
+#s = retina.on_starburst_layer.neurons[0]
+#s.drawInputs(display, 0, scale=2.0)
+#
+#running = True
+#next_frame = True
+#while running:
+#    for event in pygame.event.get():
+#        if event.type == QUIT:
+#            running = False  
+#        if event.type == KEYDOWN:
+#            next_frame = True
+#            
+#    if next_frame:
+#        scale = 2.0
+#        display.fill(background)
+#        retina.on_bipolar_layer.draw(display, scale=2.0)
+#        for i in s.morphology.compartments:
+#            i.color = (0,0,0)
+#        s.draw(display, draw_compartments=True, scale=2.0)
+#        s.drawInputs(display, randint(0, len(s.morphology.compartments)-1), scale=2.0)
+#        next_frame = False
+#        
+#    
+#    pygame.display.update()
 
                      
     

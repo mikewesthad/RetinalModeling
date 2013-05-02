@@ -14,15 +14,22 @@ class Starburst(object):
         self.history_size       = morphology.history_size
         self.starburst_type     = starburst_type
         
-        self.number_compartments    = len(self.morphology.compartments)
+        self.compartments           = self.morphology.compartments
+        self.number_compartments    = len(self.compartments)
         self.input_strength         = self.morphology.input_strength
         self.decay_rate             = self.morphology.decay_rate
         self.diffusion_weights      = self.morphology.diffusion_weights
         self.diffusion_strength     = self.morphology.diffusion_strength
-        self.initializeActivties()
         
-        self.compartment_inputs = []
-        self.initializeInputs()
+        self.activities = []
+        self.neurotransmitter_ouputs = []
+        for i in range(self.history_size):
+            blank_activity = np.zeros((1, self.number_compartments))
+            self.activities.append(blank_activity)
+            
+            self.neurotransmitter_ouputs.append([])
+            for c in range(self.number_compartments):
+                self.neurotransmitter_ouputs[-1].append({})
         
     
     def drawInputs(self, surface, selected_compartment, scale=1.0):
@@ -31,13 +38,13 @@ class Starburst(object):
             compartment.draw(surface, neuron, color=(0,0,0), scale=scale)
         
         self.morphology.location = self.location
-        self.morphology.compartments[selected_compartment].color = (255,255,255)
-        self.morphology.compartments[selected_compartment].draw(surface, scale=scale)
+        self.compartments[selected_compartment].color = (255,255,255)
+        self.compartments[selected_compartment].draw(surface, scale=scale)
         self.morphology.location = Vector2D(0.0,0.0)
     
-    def initializeInputs(self):
+    def establishInputs(self):
         self.compartment_inputs = []        
-        for compartment in self.morphology.compartments:
+        for compartment in self.compartments:
             self.compartment_inputs.append([])
             for location in compartment.gridded_locations:
                 location = location + self.location
@@ -56,7 +63,7 @@ class Starburst(object):
         return False
             
     def registerWithRetina(self):
-        for compartment in self.morphology.compartments:
+        for compartment in self.compartments:
             compartment.registerWithRetina(self, self.layer_depth)
     
     def draw(self, surface, scale=1.0, draw_segments=False, draw_points=False, 
@@ -64,12 +71,6 @@ class Starburst(object):
         self.morphology.draw(surface, scale=scale, new_location=self.location,
                              draw_points=draw_points, draw_segments=draw_segments,
                              draw_compartments=draw_compartments)
-
-    def initializeActivties(self):
-        self.activities = []
-        for i in range(self.history_size):
-            blank_activity = np.zeros((1, self.number_compartments))
-            self.activities.append(blank_activity)
 
     def updateActivity(self):
         # Delete the oldest activity and get the current activity
@@ -105,14 +106,26 @@ class Starburst(object):
         # np.sum removes a dimension, so let's restore it.
         diffusionActivity.shape = (1, self.number_compartments) 
         
-#        # Calculate the diffusion
+        # Calculate the diffusion
         d = self.decay_rate
         diffusionActivity = (1.0-d) * diffusionActivity
+#        
+#        for compartment_index in range(self.number_compartments):
+#            compartment = self.compartments[compartment_index]
+#            inputs      = self.compartment_inputs[compartment_index]
+#            
+#            [other_neuron, other_compartment], points_overlap = inputs
+#            for nt, nt_weight in other_compartment.neurotransmitters_output_weights.iteritems():
+#                other_neuron.neurotransmitter_ouputs[input_delay]
+            
+        
+        
+        i = self.input_strength
+        
 #        
 #        # Get the bipolar activity
 #        
 #        # Find the new activity
-        i = self.input_strength
         new_activity = (1.0-i) * diffusionActivity #+ i * bipolar_inputs
         
         # Add the most recent activity to the front of the list

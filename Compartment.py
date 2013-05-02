@@ -13,24 +13,14 @@ class Compartment:
         
         self.neurotransmitters_input_weights    = {}
         self.neurotransmitters_output_weights   = {}
-        
-        self.potentials                 = []
-        self.neurotransmitter_outputs   = []
-        for history in range(self.history_size):
-            self.potentials.append(0.0)
-            self.neurotransmitter_outputs.append({}) 
             
         self.color = (randint(100,255),randint(100,255),randint(100,255))
-        
-    def updatePotential(self, new_potential):
-        del self.potentials[-1]
-        self.potentials.insert(0, new_potential)
     
-    def calculateNeurotransmitterOutputs(self, new_potential):
+    def calculateNeurotransmitterOutputs(self, neuron, new_potential):
         neurotransmitter_outputs = {}
         for nt in self.neurotransmitters_output_weights:
             weight = self.neurotransmitters_output_weights[nt]
-            output = weight * self.neuron.potentialToNeurotransmitter(new_potential)
+            output = weight * neuron.layer.potentialToNeurotransmitter(new_potential)
             neurotransmitter_outputs[nt] = output
         return neurotransmitter_outputs
     

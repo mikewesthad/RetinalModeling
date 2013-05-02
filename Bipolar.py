@@ -44,7 +44,7 @@ class Bipolar:
             new_activity += triad_weight * triad_activity
         
         # Update the neurotransmitter amounts that are output
-        new_neurotransmitter_outputs = self.compartment.calculateNeurotransmitterOutputs(new_activity)
+        new_neurotransmitter_outputs = self.compartment.calculateNeurotransmitterOutputs(self, new_activity)
         
         # Store the new activity and nt output
         self.activities.insert(0, new_activity)

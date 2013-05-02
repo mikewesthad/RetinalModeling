@@ -42,8 +42,8 @@ from Compartment import Compartment
 from Compartment import GrowingCompartment
 from StarburstDendrite import DendriteSegment
 from StarburstMorphology import StarburstMorphology
-from StarburstLayer import StarburstLayer
 from Starburst import Starburst
+from StarburstLayer import StarburstLayer
 from Retina import Retina
 
 
