@@ -10,11 +10,21 @@ class Compartment:
         self.history_size   = neuron.history_size 
         
         self.gridded_locations  = []
+        self.centroid = None
+        self.heading = None
         
         self.neurotransmitters_input_weights    = {}
         self.neurotransmitters_output_weights   = {}
             
         self.color = (randint(100,255),randint(100,255),randint(100,255))
+        
+    @property
+    def centroid(self):
+        return Vector2D.calculateCentroid(self.gridded_locations)
+        
+    @property
+    def heading(self):
+        return self.neuron.location.angleHeadingTo(self.centroid)
     
     def calculateNeurotransmitterOutputs(self, neuron, new_potential):
         neurotransmitter_outputs = {}

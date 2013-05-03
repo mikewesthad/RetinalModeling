@@ -2,7 +2,7 @@ from Constants import *
 
 class Starburst(object):
     
-    def __init__(self, layer, morphology, location, starburst_type="On", input_delay=1, layer_depth=0):
+    def __init__(self, layer, morphology, location, on_off_type=ON, input_delay=1, layer_depth=0):
     
         # General neuron variables
         self.layer              = layer
@@ -12,7 +12,7 @@ class Starburst(object):
         self.layer_depth        = layer_depth
         self.retina             = morphology.retina
         self.history_size       = morphology.history_size
-        self.starburst_type     = starburst_type
+        self.on_off_type     = on_off_type
         
         self.compartments           = self.morphology.compartments
         self.number_compartments    = len(self.compartments)
@@ -42,14 +42,16 @@ class Starburst(object):
         self.compartments[selected_compartment].draw(surface, scale=scale)
         self.morphology.location = Vector2D(0.0,0.0)
     
-    def establishInputs(self):
+    def establishInputs(self, isAppropriateInput=None):
+        if isAppropriateInput==None:  
+            isAppropriateInput = self.isAppropriateInput
         self.compartment_inputs = []        
         for compartment in self.compartments:
             self.compartment_inputs.append([])
             for location in compartment.gridded_locations:
                 location = location + self.location
                 for neuron, compartment in self.retina.getOverlappingNeurons(self, location):
-                    if self.isAppropriateInput(neuron, compartment):
+                    if isAppropriateInput(neuron, compartment):
                         booleans = [(neuron, compartment) == i[0] for i in self.compartment_inputs[-1]]
                         if any(booleans):
                             index = booleans.index(True)
@@ -58,7 +60,7 @@ class Starburst(object):
                             self.compartment_inputs[-1].append([(neuron, compartment), 1.0])
                         
     def isAppropriateInput(self, neuron, compartment):
-        if isinstance(neuron, Bipolar) and neuron.layer.bipolar_type == self.starburst_type:
+        if isinstance(neuron, Bipolar) and neuron.layer.bipolar_type == self.on_off_type:
             return True
         return False
             

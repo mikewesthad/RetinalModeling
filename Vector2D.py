@@ -138,6 +138,12 @@ class Vector2D(object):
         return vector
     
     @classmethod
+    def calculateCentroid(classReference, locations_list):
+        total = Vector2D(0, 0)
+        total = sum(locations_list, total)
+        return total/len(locations_list)
+    
+    @classmethod
     def generateHeadingFromAngle(classReference, angle):
         return Vector2D(cos(angle * pi/180.0), sin(angle * pi/180.0))
         

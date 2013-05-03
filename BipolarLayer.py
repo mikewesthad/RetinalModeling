@@ -4,14 +4,14 @@ from Constants import *
 
 class BipolarLayer:
     
-    def __init__(self, retina, bipolar_type, cone_layer, horizontal_layer, history_size,
+    def __init__(self, retina, ON_OFF_type, cone_layer, horizontal_layer, history_size,
                  input_delay, layer_depth, nearest_neighbor_distance, minimum_required_density,
                  input_field_radius, output_field_radius):
                      
         self.retina             = retina
         self.cone_layer         = cone_layer
         self.horizontal_layer   = horizontal_layer
-        self.bipolar_type       = bipolar_type
+        self.on_of_type         = on_off_type
 
         self.history_size   = history_size
         self.input_delay    = input_delay
@@ -78,7 +78,7 @@ class BipolarLayer:
             
     def __str__(self):
         string = ""
-        string += "Bipolar " + self.bipolar_type + " Layer\n"
+        string += "Bipolar " + self.on_off_type + " Layer\n"
         string += "\nNearest Neightbor Distance (um)\t\t"+str(self.nearest_neighbor_distance * M_TO_UM)
         string += "\nInput Field Radius\t\t\t"+str(self.input_field_radius * M_TO_UM)
         string += "\nMinimum Required Density (cells/mm^2)\t"+str(self.minimum_required_density)

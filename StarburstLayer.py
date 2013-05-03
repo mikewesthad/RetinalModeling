@@ -6,12 +6,12 @@ from Constants import *
 
 class StarburstLayer:
     
-    def __init__(self, retina, starburst_type, layer_depth, history_size,
+    def __init__(self, retina, on_off_type, layer_depth, history_size,
                  input_delay, nearest_neighbor_distance, minimum_required_density,
                  number_morphologies=3, visualize_growth=False, display=None):
                      
         self.retina             = retina
-        self.starburst_type     = starburst_type
+        self.on_off_type        = on_off_type
         self.layer_depth        = layer_depth
         self.history_size       = history_size
         self.input_delay        = input_delay
@@ -36,7 +36,7 @@ class StarburstLayer:
         for i in range(self.number_neurons):
             location    = self.locations[i]
             morphology  = choice(self.morphologies)
-            starburst   = Starburst(self, morphology, location, starburst_type, input_delay, layer_depth)
+            starburst   = Starburst(self, morphology, location, on_off_type, input_delay, layer_depth)
             self.neurons.append(starburst)
     
         self.inputs = {}
@@ -137,7 +137,7 @@ class StarburstLayer:
         
     def __str__(self):
         string = ""
-        string += "Starburst {0} Layer\n".format(self.starburst_type)
+        string += "Starburst {0} Layer\n".format(self.on_off_type)
         string += "\nNearest Neightbor Distance (um)\t\t{0}".format(self.nearest_neighbor_distance * M_TO_UM)
         string += "\nMinimum Required Density (cells/mm^2)\t{0}".format(self.minimum_required_density)
         string += "\nNumber of Neurons\t\t\t{0}".format(self.neurons)

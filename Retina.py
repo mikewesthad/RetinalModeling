@@ -6,7 +6,7 @@ from Constants import *
 Retina class
 """
 class Retina:
-    def __init__(self, retina_width, retina_height, grid_size, timestep, stimulus, display):
+    def __init__(self, retina_width, retina_height, grid_size, display, timestep=1*MS_TO_S, stimulus=None):
         self.display = display
         
         self.width  = float(retina_width)
@@ -125,7 +125,8 @@ class Retina:
         fh          = open(save_file, "wb") 
         
         # Unload pygame surface which cannot be handled by pickle
-        self.stimulus.unloadStimulusForSaving()
+        if self.stimulus != None:        
+            self.stimulus.unloadStimulusForSaving()
         
         # Pickle the retina!
         pickle.dump(self, fh)
@@ -161,7 +162,8 @@ class Retina:
     def updateActivity(self):
         print self.time
         
-        self.stimulus.update(self.timestep)
+        if stimulus != None:
+            self.stimulus.update(self.timestep)
         
         if self.cone_layer != None:
             cone_activity = self.cone_layer.updateActivity()
