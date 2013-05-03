@@ -1,3 +1,16 @@
+import pygame
+from pygame.locals import *
+import numpy as np
+
+"""
+Linearly interpolate between color1 and color2
+"""
+def lerpColors(color1, color2, fraction):
+    r = color1.r + fraction * (color2.r - color1.r)
+    g = color1.g + fraction * (color2.g - color1.g)
+    b = color1.b + fraction * (color2.b - color1.b)
+    return pygame.Color(int(r),int(g),int(b))
+
 UM_TO_M = 1/1000000.0
 M_TO_UM = 1/UM_TO_M
 
@@ -21,9 +34,6 @@ PAPUA_NEW_GUINEA    = [(252,235,182),(94,65,47),(120,192,168),(240,120,24),(240,
 ICED_COFFEE         = [(231,243,239),(140,100,41),(85,195,220),(226,75,44),(115,114,109)]
 
 
-import pygame
-from pygame.locals import *
-import numpy as np
 
 from BarStimulus import BarStimulus
 from RuntimeBarGenerator import RuntimeBarGenerator
@@ -46,5 +56,7 @@ from Starburst import Starburst
 from StarburstLayer import StarburstLayer
 from Retina import Retina
 
+
+        
 
 

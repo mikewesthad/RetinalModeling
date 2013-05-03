@@ -8,7 +8,7 @@ class StarburstLayer:
     
     def __init__(self, retina, starburst_type, layer_depth, history_size,
                  input_delay, nearest_neighbor_distance, minimum_required_density,
-                 number_morphologies=3, visualize_growth=False, display=None):
+                 number_morphologies=1, visualize_growth=False, display=None):
                      
         self.retina             = retina
         self.starburst_type     = starburst_type
@@ -40,15 +40,22 @@ class StarburstLayer:
             self.neurons.append(starburst)
     
         self.inputs = {}
-    
+        
         self.establishInputs()
     
-    def draw(self, display):
-        for starburst in self.starburst_cells:
-            starburst.draw(display)
+    def draw(self, surface, color=None, scale=1.0):
+        if color==None: 
+            if self.starburst_type == "On": color = self.retina.on_starburst_color
+            if self.starburst_type == "Off": color = self.retina.off_starburst_color
+        for neuron in self.neurons:
+            neuron.draw(surface, color=color, scale=scale, draw_compartments=True)
             
     def update(self):
-        pass
+        layer_activity = []
+        for neuron in self.neurons:
+            neuron_activity = neuron.update()
+            layer_activity.append(neuron_activity)
+        return layer_activity 
     
     def establishInputs(self):
         for neuron in self.neurons:

@@ -6,11 +6,11 @@ from Constants import *
 
 class StarburstMorphology(object):
     
-    def __init__(self, retina, history_size=4, location=Vector2D(0.0, 0.0), average_wirelength=150*UM_TO_M, 
+    def __init__(self, retina, history_size=4, location=Vector2D(0.0, 0.0), average_wirelength=50*UM_TO_M, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=15*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
-                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=45*UM_TO_M,
-                 diffusion_strength=1.0, decay_rate=0.1, input_strength=0.0,
+                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=15*UM_TO_M,
+                 diffusion_strength=1.0, decay_rate=0.1, input_strength=0.5,
                  color_palette=GOLDFISH, draw_location=Vector2D(0.0,0.0), visualize_growth=False, scale=1.0,
                  display=None):
         
@@ -274,7 +274,7 @@ class StarburstMorphology(object):
                   draw_compartments=True, draw_text=True) 
     
         
-    def draw(self, surface, scale=1.0, new_location=None, draw_segments=False,
+    def draw(self, surface, scale=1.0, color=None, new_location=None, draw_segments=False,
              draw_compartments=False, draw_points=False, draw_text=False):
         
         # Shift the cell's location
@@ -288,7 +288,7 @@ class StarburstMorphology(object):
                 dendrite.draw(surface, scale=scale)
         elif draw_compartments:
             for compartment in self.compartments:
-                compartment.draw(surface, scale=scale, draw_text=draw_text)
+                compartment.draw(surface, scale=scale, color=color, draw_text=draw_text)
         elif draw_points:
             for point in self.points:
                 point.draw(surface, scale=scale)

@@ -36,7 +36,32 @@ class ConeLayer:
         self.initializeActivties()
 
         self.establishInputs()        
+    
+    def loadPast(self, activity):
+        self.activities[0] = activity
         
+    def drawActivity(self, surface, color_bounds, activity_bounds, radius=None, scale=1.0):
+        if radius == None: radius = self.nearest_neighbor_distance_gridded/2.0
+        min_color, max_color = color_bounds
+        min_activity, max_activity = activity_bounds
+        
+        radius  = int(radius*scale)
+        for n in range(self.neurons):
+            activity = self.activities[0][0, n]
+            percent_activity = (activity - min_activity) / (max_activity - min_activity) 
+            color = lerpColors(min_color, max_color, percent_activity)
+            x, y = self.locations[n]
+            x, y = int(x*scale), int(y*scale)
+            pygame.draw.circle(surface, color, (x, y), radius) 
+    
+    def draw(self, surface, radius=None, color=None, scale=1.0):     
+        if radius == None: radius = self.nearest_neighbor_distance_gridded/2.0
+        if color == None: color = self.retina.cone_color
+        
+        radius  = int(radius*scale)
+        for x, y in self.locations:
+            x, y = int(x*scale), int(y*scale)
+            pygame.draw.circle(surface, color, (x, y), radius) 
 
     def __str__(self):
         string = ""

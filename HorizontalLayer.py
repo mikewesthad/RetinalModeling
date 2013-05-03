@@ -28,7 +28,15 @@ class HorizontalLayer:
         
         self.decay_rate         = decay_rate
         self.input_strength     = input_strength
+    
+    def draw(self, surface, inflate_radius=0.0, radius=None, color=None, scale=1.0):     
+        if radius == None: radius = self.nearest_neighbor_distance_gridded/2.0
+        if color == None: color = self.retina.horizontal_color
         
+        radius  = int((radius+inflate_radius)*scale)
+        for x, y in self.locations:
+            x, y = int(x*scale), int(y*scale)
+            pygame.draw.circle(surface, color, (x, y), radius)     
         
     def __str__(self):
         string = ""

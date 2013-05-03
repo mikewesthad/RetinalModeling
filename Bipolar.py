@@ -15,14 +15,16 @@ class Bipolar:
         self.activities = []
         self.neurotransmitter_ouputs = []
         for step in range(self.history_size):
-            self.activities.append(0.0)
-            self.neurotransmitter_ouputs.append({})
+            self.activities.append([0.0])
+            self.neurotransmitter_ouputs.append([{}])
             
         self.inputs = []
         
         
-    def draw(self, surface, scale=1.0):
-        self.compartment.draw(surface, self, scale=scale)
+    def draw(self, surface, radius, color, scale=1.0):            
+        location = (self.location * scale).toIntTuple()        
+        radius = int(radius * scale)
+        pygame.draw.circle(surface, color, location, radius)
         
     def update(self, cone_activities, horizontal_activities):
         # Delete the oldest history
@@ -44,17 +46,18 @@ class Bipolar:
             new_activity += triad_weight * triad_activity
         
         # Update the neurotransmitter amounts that are output
-        new_neurotransmitter_outputs = self.compartment.calculateNeurotransmitterOutputs(self, new_activity)
+        new_neurotransmitter_outputs = self.compartments[0].calculateNeurotransmitterOutputsFromPotential(self, new_activity)
         
         # Store the new activity and nt output
-        self.activities.insert(0, new_activity)
-        self.neurotransmitter_ouputs.insert(0, new_neurotransmitter_outputs)
+        self.activities.insert(0, [new_activity])
+        self.neurotransmitter_ouputs.insert(0, [new_neurotransmitter_outputs])
         
         return new_activity
         
     def compartmentalize(self, compartment):
-        self.compartment = compartment
-        self.compartment.registerWithRetina(self, self.layer.layer_depth)
+        self.compartments = [compartment]
+        compartment_index = 0
+        compartment.registerWithRetina(self, compartment_index)
         
     def establishInputs(self):
         radius = self.layer.input_field_radius_gridded

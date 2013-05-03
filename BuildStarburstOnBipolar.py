@@ -41,7 +41,7 @@ retina = Retina(width, height, grid_size, timestep, bar_stimulus, None)
                          
 # Build the cone Layer
 cone_distance       = 10 * UM_TO_M
-cone_density        = 100.0
+cone_density        = 10000.0
 cone_input_size     = 10 * UM_TO_M
 retina.buildConeLayer(cone_distance, cone_density, cone_input_size)
 
@@ -54,23 +54,23 @@ retina.buildHorizontalLayer(input_strength, decay_rate, diffusion_radius)
 
 # Build the bipolar layer
 bipolar_distance    = 10 * UM_TO_M
-bipolar_density     = 10000.0
+bipolar_density     = 100.0
 input_field_radius  = 10 * UM_TO_M
-output_field_radius = 5 * UM_TO_M
+output_field_radius = 10 * UM_TO_M
 
 retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius, 
                          output_field_radius)
                          
 # Build the starburst layer
 starburst_distance = 50 * UM_TO_M
-starburst_density  = 1000.0
+starburst_density  = 1.0 / (retina.area/retina.density_area)
 
 retina.buildStarburstLayer(starburst_distance, starburst_density)
+    
+retina.runModel(3*timestep)
 
-#retina.runModel(20*timestep)
-
-#from Visualizer import Visualizer
-#v = Visualizer(retina)
+from NewVisualizer import Visualizer
+v = Visualizer(retina)
 
                         
 ## Build a display

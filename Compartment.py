@@ -15,8 +15,24 @@ class Compartment:
         self.neurotransmitters_output_weights   = {}
             
         self.color = (randint(100,255),randint(100,255),randint(100,255))
+        
+    def calculatePotentialFromNeurotransmitterInputs(self, neuron, neurotransmitter_inputs):
+        total_potential = 0.0
+        number_potentials = 0.0
+        
+        for nt, nt_amount in neurotransmitter_inputs.iteritems():
+            if nt in self.neurotransmitters_input_weights:
+                weight = self.neurotransmitters_input_weights[nt]
+                input_potential = weight * neuron.layer.neurotransmitterToPotential(nt_amount)
+                total_potential += input_potential
+                number_potentials += 1.0
+                
+        if number_potentials > 0:
+            return total_potential/number_potentials
+        else:
+            return 0.0
     
-    def calculateNeurotransmitterOutputs(self, neuron, new_potential):
+    def calculateNeurotransmitterOutputsFromPotential(self, neuron, new_potential):
         neurotransmitter_outputs = {}
         for nt in self.neurotransmitters_output_weights:
             weight = self.neurotransmitters_output_weights[nt]
@@ -31,10 +47,10 @@ class Compartment:
             point = (point + neuron.location) * scale
             pygame.draw.circle(surface, color, point.toIntTuple(), 1)
     
-    def registerWithRetina(self, neuron, layer_depth):
+    def registerWithRetina(self, neuron, compartment_index):
         for point in self.gridded_locations:
             point = neuron.location + point
-            self.retina.register(neuron, self, layer_depth, point)
+            self.retina.register(neuron, self, compartment_index, point)
     
     def getSize(self):
         return len(self.points)
@@ -108,10 +124,10 @@ class GrowingCompartment(Compartment):
         for nt in self.neurotransmitters_output_weights:
             self.neurotransmitters_output_weights[nt] /= number_points
                 
-    def registerWithRetina(self, neuron, layer_depth):
+    def registerWithRetina(self, neuron, compartment_index):
         for point in self.points:
             location = point.location + neuron.location
-            self.retina.register(neuron, self, layer_depth, location)
+            self.retina.register(neuron, self, compartment_index, location)
             
     def colorCompartments(self, colors, index):
         self.color = colors[index]
@@ -133,7 +149,7 @@ class GrowingCompartment(Compartment):
         vertices = [v1.toTuple(), v2.toTuple(), v4.toTuple(), v3.toTuple()]
         return vertices
         
-    def draw(self, surface, scale=1.0, draw_points=False, draw_text=False):
+    def draw(self, surface, color=None, scale=1.0, draw_points=False, draw_text=False):
         # This function assumes compartments are 1 line segment - check bottom 
         # of file for old draw command
         
@@ -142,10 +158,12 @@ class GrowingCompartment(Compartment):
                 point.draw(surface, scale=scale)
             return        
         
+        if color == None: color = self.color        
+        
         a           = (self.neuron.location + self.line_points[0]) * scale
         b           = (self.neuron.location + self.line_points[1]) * scale
         vertices    = self.buildQuadFromLine(a, b, 2.0/3.0 * scale)
-        pygame.draw.polygon(surface, self.color, vertices)  
+        pygame.draw.polygon(surface, color, vertices)  
             
         if draw_text:
             pygame.init()

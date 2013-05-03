@@ -26,27 +26,44 @@ class Retina:
     
         self.density_area = 1 * MM_TO_M * MM_TO_M
         
-        self.cone_layer         = None
-        self.horizontal_layer   = None
-        self.on_bipolar_layer   = None
-        self.off_bipolar_layer  = None
+        self.cone_layer             = None
+        self.horizontal_layer       = None
+        self.on_bipolar_layer       = None
+        self.off_bipolar_layer      = None
+        self.on_starburst_layer     = None
+        self.off_starburst_layer    = None
+        self.layers = [self.cone_layer, self.horizontal_layer, self.on_bipolar_layer,
+                       self.off_bipolar_layer, self.on_starburst_layer, self.off_starburst_layer]
         
-        self.cone_activities        = []
-        self.horizontal_activities  = []
-        self.on_bipolar_activities  = []
-        self.off_bipolar_activities = []
+        self.cone_activities            = []
+        self.horizontal_activities      = []
+        self.on_bipolar_activities      = []
+        self.off_bipolar_activities     = []
+        self.on_starburst_activities    = []
+        self.off_starburst_activities   = []
+        self.activities = [self.cone_activities, self.horizontal_activities, self.on_bipolar_activities,
+                           self.off_bipolar_activities, self.on_starburst_activities, self.off_starburst_activities]
         
         
-        self.background_color   = pygame.Color(255, 255, 255)
-        self.cone_color         = pygame.Color("#FFCF87")
-        self.horizontal_color   = pygame.Color("#FFA722")
-        self.on_bipolar_color   = pygame.Color("#5CCAE7")
-        self.off_bipolar_color  = pygame.Color("#007DFF")
+        self.background_color       = pygame.Color(255, 255, 255)
+        self.cone_color             = pygame.Color("#FFCF87")
+        self.horizontal_color       = pygame.Color("#FFA722")
+        self.on_bipolar_color       = pygame.Color("#5CCAE7")
+        self.off_bipolar_color      = pygame.Color("#007DFF")
+        self.on_starburst_color     = pygame.Color(255, 0, 0)
+        self.off_starburst_color    = pygame.Color(0, 0, 255)
         
-        self.layers = []
+        self.grid_layers = []
         for depth in range(1):
             grid = {}
-            self.layers.append(grid)
+            self.grid_layers.append(grid)
+            
+    def loadPast(self, timestep):
+        for layer_index in range(0, 1):
+            layer       = self.layers[layer_index]
+            activities  = self.activities[layer_index]
+            if layer != None:
+                layer.loadPast(activities[timestep])       
         
     def isPointWithinBounds(self, point):
         if point.x < 0: return False
@@ -55,24 +72,25 @@ class Retina:
         if point.y > self.grid_height: return False
         return True      
     
-    def register(self, neuron, compartment, depth, location):
+    def register(self, neuron, compartment, compartment_index, location):
         if not(self.isPointWithinBounds(location)):
             return
             
-        key = location.toIntTuple()
-        if key in self.layers[depth]:
-            self.layers[depth][key].append((neuron, compartment))
+        depth   = neuron.layer.layer_depth    
+        key     = location.toIntTuple()
+        if key in self.grid_layers[depth]:
+            self.grid_layers[depth][key].append((neuron, compartment, compartment_index))
         else:
-            self.layers[depth][key] = [(neuron, compartment)]
+            self.grid_layers[depth][key] = [(neuron, compartment, compartment_index)]
             
     def getOverlappingNeurons(self, neuron, location):
         key = location.toIntTuple()
         depth = neuron.layer_depth
-        if key in self.layers[depth]:
+        if key in self.grid_layers[depth]:
             overlap = []
-            for (other_neuron, other_compartment) in self.layers[depth][key]:
+            for (other_neuron, other_compartment, other_index) in self.grid_layers[depth][key]:
                 if neuron != other_neuron:
-                    overlap.append((other_neuron, other_compartment))
+                    overlap.append((other_neuron, other_compartment, other_index))
             return overlap 
         return []
         
@@ -135,14 +153,6 @@ class Retina:
         parameterFile.write(str(self))
         parameterFile.close()
 
-    def addStarburst(self):       
-        from StarburstMorphology import StarburstMorphology
-        from Starburst import Starburst
-        starburst_morphology = StarburstMorphology(self)
-        starburst = Starburst(None, starburst_morphology, Vector2D(200.0,200.0))
-        starburst.registerWithRetina()
-        starburst.initializeInputs()
-        return starburst
 
     """
     This function runs the retina model for a specified duration
@@ -161,7 +171,7 @@ class Retina:
     def updateActivity(self):
         print self.time
         
-        self.stimulus.update(self.timestep)
+        self.stimulus.update(self.timestep) 
         
         if self.cone_layer != None:
             cone_activity = self.cone_layer.updateActivity()
@@ -178,12 +188,22 @@ class Retina:
         if self.off_bipolar_layer != None:
             off_bipolar_activity = self.off_bipolar_layer.update()
             self.off_bipolar_activities.append(off_bipolar_activity)
+            
+        if self.on_starburst_layer != None:
+            on_starburst_activity = self.on_starburst_layer.update()
+            self.on_starburst_activities.append(on_starburst_activity)
+            
+        if self.off_starburst_layer != None:
+            off_starburst_activity = self.off_starburst_layer.update()
+            self.off_starburst_activities.append(off_starburst_activity)
+
 
     def buildConeLayer(self, minimum_distance, minimum_density, input_field_size):
         start_time = clock()
         self.cone_layer = ConeLayer(self, minimum_distance, minimum_density,
                                     input_field_size, self.history_size, self.stimulus)
         print "Cone Layer Construction Time:", clock() - start_time
+        self.layers[0] = self.cone_layer
 
     def buildHorizontalLayer(self, input_strength, decay_rate, diffusion_radius):
         input_delay = 1
@@ -192,6 +212,7 @@ class Retina:
                                                 self.history_size, input_strength,
                                                 decay_rate, diffusion_radius)
         print "Horizontal Layer Construction Time:", clock() - start_time
+        self.layers[1] = self.horizontal_layer
 
     def buildBipolarLayer(self, minimum_distance, minimum_density, input_field_radius, output_field_radius):
         input_delay = 1
@@ -201,11 +222,13 @@ class Retina:
                                              self.history_size, input_delay, layer_depth,
                                              minimum_distance, minimum_density,
                                              input_field_radius, output_field_radius)
-#        self.off_bipolar_layer = BipolarLayer(self, "Off", self.cone_layer, self.horizontal_layer,
-#                                              self.history_size, input_delay, layer_depth,
-#                                              minimum_distance, minimum_density,
-#                                              input_field_radius, output_field_radius)
+        self.off_bipolar_layer = BipolarLayer(self, "Off", self.cone_layer, self.horizontal_layer,
+                                              self.history_size, input_delay, layer_depth,
+                                              minimum_distance, minimum_density,
+                                              input_field_radius, output_field_radius)
         print "On and Off Bipolar Layers Construction Time:", clock() - start_time
+        self.layers[2] = self.on_bipolar_layer
+        self.layers[3] = self.off_bipolar_layer
     
     def buildStarburstLayer(self, minimum_distance, minimum_density):
         input_delay = 1
@@ -213,13 +236,10 @@ class Retina:
         start_time = clock()
         self.on_starburst_layer = StarburstLayer(self, "On", layer_depth, 
                                                  self.history_size, input_delay, 
+                                                 minimum_distance, minimum_density)                                                    
+        self.off_starburst_layer = StarburstLayer(self, "Off", layer_depth, 
+                                                 self.history_size, input_delay, 
                                                  minimum_distance, minimum_density)
-                                                 
-        
-#        self.off_starburst_layer = StarburstLayer(self, "Off", None, layer_depth, 
-#                                                 self.history_size, input_delay,  
-#                                                 minimum_distance,
-#                                                 minimum_density,
-#                                                 visualize_growth = False,
-#                                                 display=None)
         print "On and Off Starburst Layers Construction Time", clock() - start_time
+        self.layers[4] = self.on_starburst_layer
+        self.layers[5] = self.off_starburst_layer

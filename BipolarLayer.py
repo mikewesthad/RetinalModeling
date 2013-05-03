@@ -50,7 +50,6 @@ class BipolarLayer:
         self.compartmentalize()
         self.establishInputs()
     
-    
     def establishInputs(self):
         for neuron in self.neurons:
             neuron.establishInputs()
@@ -72,9 +71,13 @@ class BipolarLayer:
         for neuron in self.neurons:
             neuron.compartmentalize(self.compartment)
             
-    def draw(self, surface, scale=1.0):
+    def draw(self, surface, radius=None, color=None, scale=1.0):
+        if color == None: 
+            if self.bipolar_type == "On": color = self.retina.on_bipolar_color
+            if self.bipolar_type == "Off": color = self.retina.off_bipolar_color
+        if radius == None: radius = self.nearest_neighbor_distance_gridded / 2.0
         for neuron in self.neurons:
-            neuron.draw(surface, scale=scale)
+            neuron.draw(surface, radius=radius, color=color, scale=scale)
             
     def __str__(self):
         string = ""
