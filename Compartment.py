@@ -9,10 +9,7 @@ class Compartment:
         self.retina         = neuron.retina
         self.history_size   = neuron.history_size 
         
-        self.gridded_locations  = []
-        self.centroid = None
-        self.heading = None
-        
+        self.gridded_locations  = []       
         self.neurotransmitters_input_weights    = {}
         self.neurotransmitters_output_weights   = {}
             
@@ -143,10 +140,10 @@ class GrowingCompartment(Compartment):
         vertices = [v1.toTuple(), v2.toTuple(), v4.toTuple(), v3.toTuple()]
         return vertices
         
-    def draw(self, surface, scale=1.0, draw_points=False, draw_text=False):
+    def draw(self, surface, color=None, scale=1.0, draw_points=False, draw_text=False):
         # This function assumes compartments are 1 line segment - check bottom 
         # of file for old draw command
-        
+        if color == None: color = self.color
         if draw_points:
             for point in self.points:
                 point.draw(surface, scale=scale)
@@ -155,7 +152,7 @@ class GrowingCompartment(Compartment):
         a           = (self.neuron.location + self.line_points[0]) * scale
         b           = (self.neuron.location + self.line_points[1]) * scale
         vertices    = self.buildQuadFromLine(a, b, 2.0/3.0 * scale)
-        pygame.draw.polygon(surface, self.color, vertices)  
+        pygame.draw.polygon(surface, color, vertices)  
             
         if draw_text:
             pygame.init()

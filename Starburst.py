@@ -21,6 +21,7 @@ class Starburst(object):
         self.diffusion_weights      = self.morphology.diffusion_weights
         self.diffusion_strength     = self.morphology.diffusion_strength
         
+        self.compartment_inputs = [] 
         self.activities = []
         self.neurotransmitter_ouputs = []
         for i in range(self.history_size):
@@ -45,7 +46,8 @@ class Starburst(object):
     def establishInputs(self, isAppropriateInput=None):
         if isAppropriateInput==None:  
             isAppropriateInput = self.isAppropriateInput
-        self.compartment_inputs = []        
+        self.compartment_inputs = []
+        #compartment_index (at which there is a list of input_compartments): [ [(neuron, compartment), freq], ...]        
         for compartment in self.compartments:
             self.compartment_inputs.append([])
             for location in compartment.gridded_locations:

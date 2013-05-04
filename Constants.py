@@ -32,9 +32,10 @@ PAPUA_NEW_GUINEA    = [(252,235,182),(94,65,47),(120,192,168),(240,120,24),(240,
 ICED_COFFEE         = [(231,243,239),(140,100,41),(85,195,220),(226,75,44),(115,114,109)]
 
 #Monochromatic color palettes
-black = (0, 0, 0)
-white = (255, 255, 255)
-background = white
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+background = WHITE
 num_steps = 5
 light_cutoff = 1.0  #0.0 - 1.0, 1 is full scale
 dark_cutoff = .5    #0.0 - 1.0, 0 is full scale
@@ -43,7 +44,6 @@ REDS, GREENS, BLUES = [], [], []
 darkest = round(255 * dark_cutoff)
 for i in range(num_steps):
     value = int(round(i*step+darkest))
-    print(value)
     REDS.append((value, 0, 0))
     GREENS.append((0, value, 0))
     BLUES.append((0, 0, value))
@@ -56,7 +56,7 @@ REDS.reverse()
 GREENS.reverse()
 BLUES.reverse()
 
-
+import random
 import pygame
 from pygame.locals import *
 import numpy as np
