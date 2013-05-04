@@ -34,6 +34,8 @@ class Retina:
         self.off_starburst_layer    = None
         self.layers = [self.cone_layer, self.horizontal_layer, self.on_bipolar_layer,
                        self.off_bipolar_layer, self.on_starburst_layer, self.off_starburst_layer]
+        self.layer_names = ["Cone", "Horizontal", "On Bipolar", "Off Bipolar", "On Starburst", "Off Starburst"]
+        self.number_layers = len(self.layers)
         
         self.cone_activities            = []
         self.horizontal_activities      = []
@@ -43,7 +45,7 @@ class Retina:
         self.off_starburst_activities   = []
         self.activities = [self.cone_activities, self.horizontal_activities, self.on_bipolar_activities,
                            self.off_bipolar_activities, self.on_starburst_activities, self.off_starburst_activities]
-        
+        self.activity_bounds = [[], [], [], [], [], []]
         
         self.background_color       = pygame.Color(255, 255, 255)
         self.cone_color             = pygame.Color("#FFCF87")
@@ -57,13 +59,7 @@ class Retina:
         for depth in range(1):
             grid = {}
             self.grid_layers.append(grid)
-            
-    def loadPast(self, timestep):
-        for layer_index in range(0, 1):
-            layer       = self.layers[layer_index]
-            activities  = self.activities[layer_index]
-            if layer != None:
-                layer.loadPast(activities[timestep])       
+                
         
     def isPointWithinBounds(self, point):
         if point.x < 0: return False
@@ -160,10 +156,17 @@ class Retina:
     def runModel(self, duration):
         end_time = self.time + duration
         
+        for i in range(20):
+            self.on_starburst_layer.neurons[0].activities[0][0, 0] = -1.0
+        for i in range(20,40):
+            self.on_starburst_layer.neurons[0].activities[0][0, 1] = 1.0
+        
+        
         while self.time <= end_time:
             self.updateActivity()
             self.time += self.timestep
     
+        self.findRetinaActivityBounds()
         
     """
     This function updates each of the layers of the retina in turn
@@ -173,29 +176,37 @@ class Retina:
         
         self.stimulus.update(self.timestep) 
         
-        if self.cone_layer != None:
-            cone_activity = self.cone_layer.updateActivity()
-            self.cone_activities.append(cone_activity)
-        
-        if self.horizontal_layer != None:
-            horizontal_activity = self.horizontal_layer.updateActivity()
-            self.horizontal_activities.append(horizontal_activity)
-        
-        if self.on_bipolar_layer != None:
-            on_bipolar_activity = self.on_bipolar_layer.update()
-            self.on_bipolar_activities.append(on_bipolar_activity)
-        
-        if self.off_bipolar_layer != None:
-            off_bipolar_activity = self.off_bipolar_layer.update()
-            self.off_bipolar_activities.append(off_bipolar_activity)
+        for layer_index in range(self.number_layers):
+            layer           = self.layers[layer_index]
+            activities      = self.activities[layer_index]
+            new_activity    = layer.update()
+            activities.append(new_activity)
             
-        if self.on_starburst_layer != None:
-            on_starburst_activity = self.on_starburst_layer.update()
-            self.on_starburst_activities.append(on_starburst_activity)
+        print np.sum(self.activities[4])
             
-        if self.off_starburst_layer != None:
-            off_starburst_activity = self.off_starburst_layer.update()
-            self.off_starburst_activities.append(off_starburst_activity)
+#        if self.cone_layer != None:
+#            cone_activity = self.cone_layer.updateActivity()
+#            self.cone_activities.append(cone_activity)
+#        
+#        if self.horizontal_layer != None:
+#            horizontal_activity = self.horizontal_layer.updateActivity()
+#            self.horizontal_activities.append(horizontal_activity)
+#        
+#        if self.on_bipolar_layer != None:
+#            on_bipolar_activity = self.on_bipolar_layer.update()
+#            self.on_bipolar_activities.append(on_bipolar_activity)
+#        
+#        if self.off_bipolar_layer != None:
+#            off_bipolar_activity = self.off_bipolar_layer.update()
+#            self.off_bipolar_activities.append(off_bipolar_activity)
+#            
+#        if self.on_starburst_layer != None:
+#            on_starburst_activity = self.on_starburst_layer.update()
+#            self.on_starburst_activities.append(on_starburst_activity)
+#            
+#        if self.off_starburst_layer != None:
+#            off_starburst_activity = self.off_starburst_layer.update()
+#            self.off_starburst_activities.append(off_starburst_activity)
 
 
     def buildConeLayer(self, minimum_distance, minimum_density, input_field_size):
@@ -230,16 +241,77 @@ class Retina:
         self.layers[2] = self.on_bipolar_layer
         self.layers[3] = self.off_bipolar_layer
     
-    def buildStarburstLayer(self, minimum_distance, minimum_density):
+    def buildStarburstLayer(self, minimum_distance, minimum_density, 
+                            average_wirelength, step_size, 
+                            input_strength, decay_rate, diffusion_width):
         input_delay = 1
         layer_depth = 0
+        minimum_distance    /= self.grid_size
+        diffusion_width     /= self.grid_size
+        average_wirelength  /= self.grid_size
+        step_size           /= self.grid_size
         start_time = clock()
         self.on_starburst_layer = StarburstLayer(self, "On", layer_depth, 
                                                  self.history_size, input_delay, 
-                                                 minimum_distance, minimum_density)                                                    
+                                                 minimum_distance, minimum_density,
+                                                 average_wirelength, step_size,
+                                                 diffusion_width, decay_rate,
+                                                 input_strength)                                                    
         self.off_starburst_layer = StarburstLayer(self, "Off", layer_depth, 
                                                  self.history_size, input_delay, 
-                                                 minimum_distance, minimum_density)
+                                                 minimum_distance, minimum_density,
+                                                 average_wirelength, step_size,
+                                                 diffusion_width, decay_rate,
+                                                 input_strength)              
         print "On and Off Starburst Layers Construction Time", clock() - start_time
         self.layers[4] = self.on_starburst_layer
         self.layers[5] = self.off_starburst_layer
+    
+    
+    
+    ###########################################################################
+    # Visualization Related Methods
+    ###########################################################################
+    
+    def loadPast(self, timestep):
+        for layer_index in range(self.number_layers):
+            layer       = self.layers[layer_index]
+            activities  = self.activities[layer_index]
+            if layer != None:
+                layer.loadPast(activities[timestep])       
+    
+    def drawLayerActivity(self, surface, layer_name, colormap, scale=1.0):
+        if layer_name != None:
+            layer_index     = self.layer_names.index(layer_name)
+            layer           = self.layers[layer_index]
+            activity_bounds = self.activity_bounds[layer_index]
+            layer.drawActivity(surface, colormap, activity_bounds, scale=scale)
+    
+    def findRetinaActivityBounds(self):
+        for layer_index in range(self.number_layers):
+            layer       = self.layers[layer_index]
+            activities  = self.activities[layer_index]
+            layer_name  = self.layer_names[layer_index]
+            if layer != None:
+                bounds = self.findActivityBounds(activities, -1, 1, True)
+                self.activity_bounds[layer_index] = bounds
+                print "{0} Activity Bounds: ({1:.3f}, {2:.3f})".format(layer_name, bounds[0], bounds[1])
+        
+    def findActivityBounds(self, activities, estimated_min, estimated_max, activity_centered_on_zero):
+        # Find the real max/min activity values
+        max_activity = np.amax(activities)
+        min_activity = np.amin(activities)
+        print "Activity Bounds: ({0:.3f}, {1:.3f})".format(min_activity, max_activity)
+        
+        # Impose an estimated max/min
+        max_activity    = max(max_activity, estimated_max)
+        min_activity    = min(min_activity, estimated_min)
+        
+        # If the range of activity values is expected to be symmetric and
+        # centered on zero, then the max and min values should be equal
+        if activity_centered_on_zero:
+            bound           = max(abs(max_activity), abs(min_activity))
+            max_activity    = bound
+            min_activity    = -bound
+        
+        return [min_activity, max_activity] 

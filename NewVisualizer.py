@@ -89,6 +89,7 @@ class Visualizer:
     
     def mainloop(self):  
         running = True
+        clock = pygame.time.Clock()
         while running:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             mouse_click = False   
@@ -100,11 +101,20 @@ class Visualizer:
                     if event.type == MOUSEBUTTONUP:
                         if event.button == 1:
                             mouse_click = True
+                    
+            # Hack to allow LEFT/RIGHT arrows to simulate button press
+            if pygame.key.get_pressed()[K_LEFT]: 
+                self.timestep -= 1
+                if self.timestep < 0: self.timestep = self.end_timestep
+            elif pygame.key.get_pressed()[K_RIGHT]:            
+                self.timestep += 1
+                if self.timestep > self.end_timestep: self.timestep = 0
                             
             buttons_pressed = self.updateControlSurface(mouse_x, mouse_y, mouse_click)
             self.updateVisualizationSurface(buttons_pressed, mouse_x, mouse_y)
             
             pygame.display.update()
+            clock.tick(60)
     
     
     
@@ -140,28 +150,20 @@ class Visualizer:
         self.on_starburst_activities    = r.on_starburst_activities
         self.off_starburst_activities   = r.off_starburst_activities
         
-        self.cone_activity_bounds           = self.findActivityBounds(self.cone_activities, -1, 1, True)
-        self.horizontal_activity_bounds     = self.findActivityBounds(self.horizontal_activities, -1, 1, True)
-        self.on_bipolar_activity_bounds     = self.findActivityBounds(self.cone_activities, -1, 1, True)
-        self.off_bipolar_activity_bounds    = self.findActivityBounds(self.cone_activities, -1, 1, True)
-        self.on_starburst_activity_bounds   = self.findActivityBounds(self.on_starburst_activities, -1, 1, True)
-        self.off_starburst_activity_bounds  = self.findActivityBounds(self.off_starburst_activities, -1, 1, True)
-        
-        info = [["Cone", self.cone_activity_bounds], ["Horizontal", self.horizontal_activity_bounds],
-                ["On Bipolar", self.on_bipolar_activity_bounds], ["Off Bipolar", self.off_bipolar_activity_bounds],
-                ["On Starburst", self.on_starburst_activity_bounds], ["Off Starburst", self.off_starburst_activity_bounds]]
-        for cell_name, [min_bound, max_bound] in info:
-            print cell_name,"Activity Bounds: ({0:.3f}, {1:.3f})".format(min_bound, max_bound)
+        self.cone_activity_bounds           = r.activity_bounds[0]
+        self.horizontal_activity_bounds     = r.activity_bounds[1]
+        self.on_bipolar_activity_bounds     = r.activity_bounds[2]
+        self.off_bipolar_activity_bounds    = r.activity_bounds[3]
+        self.on_starburst_activity_bounds   = r.activity_bounds[4]
+        self.off_starburst_activity_bounds  = r.activity_bounds[5]
             
-        self.color_bounds = [pygame.Color(0,0,255), pygame.Color(255,0,0)]
+        self.colormap = [[-1.0, pygame.Color(0,0,255)], [0.0, pygame.Color(0,0,0)], [1.0, pygame.Color(255,0,0)]]
         
         self.timestep       = 0
         self.end_timestep   = len(self.cone_activities) - 1    
     
-    def visualizeCellPlacement(self, surface, cell_type):
-        
-        scale = self.visualization_scale        
-        if cell_type == "None":
+    def visualizeCellPlacement(self, surface, cell_type, scale=1.0):
+        if cell_type == None:
             self.on_starburst_layer.draw(surface, scale=scale)
             self.off_starburst_layer.draw(surface, scale=scale)
             self.on_bipolar_layer.draw(surface, scale=scale) 
@@ -186,82 +188,34 @@ class Visualizer:
             elif cell_type == "On Starburst":
                  self.on_starburst_layer.draw(surface, scale=scale)
             elif cell_type == "Off Starburst":
-                 self.off_starburst_layer.draw(surface, scale=scale)
-    
-                
-    def findActivityBounds(self, activities, estimated_min, estimated_max, activity_centered_on_zero):
-        # Find the real max/min activity values
-        max_activity = np.amax(activities)
-        min_activity = np.amin(activities)
-        
-        # Impose an estimated max/min
-        max_activity    = max(max_activity, estimated_max)
-        min_activity    = min(min_activity, estimated_min)
-        
-        # If the range of activity values is expected to be symmetric and
-        # centered on zero, then the max and min values should be equal
-        if activity_centered_on_zero:
-            bound           = max(abs(max_activity), abs(min_activity))
-            max_activity    = bound
-            min_activity    = -bound
-        
-        return [min_activity, max_activity] 
-             
-    def mapActivityToColor(self, activity, min_activity, max_activity, activity_centered_on_zero):
-        positive_activity_color         = pygame.Color(255, 0, 0)
-        zero_positive_activity_color    = pygame.Color(0, 0, 0)
-        negative_activity_color         = pygame.Color(0, 0, 255)
-        zero_negative_activity_color    = pygame.Color(0, 0, 0)
-        
-        if activity_centered_on_zero:
-            if activity < 0:
-                percent_from_zero_to_min = activity/min_activity
-                color = lerpColors(zero_negative_activity_color, negative_activity_color, percent_from_zero_to_min)
-            else:
-                percent_from_zero_to_max = activity/max_activity
-                color = lerpColors(zero_positive_activity_color, positive_activity_color, percent_from_zero_to_max)
-        else:
-            percent_from_min_to_max = (activity-min_activity) / (max_activity-min_activity)
-            color = self.lerpColors(zero_positive_activity_color, positive_activity_color, percent_from_min_to_max)
-            
-        return color
-                    
-    def playLayerActivity(self, surface, activities, locations, radius,
-                          min_activity, max_activity, activity_centered_on_zero=True):
-                             
-        number_neurons = activities[0].shape[1]
-        for n in range(number_neurons):
-            x, y        = locations[n]
-            activity    = activities[self.timestep][0,n]
-            color       = self.mapActivityToColor(activity, min_activity, max_activity, 
-                                                  activity_centered_on_zero)
-            pygame.draw.circle(surface, color, (x,y), radius) 
-            
+                 self.off_starburst_layer.draw(surface, scale=scale)            
         
     def updateVisualizationSurface(self, buttons_pressed, mouse_x, mouse_y):
-        self.visualization_surface.fill(self.visualization_background_color)
+        scale   = self.visualization_scale
+        surface = self.visualization_surface
+        
+        surface.fill(self.visualization_background_color)
         
         vis_button_pressed  = buttons_pressed[0]
         cell_button_pressed = buttons_pressed[1]
         
         if not(vis_button_pressed==None):
             vis_type = vis_button_pressed.name
-                        
-            if cell_button_pressed != None:     cell_type = cell_button_pressed.name
-            else:                               cell_type = "None"
+            
+            cell_type = None
+            if cell_button_pressed != None:     
+                cell_type = cell_button_pressed.name        
             
             if vis_type == "Soma Placement":
-                pygame.display.set_caption(vis_type + " " + cell_type)
-                self.visualizeCellPlacement(self.visualization_surface, cell_type)
+                pygame.display.set_caption(vis_type + " " + str(cell_type))
+                self.visualizeCellPlacement(surface, cell_type, scale)
+                    
             elif vis_type == "Activity":
-                pygame.display.set_caption(vis_type + " " + cell_type + " " + str(self.timestep))
-                if cell_type == "Cone":
+                if cell_type != None:
                     self.retina.loadPast(self.timestep)
-                    self.cone_layer.drawActivity(self.visualization_surface,
-                                                 self.color_bounds,
-                                                 self.cone_activity_bounds,
-                                                 scale=self.visualization_scale)
-                
+                    self.retina.drawLayerActivity(surface, cell_type, self.colormap, scale)
+                    pygame.display.set_caption(vis_type + " " + str(cell_type) + " " + str(self.timestep))
+                    
         self.screen_surface.blit(self.visualization_surface, self.visualization_position)
         
     

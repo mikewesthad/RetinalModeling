@@ -10,16 +10,15 @@ class Starburst(object):
         self.location           = location
         self.input_delay        = input_delay
         self.layer_depth        = layer_depth
-        self.retina             = morphology.retina
-        self.history_size       = morphology.history_size
+        self.retina             = layer.retina
+        self.history_size       = layer.history_size
         self.starburst_type     = starburst_type
         
         self.compartments           = self.morphology.compartments
         self.number_compartments    = len(self.compartments)
-        self.input_strength         = self.morphology.input_strength
-        self.decay_rate             = self.morphology.decay_rate
+        self.input_strength         = layer.input_strength
+        self.decay_rate             = layer.decay_rate
         self.diffusion_weights      = self.morphology.diffusion_weights
-        self.diffusion_strength     = self.morphology.diffusion_strength
         
         self.activities = []
         self.neurotransmitter_ouputs = []
@@ -31,6 +30,9 @@ class Starburst(object):
             for c in range(self.number_compartments):
                 self.neurotransmitter_ouputs[-1].append({})
         
+    def loadPast(self, activity):
+        self.activities[0] = activity
+        
     def drawInputs(self, surface, selected_compartment, scale=1.0):
         for (info, weight) in self.compartment_inputs[selected_compartment]:
             neuron, compartment, compartment_index = info
@@ -40,6 +42,18 @@ class Starburst(object):
         self.compartments[selected_compartment].color = (255,255,255)
         self.compartments[selected_compartment].draw(surface, scale=scale)
         self.morphology.location = Vector2D(0.0,0.0)
+    
+    def draw(self, surface, color=None, scale=1.0, draw_segments=False, draw_points=False, 
+             draw_compartments=False):
+        self.morphology.draw(surface, color=color, scale=scale, new_location=self.location,
+                             draw_points=draw_points, draw_segments=draw_segments,
+                             draw_compartments=draw_compartments)
+    
+    def drawActivity(self, surface, colormap, activity_bounds, scale=1.0):
+        activities = self.activities[0]
+        self.morphology.drawActivity(surface, colormap, activity_bounds, 
+                                     activities, scale=scale, 
+                                     new_location=self.location)
     
     def establishInputs(self):
         self.compartment_inputs = []        
@@ -66,11 +80,6 @@ class Starburst(object):
             compartment = self.compartments[compartment_index]
             compartment.registerWithRetina(self, compartment_index)
     
-    def draw(self, surface, color=None, scale=1.0, draw_segments=False, draw_points=False, 
-             draw_compartments=False):
-        self.morphology.draw(surface, color=color, scale=scale, new_location=self.location,
-                             draw_points=draw_points, draw_segments=draw_segments,
-                             draw_compartments=draw_compartments)
 
     def update(self):
         # Delete the oldest activity and get the current activity

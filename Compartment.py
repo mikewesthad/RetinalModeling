@@ -162,7 +162,7 @@ class GrowingCompartment(Compartment):
         
         a           = (self.neuron.location + self.line_points[0]) * scale
         b           = (self.neuron.location + self.line_points[1]) * scale
-        vertices    = self.buildQuadFromLine(a, b, 2.0/3.0 * scale)
+        vertices    = self.buildQuadFromLine(a, b, scale)
         pygame.draw.polygon(surface, color, vertices)  
             
         if draw_text:

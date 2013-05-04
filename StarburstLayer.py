@@ -8,24 +8,31 @@ class StarburstLayer:
     
     def __init__(self, retina, starburst_type, layer_depth, history_size,
                  input_delay, nearest_neighbor_distance, minimum_required_density,
-                 number_morphologies=1, visualize_growth=False, display=None):
+                 average_wirelength, step_size, diffusion_width, decay_rate, 
+                 input_strength, number_morphologies=1, visualize_growth=False, display=None):
                      
         self.retina             = retina
         self.starburst_type     = starburst_type
         self.layer_depth        = layer_depth
         self.history_size       = history_size
         self.input_delay        = input_delay
+        self.diffusion_width    = diffusion_width
+        self.decay_rate         = decay_rate
+        self.input_strength     = input_strength
     
         # Generate unique morphologies
         self.morphologies = []
         for i in range(number_morphologies):
             morphology = StarburstMorphology(retina, history_size=history_size,
+                                             diffusion_width=diffusion_width,
+                                             average_wirelength=average_wirelength,
+                                             step_size=step_size,
                                              visualize_growth=visualize_growth,
                                              display=display)
             self.morphologies.append(morphology)    
         
         # Generate soma locations
-        self.nearest_neighbor_distance  = nearest_neighbor_distance / retina.grid_size
+        self.nearest_neighbor_distance  = nearest_neighbor_distance
         self.minimum_required_density   = minimum_required_density
         self.minimum_required_cells     = int(minimum_required_density * (retina.area/retina.density_area))
         self.placeNeurons()
@@ -34,7 +41,8 @@ class StarburstLayer:
         # Instantiate starbursts
         self.neurons = []
         for i in range(self.number_neurons):
-            location    = self.locations[i]
+#            location    = self.locations[i]
+            location = Vector2D(200.0, 200.0)
             morphology  = choice(self.morphologies)
             starburst   = Starburst(self, morphology, location, starburst_type, input_delay, layer_depth)
             self.neurons.append(starburst)
@@ -43,6 +51,15 @@ class StarburstLayer:
         
         self.establishInputs()
     
+    def loadPast(self, activity):
+        for neuron_index in range(self.number_neurons):
+            neuron = self.neurons[neuron_index]
+            neuron.loadPast(activity[neuron_index])
+                  
+    def drawActivity(self, surface, colormap, activity_bounds, scale=1.0):
+        for neuron in self.neurons:
+            neuron.drawActivity(surface, colormap, activity_bounds, scale=scale)
+        
     def draw(self, surface, color=None, scale=1.0):
         if color==None: 
             if self.starburst_type == "On": color = self.retina.on_starburst_color

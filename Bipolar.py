@@ -19,7 +19,16 @@ class Bipolar:
             self.neurotransmitter_ouputs.append([{}])
             
         self.inputs = []
-        
+    
+    def loadPast(self, activity):
+        self.activities[0] = activity
+    
+    def drawActivity(self, surface, radius, colormap, activity_bounds, scale=1.0):
+        min_activity, max_activity = activity_bounds  
+        activity = self.activities[0]
+        color = getColorFromActivity(colormap, activity) 
+        location = (self.location * scale).toIntTuple()
+        pygame.draw.circle(surface, color, location, radius)      
         
     def draw(self, surface, radius, color, scale=1.0):            
         location = (self.location * scale).toIntTuple()        
@@ -39,8 +48,10 @@ class Bipolar:
             horizontal_activity     = horizontal_activities[0, triad_number]
             
             if self.layer.bipolar_type == "On":
+#                triad_activity = -cone_activity 
                 triad_activity = -(cone_activity - horizontal_activity)/2.0  
             else: 
+#                triad_activity = cone_activity
                 triad_activity = (cone_activity - horizontal_activity)/2.0
             
             new_activity += triad_weight * triad_activity

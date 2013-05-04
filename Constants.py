@@ -10,6 +10,24 @@ def lerpColors(color1, color2, fraction):
     g = color1.g + fraction * (color2.g - color1.g)
     b = color1.b + fraction * (color2.b - color1.b)
     return pygame.Color(int(r),int(g),int(b))
+    
+def getColorFromActivity(colormap, activity):
+    
+    for index in range(len(colormap)-1):
+        value1, color1 = colormap[index]
+        value2, color2 = colormap[index+1]
+        if activity <= value2:      # This implicitly handles cases when activity < colormap
+            fraction = (activity - value1) / (value2 - value1)
+            new_color = lerpColors(color1, color2, fraction)
+            return new_color
+    
+    # Value above the maximum of the colormap
+    print "Activity value above maximum of colormap", activity
+    return color2
+            
+            
+BLUE_RED_COLORMAP = [[-1.0, pygame.Color(0,0,255)], [0.0, pygame.Color(0,0,0)], [1.0, pygame.Color(255,0,0)]]
+
 
 UM_TO_M = 1/1000000.0
 M_TO_UM = 1/UM_TO_M

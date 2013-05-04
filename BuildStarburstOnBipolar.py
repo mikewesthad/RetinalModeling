@@ -7,8 +7,8 @@ from random import randint
 framerate               = 30.0              # Fps
 movie_size              = (400, 400)        # Pixels
 bar_orientation         = 45.0              # Degrees clockwise on circle
-bar_size                = (40.0, 120.0)     # Pixels (width = size in direction of motion)
-bar_speed               = 200.0              # Pixels/second
+bar_size                = (20.0, 120.0)     # Pixels (width = size in direction of motion)
+bar_speed               = 50.0              # Pixels/second
 bar_movement_distance   = 500.0             # Pixels
 bar_position            = (100, 100)        # Pixels
 bar_color               = (0, 0, 0)         # (R,G,B)
@@ -46,7 +46,7 @@ cone_input_size     = 10 * UM_TO_M
 retina.buildConeLayer(cone_distance, cone_density, cone_input_size)
 
 # Build the horizontal Layer
-input_strength      = 0.5
+input_strength      = 0.25
 decay_rate          = 0.01
 diffusion_radius    = 1 * UM_TO_M
 
@@ -54,7 +54,7 @@ retina.buildHorizontalLayer(input_strength, decay_rate, diffusion_radius)
 
 # Build the bipolar layer
 bipolar_distance    = 10 * UM_TO_M
-bipolar_density     = 100.0
+bipolar_density     = 10000.0
 input_field_radius  = 10 * UM_TO_M
 output_field_radius = 10 * UM_TO_M
 
@@ -62,12 +62,19 @@ retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius,
                          output_field_radius)
                          
 # Build the starburst layer
-starburst_distance = 50 * UM_TO_M
-starburst_density  = 1.0 / (retina.area/retina.density_area)
+starburst_distance  = 50 * UM_TO_M
+starburst_density   = 1.0 / (retina.area/retina.density_area)
+average_wirelength  = 150 * UM_TO_M
+step_size           = 15 * UM_TO_M
+input_strength      = 1.0
+decay_rate          = 0.0
+diffusion_radius    = 15 * UM_TO_M
 
-retina.buildStarburstLayer(starburst_distance, starburst_density)
+retina.buildStarburstLayer(starburst_distance, starburst_density,
+                           average_wirelength, step_size,
+                           input_strength, decay_rate, diffusion_radius) 
     
-retina.runModel(3*timestep)
+retina.runModel(20*timestep)
 
 from NewVisualizer import Visualizer
 v = Visualizer(retina)

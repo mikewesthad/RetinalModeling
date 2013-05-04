@@ -6,11 +6,10 @@ from Constants import *
 
 class StarburstMorphology(object):
     
-    def __init__(self, retina, history_size=4, location=Vector2D(0.0, 0.0), average_wirelength=50*UM_TO_M, 
+    def __init__(self, retina, history_size=4, location=Vector2D(0.0, 0.0), average_wirelength=50, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
-                 step_size=15*UM_TO_M, max_segment_length=35*UM_TO_M, children_deviation=20, 
+                 step_size=15, max_segment_length=35*UM_TO_M, children_deviation=20, 
                  dendrite_vision_radius=30*UM_TO_M, diffusion_width=15*UM_TO_M,
-                 diffusion_strength=1.0, decay_rate=0.1, input_strength=0.5,
                  color_palette=GOLDFISH, draw_location=Vector2D(0.0,0.0), visualize_growth=False, scale=1.0,
                  display=None):
         
@@ -30,14 +29,14 @@ class StarburstMorphology(object):
         grid_size               = retina.grid_size
     
         # Wirelength variables
-        average_wirelength      = average_wirelength / grid_size
+        average_wirelength      = average_wirelength
         max_wirelength          = average_wirelength * (1.0+radius_deviation)
         min_wirelength          = average_wirelength * (1.0-radius_deviation)
         self.bounding_radius    = max_wirelength
         
         # Dendrite variables
         self.heading_deviation      = heading_deviation
-        self.step_size              = step_size / grid_size
+        self.step_size              = step_size
         self.max_segment_length     = max_segment_length / grid_size
         self.dendrite_vision_radius = dendrite_vision_radius / grid_size
         
@@ -74,10 +73,7 @@ class StarburstMorphology(object):
         self.establishCompartmentSynapses()
         
         # Establish variables needed for activity
-        self.decay_rate         = decay_rate
-        self.input_strength     = input_strength
-        self.diffusion_width    = diffusion_width / retina.grid_size
-        self.diffusion_strength = diffusion_strength
+        self.diffusion_width    = diffusion_width
         self.establisthLineSegmentDiffusionWeights()
         
     def grow(self):
@@ -295,8 +291,23 @@ class StarburstMorphology(object):
                 
         # Shift the cell's location back to the original
         self.location = old_location
+    
+    def drawActivity(self, surface, colormap, activity_bounds, activities, scale=1.0, new_location=None):
         
-  
+        # Shift the cell's location
+        if new_location == None: 
+            new_location = self.location
+        old_location = self.location
+        self.location = new_location   
+        
+        for compartment_index in range(len(self.compartments)):
+            compartment = self.compartments[compartment_index]
+            activity    = activities[0, compartment_index]
+            color       = getColorFromActivity(colormap, activity)         
+            compartment.draw(surface, scale=scale, color=color, draw_text=False)
+                
+        # Shift the cell's location back to the original
+        self.location = old_location 
 
 
 

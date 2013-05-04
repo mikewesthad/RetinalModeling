@@ -28,6 +28,22 @@ class HorizontalLayer:
         
         self.decay_rate         = decay_rate
         self.input_strength     = input_strength
+        
+        
+    def loadPast(self, activity):
+        self.activities[0] = activity
+    
+    def drawActivity(self, surface, colormap, activity_bounds, radius=None, scale=1.0):
+        if radius == None: radius = self.nearest_neighbor_distance_gridded/2.0
+        min_activity, max_activity = activity_bounds
+        
+        radius  = int(radius*scale)
+        for n in range(self.neurons):
+            activity = self.activities[0][0, n]
+            color = getColorFromActivity(colormap, activity)    
+            x, y = self.locations[n]
+            x, y = int(x*scale), int(y*scale)
+            pygame.draw.circle(surface, color, (x, y), radius) 
     
     def draw(self, surface, inflate_radius=0.0, radius=None, color=None, scale=1.0):     
         if radius == None: radius = self.nearest_neighbor_distance_gridded/2.0
@@ -93,7 +109,7 @@ class HorizontalLayer:
     """
     Update the horizontal cell activity based on diffusion, decay and cone activity 
     """      
-    def updateActivity(self):
+    def update(self):
         # Delete the oldest activity and get the current activity
         del self.activities[-1]
         last_activity = self.activities[0]

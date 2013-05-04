@@ -71,13 +71,25 @@ class BipolarLayer:
         for neuron in self.neurons:
             neuron.compartmentalize(self.compartment)
             
+    def loadPast(self, activity):
+        for neuron_index in range(self.number_neurons):
+            neuron = self.neurons[neuron_index]
+            neuron.loadPast(activity[0, neuron_index])
+            
+    def drawActivity(self, surface, colormap, activity_bounds, radius=None, scale=1.0):
+        if radius == None: radius = self.nearest_neighbor_distance_gridded/2.0
+        
+        radius = int(radius*scale)
+        for neuron in self.neurons:
+            neuron.drawActivity(surface, radius, colormap, activity_bounds, scale=scale)
+            
     def draw(self, surface, radius=None, color=None, scale=1.0):
         if color == None: 
             if self.bipolar_type == "On": color = self.retina.on_bipolar_color
             if self.bipolar_type == "Off": color = self.retina.off_bipolar_color
         if radius == None: radius = self.nearest_neighbor_distance_gridded / 2.0
         for neuron in self.neurons:
-            neuron.draw(surface, radius=radius, color=color, scale=scale)
+            neuron.draw(surface, radius, color=color, scale=scale)
             
     def __str__(self):
         string = ""
