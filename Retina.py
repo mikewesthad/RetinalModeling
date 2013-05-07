@@ -154,13 +154,7 @@ class Retina:
     This function runs the retina model for a specified duration
     """
     def runModel(self, duration):
-        end_time = self.time + duration
-        
-        for i in range(20):
-            self.on_starburst_layer.neurons[0].activities[0][0, 0] = -1.0
-        for i in range(20,40):
-            self.on_starburst_layer.neurons[0].activities[0][0, 1] = 1.0
-        
+        end_time = self.time + duration       
         
         while self.time <= end_time:
             self.updateActivity()
@@ -178,12 +172,11 @@ class Retina:
         
         for layer_index in range(self.number_layers):
             layer           = self.layers[layer_index]
-            activities      = self.activities[layer_index]
-            new_activity    = layer.update()
-            activities.append(new_activity)
-            
-        print np.sum(self.activities[4])
-            
+            if layer != None:
+                activities      = self.activities[layer_index]
+                new_activity    = layer.update()
+                activities.append(new_activity)
+                
 #        if self.cone_layer != None:
 #            cone_activity = self.cone_layer.updateActivity()
 #            self.cone_activities.append(cone_activity)
