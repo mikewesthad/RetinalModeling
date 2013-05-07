@@ -23,7 +23,8 @@ class Compartment:
         for nt, nt_amount in neurotransmitter_inputs.iteritems():
             if nt in self.neurotransmitters_input_weights:
                 weight = self.neurotransmitters_input_weights[nt]
-                input_potential = weight * neuron.layer.neurotransmitterToPotential(nt_amount)
+#                input_potential = weight * neuron.layer.neurotransmitterToPotential(nt_amount)
+                input_potential = neuron.layer.neurotransmitterToPotential(weight * nt_amount)
                 total_potential += input_potential
                 number_potentials += 1.0
                 

@@ -127,6 +127,9 @@ class Starburst(object):
             for [other_neuron, other_compartment, other_index], points_overlap in inputs: 
                 other_nt_outputs = other_neuron.neurotransmitter_ouputs[self.input_delay][other_index]
                 for nt, nt_amount in other_nt_outputs.iteritems():
+                    # This might be hacked and may need to be re-evaluated
+                    # Normalzing by the max amount of input nt I could have recieved
+                    # Only works when nt amounts scale between 0 and 1
                     if nt in nt_inputs:
                         nt_inputs[nt]   += nt_amount * points_overlap
                         nt_maxes[nt]    += other_compartment.neurotransmitters_output_weights[nt] * points_overlap
