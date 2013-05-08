@@ -105,34 +105,51 @@ class Starburst(object):
         
         # Add the up the concentration passed to each compartment and the amount 
         # of charge left after diffusion 
-        diffusionActivity = np.sum(differences, 0) + self_activities
+        diffusion_activity = np.sum(differences, 0) + self_activities
         
         # np.sum removes a dimension, so let's restore it.
-        diffusionActivity.shape = (1, self.number_compartments) 
+        diffusion_activity.shape = (1, self.number_compartments) 
         
-        # Calculate the diffusion
-        d = self.decay_rate
-        diffusionActivity = (1.0-d) * diffusionActivity
-#        
-#        for compartment_index in range(self.number_compartments):
-#            compartment = self.compartments[compartment_index]
-#            inputs      = self.compartment_inputs[compartment_index]
-#            
-#            [other_neuron, other_compartment], points_overlap = inputs
-#            for nt, nt_weight in other_compartment.neurotransmitters_output_weights.iteritems():
-#                other_neuron.neurotransmitter_ouputs[input_delay]
+        
+        input_activity = np.zeros((1, self.number_compartments))    
+        for compartment_index in range(self.number_compartments):
+            compartment = self.compartments[compartment_index]
+            inputs      = self.compartment_inputs[compartment_index]
+            
+            input_potential = 0.0
+            nt_inputs   = {}
+            nt_maxes    = {}
+            for [other_neuron, other_compartment, other_index], points_overlap in inputs: 
+                other_nt_outputs = other_neuron.neurotransmitter_ouputs[self.input_delay][other_index]
+                for nt, nt_amount in other_nt_outputs.iteritems():
+                    # This might be hacked and may need to be re-evaluated
+                    # Normalzing by the max amount of input nt I could have recieved
+                    # Only works when nt amounts scale between 0 and 1
+                    if nt in nt_inputs:
+                        nt_inputs[nt]   += nt_amount * points_overlap
+                        nt_maxes[nt]    += other_compartment.neurotransmitters_output_weights[nt] * points_overlap
+                    else:
+                        nt_inputs[nt]   = nt_amount * points_overlap
+                        nt_maxes[nt]    = other_compartment.neurotransmitters_output_weights[nt] * points_overlap
+            for nt in nt_inputs:
+                nt_inputs[nt] /= nt_maxes[nt]
+            input_potential = compartment.calculatePotentialFromNeurotransmitterInputs(self, nt_inputs)
+             
+            input_activity[0, compartment_index] = input_potential
+            
             
         
-        
+        # Calcualte the new activity
+        d = self.decay_rate
         i = self.input_strength
+        new_activity = i * input_activity + (1.0-i) * (1.0-d) * diffusion_activity
         
-#        
-#        # Get the bipolar activity
-#        
-#        # Find the new activity
-        new_activity = (1.0-i) * diffusionActivity #+ i * bipolar_inputs
         
+#        np.set_printoptions(precision=3, suppress=True, linewidth=300)
+#        print diffusion_activity
+#        print input_activity
+#        print new_activity
+            
         # Add the most recent activity to the front of the list
         self.activities.insert(0, new_activity)
-        
         return new_activity
