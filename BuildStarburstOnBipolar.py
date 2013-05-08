@@ -76,7 +76,7 @@ retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius,
     
 retina.runModel(20*timestep)
 
-from NewVisualizer import Visualizer
+from Visualizer import Visualizer
 v = Visualizer(retina)
 
                         

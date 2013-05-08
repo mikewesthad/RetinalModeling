@@ -1,7 +1,4 @@
-import numpy as np
-import pygame
-from pygame.locals import *
-
+from Constants import *
 
 class Visualizer:
     
@@ -60,7 +57,7 @@ class Visualizer:
         self.visualization_type_button_group = LinkedButtons(buttons)
         
         # Create a set of linked buttons to determine the cell type
-        cell_types = ["Cone", "Horizontal", "On Bipolar", "Off Bipolar"]
+        cell_types = ["Cone", "Horizontal", "On Bipolar", "Off Bipolar", "On Starburst", "Off Starburst"]
         buttons = []
         width, height = 200, 40
         dy = 40 + 20
@@ -92,6 +89,7 @@ class Visualizer:
     
     def mainloop(self):  
         running = True
+        clock = pygame.time.Clock()
         while running:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             mouse_click = False   
@@ -103,11 +101,20 @@ class Visualizer:
                     if event.type == MOUSEBUTTONUP:
                         if event.button == 1:
                             mouse_click = True
+                    
+            # Hack to allow LEFT/RIGHT arrows to simulate button press
+            if pygame.key.get_pressed()[K_LEFT]: 
+                self.timestep -= 1
+                if self.timestep < 0: self.timestep = self.end_timestep
+            elif pygame.key.get_pressed()[K_RIGHT]:            
+                self.timestep += 1
+                if self.timestep > self.end_timestep: self.timestep = 0
                             
             buttons_pressed = self.updateControlSurface(mouse_x, mouse_y, mouse_click)
             self.updateVisualizationSurface(buttons_pressed, mouse_x, mouse_y)
             
             pygame.display.update()
+            clock.tick(60)
     
     
     
@@ -115,260 +122,100 @@ class Visualizer:
         
         r = self.retina   
         
-        self.cone_color         = r.cone_color
-        self.horizontal_color   = r.horizontal_color
-        self.on_bipolar_color   = r.on_bipolar_color
-        self.off_bipolar_color  = r.off_bipolar_color
+        self.cone_layer             = r.cone_layer
+        self.horizontal_layer       = r.horizontal_layer
+        self.on_bipolar_layer       = r.on_bipolar_layer
+        self.off_bipolar_layer      = r.off_bipolar_layer
+        self.on_starburst_layer     = r.on_starburst_layer
+        self.off_starburst_layer    = r.off_starburst_layer
+        
+        self.cone_color             = r.cone_color
+        self.horizontal_color       = r.horizontal_color
+        self.on_bipolar_color       = r.on_bipolar_color
+        self.off_bipolar_color      = r.off_bipolar_color
+        self.on_starburst_color     = r.on_starburst_color
+        self.off_starburst_color    = r.off_starburst_color
         
         self.cone_color_deselected          = lerpColors(self.cone_color, self.visualization_background_color, 0.85)
         self.horizontal_color_deselected    = lerpColors(self.horizontal_color, self.visualization_background_color, 0.85)
         self.on_bipolar_color_deselected    = lerpColors(self.on_bipolar_color, self.visualization_background_color, 0.85)
         self.off_bipolar_color_deselected   = lerpColors(self.off_bipolar_color, self.visualization_background_color, 0.85)
+        self.on_starburst_color_deselected  = lerpColors(self.on_starburst_color, self.visualization_background_color, 0.85)
+        self.off_starburst_color_deselected = lerpColors(self.off_starburst_color, self.visualization_background_color, 0.85)
         
-        self.cone_neighbor_radius           = int(round(r.cone_layer.nearest_neighbor_distance_gridded/2.0 * self.visualization_scale))
-        self.horizontal_neighbor_radius     = int(round(r.horizontal_layer.nearest_neighbor_distance_gridded/2.0 * self.visualization_scale))
-        self.on_bipolar_neighbor_radius     = int(round(r.on_bipolar_layer.nearest_neighbor_distance_gridded/2.0 * self.visualization_scale))
-        self.off_bipolar_neighbor_radius    = int(round(r.off_bipolar_layer.nearest_neighbor_distance_gridded/2.0 * self.visualization_scale))
+        self.cone_activities            = r.cone_activities
+        self.horizontal_activities      = r.horizontal_activities
+        self.on_bipolar_activities      = r.on_bipolar_activities
+        self.off_bipolar_activities     = r.off_bipolar_activities
+        self.on_starburst_activities    = r.on_starburst_activities
+        self.off_starburst_activities   = r.off_starburst_activities
         
-        self.cone_input_radus           = int(round(r.cone_layer.input_field_radius_gridded * self.visualization_scale))
-        self.horizontal_input_radius    = int(round(r.cone_layer.input_field_radius_gridded * self.visualization_scale))
-        self.on_bipolar_input_radius    = int(round(r.on_bipolar_layer.input_field_radius_gridded * self.visualization_scale))
-        self.off_bipolar_input_radius   = int(round(r.off_bipolar_layer.input_field_radius_gridded * self.visualization_scale))
-        
-        self.cone_locations          = [[int(round(x * self.visualization_scale)), int(round(y * self.visualization_scale))] for x, y in r.cone_layer.locations]
-        self.horizontal_locations    = [[int(round(x * self.visualization_scale)), int(round(y * self.visualization_scale))] for x, y in r.horizontal_layer.locations]        
-        self.on_bipolar_locations    = [[int(round(x * self.visualization_scale)), int(round(y * self.visualization_scale))] for x, y in r.on_bipolar_layer.locations] 
-        self.off_bipolar_locations   = [[int(round(x * self.visualization_scale)), int(round(y * self.visualization_scale))] for x, y in r.off_bipolar_layer.locations] 
-        
-        self.cone_layer         = r.cone_layer
-        self.horizontal_layer   = r.horizontal_layer
-        self.on_bipolar_layer   = r.on_bipolar_layer
-        self.off_bipolar_layer  = r.off_bipolar_layer
-        
-        print "Cone Activities"
-        self.cone_activities = r.cone_activities
-        self.cone_activity_bounds = self.findActivityBounds(self.cone_activities, -1, 1, True)
-        
-        print "Horizontal Activities"
-        self.horizontal_activities = r.horizontal_activities
-        self.horizontal_activity_bounds = self.findActivityBounds(self.horizontal_activities, -1, 1, True)
-        
-        print "On Bipolar Activities"
-        self.on_bipolar_activities = r.on_bipolar_activities
-        self.on_bipolar_activity_bounds = self.findActivityBounds(self.cone_activities, -1, 1, True)
-        
-        print "Off Bipolar Activities"
-        self.off_bipolar_activities = r.off_bipolar_activities
-        self.off_bipolar_activity_bounds = self.findActivityBounds(self.cone_activities, -1, 1, True)
+        self.cone_activity_bounds           = r.activity_bounds[0]
+        self.horizontal_activity_bounds     = r.activity_bounds[1]
+        self.on_bipolar_activity_bounds     = r.activity_bounds[2]
+        self.off_bipolar_activity_bounds    = r.activity_bounds[3]
+        self.on_starburst_activity_bounds   = r.activity_bounds[4]
+        self.off_starburst_activity_bounds  = r.activity_bounds[5]
+            
+        self.colormap = [[-1.0, pygame.Color(0,0,255)], [0.0, pygame.Color(0,0,0)], [1.0, pygame.Color(255,0,0)]]
         
         self.timestep       = 0
-        self.end_timestep   = len(self.cone_activities) - 1
+        self.end_timestep   = len(self.cone_activities) - 1    
     
-    
-    
-    """
-    HACKED THIS ONLY WORKS FOR ON BIPOLAR CELLS
-    """
-    def visualizeInputWeights(self, surface, layer_locations, layer_neighbor_radius,
-                              layer_input_radius, input_locations, input_neighbor_radius,
-                              layer_selected_color, layer_deselected_color,
-                              input_color, mouse_x, mouse_y):
-        
-        # Find if the mouse is hovering over a cell
-        selected_cell = None        
-        number_neurons = len(layer_locations)
-        for n in range(number_neurons):
-            x, y = layer_locations[n]
-            if linearDistance(x, y, mouse_x, mouse_y) < layer_neighbor_radius:
-                selected_cell = n
-                break
-        
-        # Draw the cells in the layer
-        for n in range(number_neurons):
-            if n != selected_cell:
-                x, y = layer_locations[n]
-                pygame.draw.circle(surface, layer_deselected_color, (x, y), layer_neighbor_radius)
-        
-        # Draw the selected cell and its inputs
-        if selected_cell != None:
-            x, y = layer_locations[selected_cell]
-            pygame.draw.circle(surface, layer_selected_color, (x, y), layer_input_radius)
-                      
-            x, y = self.on_bipolar_layer.locations[selected_cell]
-            loc_ID  = str(x)+"."+str(y)
-            connected_inputs = self.on_bipolar_layer.inputs[loc_ID]
-            
-            for i in connected_inputs:
-                ID, w   = i
-                ix, iy  = ID.split(".")
-                ix, iy  = int(ix), int(iy)
-                display_x, display_y = int(round(ix * self.visualization_scale)), int(round(iy * self.visualization_scale))
-                color = lerpColors(self.visualization_background_color, input_color, w)
-                pygame.draw.circle(surface, color, (display_x, display_y), input_neighbor_radius)
-                
-    
-    
-    
-    def visualizeCellPlacement(self, surface, cell_type):
-        
-            if cell_type == "None":    
-                cone_color          = self.cone_color
-                horizontal_color    = self.horizontal_color
-                horizontal_radius   = int(round(self.horizontal_neighbor_radius + 3*self.visualization_scale))  # Inflate the radius so they are visible behind cones
-                on_bipolar_color    = self.on_bipolar_color
-                off_bipolar_color   = self.off_bipolar_color
-                drawOrder           = [[self.on_bipolar_locations, on_bipolar_color, self.on_bipolar_neighbor_radius],
-                                       [self.off_bipolar_locations, off_bipolar_color, self.off_bipolar_neighbor_radius],
-                                       [self.horizontal_locations, horizontal_color, horizontal_radius],
-                                       [self.cone_locations, cone_color, self.cone_neighbor_radius]] 
-            elif cell_type == "Cone":     
-                cone_color          = self.cone_color
-                horizontal_color    = self.horizontal_color_deselected
-                horizontal_radius   = int(round(self.horizontal_neighbor_radius + 3*self.visualization_scale))
-                on_bipolar_color    = self.on_bipolar_color_deselected
-                off_bipolar_color   = self.off_bipolar_color_deselected
-                drawOrder           = [[self.on_bipolar_locations, on_bipolar_color, self.on_bipolar_neighbor_radius],
-                                       [self.off_bipolar_locations, off_bipolar_color, self.off_bipolar_neighbor_radius],
-                                       [self.horizontal_locations, horizontal_color, horizontal_radius],
-                                       [self.cone_locations, cone_color, self.cone_neighbor_radius]] 
-            elif cell_type == "Horizontal":     
-                cone_color          = self.cone_color_deselected 
-                horizontal_color    = self.horizontal_color
-                horizontal_radius   = int(round(self.horizontal_neighbor_radius + 3*self.visualization_scale))
-                on_bipolar_color    = self.on_bipolar_color_deselected
-                off_bipolar_color   = self.off_bipolar_color_deselected
-                drawOrder           = [[self.on_bipolar_locations, on_bipolar_color, self.on_bipolar_neighbor_radius],
-                                       [self.off_bipolar_locations, off_bipolar_color, self.off_bipolar_neighbor_radius],
-                                       [self.cone_locations, cone_color, self.cone_neighbor_radius],
-                                       [self.horizontal_locations, horizontal_color, horizontal_radius]] 
-            elif cell_type == "On Bipolar":  
-                cone_color          = self.cone_color_deselected 
-                horizontal_color    = self.horizontal_color_deselected
-                horizontal_radius   = int(round(self.horizontal_neighbor_radius + 3*self.visualization_scale))
-                on_bipolar_color    = self.on_bipolar_color
-                off_bipolar_color   = self.off_bipolar_color_deselected
-                drawOrder           = [[self.off_bipolar_locations, off_bipolar_color, self.off_bipolar_neighbor_radius],
-                                       [self.horizontal_locations, horizontal_color, horizontal_radius],
-                                       [self.cone_locations, cone_color, self.cone_neighbor_radius],
-                                       [self.on_bipolar_locations, on_bipolar_color, self.on_bipolar_neighbor_radius]] 
-            else:     
-                cone_color          = self.cone_color_deselected 
-                horizontal_color    = self.horizontal_color_deselected
-                horizontal_radius   = int(round(self.horizontal_neighbor_radius + 3*self.visualization_scale))
-                on_bipolar_color    = self.on_bipolar_color_deselected
-                off_bipolar_color   = self.off_bipolar_color
-                drawOrder           = [[self.on_bipolar_locations, on_bipolar_color, self.on_bipolar_neighbor_radius],
-                                       [self.horizontal_locations, horizontal_color, horizontal_radius],
-                                       [self.cone_locations, cone_color, self.cone_neighbor_radius],
-                                       [self.off_bipolar_locations, off_bipolar_color, self.off_bipolar_neighbor_radius]] 
-            
-            for locations, color, radius in drawOrder:
-                for x, y in locations:
-                    pygame.draw.circle(surface, color, (x, y), radius)
-    
-                
-    def findActivityBounds(self, activities, estimated_min, estimated_max, activity_centered_on_zero):
-        # Find the real max/min activity values
-        max_activity = np.amax(activities)
-        min_activity = np.amin(activities)
-        
-        print "\tTrue Max Activity Value:", max_activity
-        print "\tTrue Min Activity Value:", min_activity
-        
-        # Impose an estimated max/min
-        max_activity    = max(max_activity, estimated_max)
-        min_activity    = min(min_activity, estimated_min)
-        
-        # If the range of activity values is expected to be symmetric and
-        # centered on zero, then the max and min values should be equal
-        if activity_centered_on_zero:
-            bound           = max(abs(max_activity), abs(min_activity))
-            max_activity    = bound
-            min_activity    = -bound
-            
-        print "\tAdjusted Max Activity Value For Color Scale:", max_activity
-        print "\tAdjusted Min Activity Value For Color Scale:", min_activity
-        
-        return [min_activity, max_activity] 
-             
-    def mapActivityToColor(self, activity, min_activity, max_activity, activity_centered_on_zero):
-        positive_activity_color         = pygame.Color(255, 0, 0)
-        zero_positive_activity_color    = pygame.Color(0, 0, 0)
-        negative_activity_color         = pygame.Color(0, 0, 255)
-        zero_negative_activity_color    = pygame.Color(0, 0, 0)
-        
-        if activity_centered_on_zero:
-            if activity < 0:
-                percent_from_zero_to_min = activity/min_activity
-                color = lerpColors(zero_negative_activity_color, negative_activity_color, percent_from_zero_to_min)
-            else:
-                percent_from_zero_to_max = activity/max_activity
-                color = lerpColors(zero_positive_activity_color, positive_activity_color, percent_from_zero_to_max)
-        else:
-            percent_from_min_to_max = (activity-min_activity) / (max_activity-min_activity)
-            color = self.lerpColors(zero_positive_activity_color, positive_activity_color, percent_from_min_to_max)
-            
-        return color
-                    
-    def playLayerActivity(self, surface, activities, locations, radius,
-                          min_activity, max_activity, activity_centered_on_zero=True):
-                             
-        number_neurons = activities[0].shape[1]
-        for n in range(number_neurons):
-            x, y        = locations[n]
-            activity    = activities[self.timestep][0,n]
-            color       = self.mapActivityToColor(activity, min_activity, max_activity, 
-                                                  activity_centered_on_zero)
-            pygame.draw.circle(surface, color, (x,y), radius) 
-            
+    def visualizeCellPlacement(self, surface, cell_type, scale=1.0):
+        if cell_type == None:
+            self.on_starburst_layer.draw(surface, scale=scale)
+            self.off_starburst_layer.draw(surface, scale=scale)
+            self.on_bipolar_layer.draw(surface, scale=scale) 
+            self.off_bipolar_layer.draw(surface, scale=scale) 
+            self.horizontal_layer.draw(surface, inflate_radius=1.0, scale=scale)  
+            self.cone_layer.draw(surface, scale=self.visualization_scale)
+        else:            
+            self.on_starburst_layer.draw(surface, color=self.on_starburst_color_deselected, scale=scale)
+            self.off_starburst_layer.draw(surface, color=self.off_starburst_color_deselected, scale=scale)
+            self.on_bipolar_layer.draw(surface, color=self.on_bipolar_color_deselected, scale=scale) 
+            self.off_bipolar_layer.draw(surface, color=self.off_bipolar_color_deselected, scale=scale) 
+            self.horizontal_layer.draw(surface, color=self.horizontal_color_deselected, inflate_radius=1.0, scale=scale)  
+            self.cone_layer.draw(surface, color=self.cone_color_deselected, scale=self.visualization_scale)
+            if cell_type == "Cone":
+                 self.cone_layer.draw(surface, scale=self.visualization_scale)
+            elif cell_type == "Horizontal":
+                 self.horizontal_layer.draw(surface, scale=self.visualization_scale)
+            elif cell_type == "On Bipolar":
+                self.on_bipolar_layer.draw(surface, scale=scale) 
+            elif cell_type == "Off Bipolar":
+                self.off_bipolar_layer.draw(surface, scale=scale) 
+            elif cell_type == "On Starburst":
+                 self.on_starburst_layer.draw(surface, scale=scale)
+            elif cell_type == "Off Starburst":
+                 self.off_starburst_layer.draw(surface, scale=scale)            
         
     def updateVisualizationSurface(self, buttons_pressed, mouse_x, mouse_y):
-        self.visualization_surface.fill(self.visualization_background_color)
+        scale   = self.visualization_scale
+        surface = self.visualization_surface
+        
+        surface.fill(self.visualization_background_color)
         
         vis_button_pressed  = buttons_pressed[0]
         cell_button_pressed = buttons_pressed[1]
         
         if not(vis_button_pressed==None):
             vis_type = vis_button_pressed.name
-                        
-            if cell_button_pressed != None:     cell_type = cell_button_pressed.name
-            else:                               cell_type = "None"
+            
+            cell_type = None
+            if cell_button_pressed != None:     
+                cell_type = cell_button_pressed.name        
             
             if vis_type == "Soma Placement":
-                pygame.display.set_caption(vis_type + " " + cell_type)
-                self.visualizeCellPlacement(self.visualization_surface, cell_type)
+                pygame.display.set_caption(vis_type + " " + str(cell_type))
+                self.visualizeCellPlacement(surface, cell_type, scale)
+                    
             elif vis_type == "Activity":
-                pygame.display.set_caption(vis_type + " " + cell_type + " " + str(self.timestep))
-                if cell_type == "Cone":
-                    self.playLayerActivity(self.visualization_surface, self.cone_activities,
-                                           self.cone_locations, self.cone_neighbor_radius,
-                                           self.cone_activity_bounds[0],
-                                           self.cone_activity_bounds[1])
-                elif cell_type == "Horizontal":
-                    self.playLayerActivity(self.visualization_surface, self.horizontal_activities,
-                                           self.horizontal_locations, self.horizontal_neighbor_radius,
-                                           self.horizontal_activity_bounds[0],
-                                           self.horizontal_activity_bounds[1])
-                elif cell_type == "On Bipolar":
-                    self.playLayerActivity(self.visualization_surface, self.on_bipolar_activities,
-                                           self.on_bipolar_locations, self.on_bipolar_neighbor_radius,
-                                           self.on_bipolar_activity_bounds[0],
-                                           self.on_bipolar_activity_bounds[1])
-                elif cell_type == "Off Bipolar":
-                    self.playLayerActivity(self.visualization_surface, self.off_bipolar_activities,
-                                           self.off_bipolar_locations, self.off_bipolar_neighbor_radius,
-                                           self.off_bipolar_activity_bounds[0],
-                                           self.off_bipolar_activity_bounds[1])
-            elif vis_type == "Input Weights":
-                if cell_type == "On Bipolar":
-                    self.visualizeInputWeights(self.visualization_surface, self.on_bipolar_locations,
-                                               self.on_bipolar_neighbor_radius,
-                                               self.on_bipolar_input_radius,
-                                               self.cone_locations,
-                                               self.cone_neighbor_radius,
-                                               self.on_bipolar_color, self.on_bipolar_color_deselected,
-                                               self.cone_color, mouse_x, mouse_y)
-                
+                if cell_type != None:
+                    self.retina.loadPast(self.timestep)
+                    self.retina.drawLayerActivity(surface, cell_type, self.colormap, scale)
+                    pygame.display.set_caption(vis_type + " " + str(cell_type) + " " + str(self.timestep))
+                    
         self.screen_surface.blit(self.visualization_surface, self.visualization_position)
         
     
@@ -550,51 +397,3 @@ def linearDistance(x1, y1, x2, y2):
     return ((x2-x1)**2.0 + (y2-y1)**2.0)**0.5
 
 
-
-#    def visualizeConeWeights(self):
-#        
-#        pygame.init()
-#        displaySurface = pygame.display.set_mode((self.gridWidth, self.gridHeight))
-#        displaySurface.fill((0,0,0))
-#        
-#        cl = self.coneLayer
-#        
-#        locID   = random.choice(cl.locations)
-#        
-#
-#        rectx = self.stimulus.position[0]
-#        recty = self.stimulus.position[1]        
-#        rectw = self.stimulus.size[0]      
-#        recth = self.stimulus.size[1]
-#        pygame.draw.rect(displaySurface, (255,255,255), (rectx, recty, rectw, recth))
-#
-#        
-#        
-#        connectedPixels = cl.inputs[locID]
-#        for p in connectedPixels:
-#            pID, w = p
-#            x, y = pID.split(".")
-#            x, y = float(x), float(y)
-#            rectx = self.stimulus.position[0] + x * self.stimulus.pixelSize
-#            recty = self.stimulus.position[1] + y * self.stimulus.pixelSize
-#            rects = self.stimulus.pixelSize
-#            pygame.draw.rect(displaySurface, (w*255,0,0), (rectx, recty, rects, rects))
-#            
-#
-#
-#        # Get cone rectangle
-#        x, y    = locID.split(".")
-#        x, y    = float(x), float(y)
-#        rectx = x - cl.input_field_radius_gridded
-#        recty = y - cl.input_field_radius_gridded
-#        rects = 2 * cl.input_field_radius_gridded
-#        pygame.draw.rect(displaySurface, (0,0,255), (rectx, recty, rects, rects), 1)
-#
-#        running = True
-#        while running:
-#            for event in pygame.event.get():
-#                if event.type == QUIT:
-#                    running = False
-#            pygame.display.update()
-
-        
