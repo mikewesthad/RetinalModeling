@@ -35,6 +35,7 @@ ICED_COFFEE         = [(231,243,239),(140,100,41),(85,195,220),(226,75,44),(115,
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
+YELLOW = (255, 255, 0)
 background = WHITE
 num_steps = 5
 light_cutoff = 1.0  #0.0 - 1.0, 1 is full scale

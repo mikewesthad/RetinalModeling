@@ -7,7 +7,7 @@ from Constants import *
 class DSG(object):
     
     def __init__(self, layer, ON_morphology, OFF_morphology, location, 
-                 preferred_dir=UP, history_size=1, input_delay=1, layer_depth=0):
+                 preferred_dir=None, history_size=1, input_delay=1, layer_depth=0):
     
         # General neuron variables
         self.layer              = layer
@@ -19,8 +19,8 @@ class DSG(object):
         self.retina             = ON_morphology.retina
         self.history_size       = history_size
         self.preferred_dir      = preferred_dir
-        self.null_dir           = preferred_dir + 180
-        self.connection_heading_delta = 90
+        self.null_dir           = (preferred_dir + 180) % 360
+        self.connection_heading_delta = 180
         
         self.ON_arbor = Starburst(self.layer,
                                   self.ON_morphology,
@@ -55,28 +55,36 @@ class DSG(object):
                 
     def isAppropriateInputON(self, neuron, compartment):
         is_correct_neuron = isinstance(neuron, Starburst)
-        is_correct_type = neuron.layer.on_off_type==self.ON_arbor.on_off_type            
+        is_correct_on_off = neuron.layer.on_off_type==self.ON_arbor.on_off_type            
         def isAppropriateHeading():
-            heading_max = self.null_dir + self.connection_heading_delta
-            heading_min = self.null_dir - self.connection_heading_delta            
-            return compartment.heading < heading_max and compartment.heading > heading_min
+            heading_max = (self.null_dir + self.connection_heading_delta - 1) % 360
+            heading_min = (self.null_dir - self.connection_heading_delta) % 360
+            print "heading_min =", heading_min, ":", "heading_max =", heading_max
+            print "compartment.heading =" , compartment.heading
+            if heading_max >= heading_min:            
+                return compartment.heading <= heading_max and compartment.heading >= heading_min
+            else:            
+                return compartment.heading < heading_max or compartment.heading > heading_min
         is_correct_heading = isAppropriateHeading()
-        is_appropriate = is_correct_neuron and is_correct_type and is_correct_heading     
-        print "Inside isAppropriateInputON", is_correct_neuron, is_correct_type, is_correct_heading      
+        is_appropriate = is_correct_neuron and is_correct_on_off and is_correct_heading     
+        print "Inside isAppropriateInputON", is_correct_neuron, is_correct_on_off, is_correct_heading      
         if is_appropriate:
             print is_appropriate   
         return is_appropriate
                    
     def isAppropriateInputOFF(self, neuron, compartment):
         is_correct_neuron = isinstance(neuron, Starburst)
-        is_correct_type = neuron.layer.on_off_type==self.OFF_arbor.on_off_type            
+        is_correct_on_off = neuron.layer.on_off_type==self.OFF_arbor.on_off_type            
         def isAppropriateHeading():
-            heading_max = self.null_dir + self.connection_heading_delta
-            heading_min = self.null_dir - self.connection_heading_delta            
-            return compartment.heading < heading_max and compartment.heading > heading_min
+            heading_max = (self.null_dir + self.connection_heading_delta - 1) % 360
+            heading_min = (self.null_dir - self.connection_heading_delta) % 360
+            if heading_max >= heading_min:            
+                return compartment.heading <= heading_max and compartment.heading >= heading_min
+            else:            
+                return compartment.heading < heading_max or compartment.heading > heading_min
         is_correct_heading = isAppropriateHeading()
-        is_appropriate = is_correct_neuron and is_correct_type and is_correct_heading     
-        print "Inside isAppropriateInputON", is_correct_neuron, is_correct_type, is_correct_heading      
+        is_appropriate = is_correct_neuron and is_correct_on_off and is_correct_heading     
+        print "Inside isAppropriateInputOFF", is_correct_neuron, is_correct_on_off, is_correct_heading      
         if is_appropriate:
             print is_appropriate   
         return is_appropriate 
@@ -84,7 +92,7 @@ class DSG(object):
     def draw(self, surface, scale=1.0, draw_segments=False, draw_points=False, 
              draw_compartments=False):
         self.ON_arbor.draw(surface, scale, draw_segments, draw_points, draw_compartments)
-        #self.OFF_arbor.draw(surface, scale, draw_segments, draw_points, draw_compartments)
+        self.OFF_arbor.draw(surface, scale, draw_segments, draw_points, draw_compartments)
             
             
             

@@ -12,7 +12,7 @@ class Starburst(object):
         self.layer_depth        = layer_depth
         self.retina             = morphology.retina
         self.history_size       = morphology.history_size
-        self.on_off_type     = on_off_type
+        self.on_off_type        = on_off_type
         
         self.compartments           = self.morphology.compartments
         self.number_compartments    = len(self.compartments)

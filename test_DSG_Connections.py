@@ -80,7 +80,7 @@ for i in range(len(SACs)):
     SACs[i].location = (i+1)*screen_third
                        
 #Build a unique DSG using the above dendritic (starburst) morphologies
-dsg1 = DSG(dsg_layer, starburst_morphology1, starburst_morphology2, screen_mid)
+dsg1 = DSG(dsg_layer, starburst_morphology1, starburst_morphology2, screen_mid, RIGHT)
 
 dsg1.establishInputs()
 
@@ -115,21 +115,21 @@ while running:
             if event.key == K_RIGHT:
                 scale *= 1.5
     screen_third = screen_size/(3.0 * scale)
-    #for i in range(len(SACs)):       
-    SACs[0].draw(display, 
-                scale = scale,
-                draw_segments = draw_segments,
-                draw_compartments = draw_compartments,
-                draw_points = draw_points)
+    for i in range(len(SACs)):       
+        SACs[i].draw(display, 
+                    scale = scale,
+                    draw_segments = draw_segments,
+                    draw_compartments = draw_compartments,
+                    draw_points = draw_points)
     dsg1.draw(display, 
             scale = scale,
             draw_segments = draw_segments,
             draw_compartments = draw_compartments,
             draw_points = draw_points)
-    all_inputs = dsg1.ON_arbor.compartment_inputs
-    index = random.randint(0, len(all_inputs)-1)
+    ON_inputs = dsg1.ON_arbor.compartment_inputs
+    index = random.randint(0, len(ON_inputs)-1)
     print "Current DSG compartment index =", index
-    inputs_to_one_comp = all_inputs[index]
+    inputs_to_one_comp = ON_inputs[index]
     receiving_comp = dsg1.ON_arbor.morphology.compartments[index]
     print "Current DSG compartment is", receiving_comp
     dot_loc = (receiving_comp.centroid + dsg1.location).toIntTuple()    
@@ -142,18 +142,49 @@ while running:
                 5,
                 0)
     receiving_comp.draw(display, GREEN)
-    print "all inputs", all_inputs[index]
-    for neuro_comp_freq in all_inputs[index]: #for all inputs to one dsg compartment
+    print "ON inputs", ON_inputs[index]
+    for neuro_comp_freq in ON_inputs[index]: #for all ON inputs to one dsg compartment
         print("neuro_comp_freq", neuro_comp_freq)
         input_comp = neuro_comp_freq[0][1]
-        intput_neuron = neuro_comp_freq[0][0]
+        input_neuron = neuro_comp_freq[0][0]
         start_abs = input_neuron.location
         stop_rel = input_comp.centroid        
         print("at location", (start_abs + stop_rel).toIntTuple())        
-        pygame.draw.line(display,                              #surface
+        pygame.draw.line(display,                       #surface
                   GREEN,                                #color 
-                  start_abs.toIntTuple,                 #start
+                  start_abs.toIntTuple(),                 #start
                   (start_abs + stop_rel).toIntTuple(),  #stop
-                  5)                                    #width  
+                  5)   
+
+    OFF_inputs = dsg1.OFF_arbor.compartment_inputs
+    index = random.randint(0, len(OFF_inputs)-1)
+    print "Current DSG compartment index =", index
+    inputs_to_one_comp = OFF_inputs[index]
+    receiving_comp = dsg1.OFF_arbor.morphology.compartments[index]
+    print "Current DSG compartment is", receiving_comp
+    dot_loc = (receiving_comp.centroid + dsg1.location).toIntTuple()    
+    print receiving_comp.centroid.toIntTuple()
+    print dsg1.location.toIntTuple()    
+    print "at location", dot_loc
+    pygame.draw.circle(display,
+                YELLOW,
+                dot_loc,
+                5,
+                0)
+    receiving_comp.draw(display, GREEN)
+    print "OFF inputs", OFF_inputs[index]
+    for neuro_comp_freq in OFF_inputs[index]: #for all OFF inputs to one dsg compartment
+        print("neuro_comp_freq", neuro_comp_freq)
+        input_comp = neuro_comp_freq[0][1]
+        input_neuron = neuro_comp_freq[0][0]
+        start_abs = input_neuron.location
+        stop_rel = input_comp.centroid        
+        print("at location", (start_abs + stop_rel).toIntTuple())        
+        pygame.draw.line(display,                       #surface
+                  YELLOW,                                #color 
+                  start_abs.toIntTuple(),                 #start
+                  (start_abs + stop_rel).toIntTuple(),  #stop
+                  5)    
+                                 #width  
     pygame.display.update()
     raw_input()

@@ -129,7 +129,11 @@ class Vector2D(object):
     def angleHeadingTo(self, other):
         vector = other-self
         angle = atan2(vector.y, vector.x) * 180.0/pi
-        if angle < 0: angle += 360.0
+        angle = angle % 360 #Bound angle = [0, 359]
+#        if angle < 0:       
+#            angle += 360.0
+#        if angle >= 360: 
+#            angle -= 360
         return angle
         
     def unitHeadingTo(self, other):
