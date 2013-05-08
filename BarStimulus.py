@@ -1,9 +1,6 @@
 import math as m
 from RuntimeBarGenerator import RuntimeBarGenerator
 
-
-
-
 class BarStimulus:
 
     def __init__(self, position_on_retina=(0.0, 0.0), pixel_size=1.0, 

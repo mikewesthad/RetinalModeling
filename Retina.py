@@ -6,8 +6,10 @@ from Constants import *
 Retina class
 """
 class Retina:
-    def __init__(self, retina_width, retina_height, grid_size, timestep, stimulus, display):
-        self.display = display
+    def __init__(self, retina_width, retina_height, grid_size, timestep, 
+                 stimulus=None, display=None):
+        self.display    = display
+        self.stimulus   = None
         
         self.width  = float(retina_width)
         self.height = float(retina_height)
@@ -16,8 +18,6 @@ class Retina:
         self.grid_size      = float(grid_size)
         self.grid_width     = int(self.width / self.grid_size)
         self.grid_height    = int(self.height / self.grid_size)
-        
-        self.stimulus = stimulus
         
         self.time       = 0.0
         self.timestep   = timestep
@@ -59,7 +59,10 @@ class Retina:
         for depth in range(1):
             grid = {}
             self.grid_layers.append(grid)
-                
+    
+    def loadMovieIntoStimulus(self, movie):
+        self.stimulus.loadMovie(movie)
+         
         
     def isPointWithinBounds(self, point):
         if point.x < 0: return False
@@ -114,7 +117,7 @@ class Retina:
     """
     This function saves the current retina object using the Pickle module
     """ 
-    def saveModel(self, name):
+    def saveRetina(self, name):
         import pickle, os
         
         if not(os.path.exists("Saved Retinas")):
@@ -148,6 +151,38 @@ class Retina:
         parameterFile = open(parameterPath, "w")
         parameterFile.write(str(self))
         parameterFile.close()
+        
+    def saveActivities(self):
+        import pickle, os
+        name = "File_Size_Test"
+        directory_name = os.path.join("Saved Retinas", name)
+        
+        for layer_index in range(self.number_layers):
+            layer           = self.layers[layer_index]
+            layer_name      = self.layer_names[layer_index]
+            if layer != None:
+                activities      = self.activities[layer_index]
+                
+                fh = os.path.join(directory_name, "np_save_"+layer_name)
+                np.save(fh, activities)
+#                fh = os.path.join(directory_name, "np_savetxt_default_"+layer_name+".txt")
+#                np.savetxt(fh, activities)
+#                fh = os.path.join(directory_name, "np_savetxt_default_"+layer_name+".gz")
+#                np.savetxt(fh, activities)
+#                fh = os.path.join(directory_name, "np_savetxt_lessprecision_"+layer_name+".txt")
+#                np.savetxt(fh, activities, fmt="%.5f")
+#                fh = os.path.join(directory_name, "np_savetxt_lessprecision_"+layer_name+".gz")
+#                np.savetxt(fh, activities, fmt="%.5f")
+                fh = os.path.join(directory_name, "py_pickle_"+layer_name)
+                fh = open(fh, "wb")
+                pickle.dump(activities, fh)
+                
+        fh = os.path.join(directory_name, "np_savez_alllayers")
+        np.savez(fh, self.cone_activities, self.horizontal_activities,
+                 self.on_bipolar_activities, self.off_bipolar_activities,
+                 self.on_starburst_activities, self.off_starburst_activities)
+                 
+        self.saveModel(name)
 
 
     """
@@ -176,30 +211,6 @@ class Retina:
                 activities      = self.activities[layer_index]
                 new_activity    = layer.update()
                 activities.append(new_activity)
-                
-#        if self.cone_layer != None:
-#            cone_activity = self.cone_layer.updateActivity()
-#            self.cone_activities.append(cone_activity)
-#        
-#        if self.horizontal_layer != None:
-#            horizontal_activity = self.horizontal_layer.updateActivity()
-#            self.horizontal_activities.append(horizontal_activity)
-#        
-#        if self.on_bipolar_layer != None:
-#            on_bipolar_activity = self.on_bipolar_layer.update()
-#            self.on_bipolar_activities.append(on_bipolar_activity)
-#        
-#        if self.off_bipolar_layer != None:
-#            off_bipolar_activity = self.off_bipolar_layer.update()
-#            self.off_bipolar_activities.append(off_bipolar_activity)
-#            
-#        if self.on_starburst_layer != None:
-#            on_starburst_activity = self.on_starburst_layer.update()
-#            self.on_starburst_activities.append(on_starburst_activity)
-#            
-#        if self.off_starburst_layer != None:
-#            off_starburst_activity = self.off_starburst_layer.update()
-#            self.off_starburst_activities.append(off_starburst_activity)
 
 
     def buildConeLayer(self, minimum_distance, minimum_density, input_field_size):

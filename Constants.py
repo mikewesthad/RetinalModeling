@@ -53,7 +53,7 @@ ICED_COFFEE         = [(231,243,239),(140,100,41),(85,195,220),(226,75,44),(115,
 
 
 
-from BarStimulus import BarStimulus
+from Stimulus import Stimulus
 from RuntimeBarGenerator import RuntimeBarGenerator
 
 from Vector2D import Vector2D
