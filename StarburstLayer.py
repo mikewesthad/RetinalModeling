@@ -35,14 +35,15 @@ class StarburstLayer:
         self.nearest_neighbor_distance  = nearest_neighbor_distance
         self.minimum_required_density   = minimum_required_density
         self.minimum_required_cells     = int(minimum_required_density * (retina.area/retina.density_area))
-        self.placeNeurons()
+        
+#        self.placeNeurons()
+        self.locations = [(int(retina.grid_width/2.0), int(retina.grid_height/2.0))]
         self.number_neurons = len(self.locations)
         
         # Instantiate starbursts
         self.neurons = []
         for i in range(self.number_neurons):
-#            location    = self.locations[i]
-            location = Vector2D(200.0, 200.0)
+            location    = self.locations[i]
             morphology  = choice(self.morphologies)
             starburst   = Starburst(self, morphology, location, starburst_type, input_delay, layer_depth)
             self.neurons.append(starburst)

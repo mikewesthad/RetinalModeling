@@ -4,11 +4,12 @@ from Constants import *
 
 class Bipolar:
     
-    def __init__(self, layer, location):
+    def __init__(self, layer, location, rectified=True):
         self.location = location
         
         self.layer  = layer
         self.retina = layer.retina
+        self.rectified = rectified        
         
         self.history_size   = layer.history_size           
         
@@ -55,6 +56,10 @@ class Bipolar:
                 triad_activity = (cone_activity - horizontal_activity)/2.0
             
             new_activity += triad_weight * triad_activity
+            
+        if self.rectified: 
+#            new_activity = 1.0 / (1.0 + m.exp(1.54 - 7.0*new_activity))
+            if new_activity < 0.0: new_activity = 0.0
         
         # Update the neurotransmitter amounts that are output
         new_neurotransmitter_outputs = self.compartments[0].calculateNeurotransmitterOutputsFromPotential(self, new_activity)

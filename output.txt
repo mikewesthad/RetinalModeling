@@ -1,0 +1,4404 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 0
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.300
+Horizontal Decay			0.010
+Horizontal Diffusion Radius (um)	10.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.370)
+	Horizontal Bounds	(-0.977, 0.000)
+	Bipolar Bounds		(-0.157, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.225)
+	Horizontal Bounds	(-0.977, -0.557)
+	Bipolar Bounds		(-0.303, 0.115)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.395)
+	Horizontal Bounds	(-0.977, -0.709)
+	Bipolar Bounds		(-0.247, 0.146)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.275)
+	Horizontal Bounds	(-0.977, -0.333)
+	Bipolar Bounds		(-0.411, 0.106)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.408)
+	Horizontal Bounds	(-0.977, -0.109)
+	Bipolar Bounds		(-0.448, 0.358)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.160)
+	Horizontal Bounds	(-0.977, -0.403)
+	Bipolar Bounds		(-0.509, 0.298)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.977, -0.263)
+	Bipolar Bounds		(-0.589, 0.137)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.392)
+	Horizontal Bounds	(-0.977, -0.085)
+	Bipolar Bounds		(-0.588, 0.372)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.392)
+	Horizontal Bounds	(-0.977, -0.137)
+	Bipolar Bounds		(-0.593, 0.386)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.220)
+	Horizontal Bounds	(-0.977, -0.336)
+	Bipolar Bounds		(-0.436, 0.082)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.347)
+	Horizontal Bounds	(-0.977, -0.163)
+	Bipolar Bounds		(-0.436, 0.239)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.160)
+	Horizontal Bounds	(-0.977, -0.349)
+	Bipolar Bounds		(-0.486, 0.302)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.995)
+	Horizontal Bounds	(-0.977, 0.244)
+	Bipolar Bounds		(-0.886, 0.173)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.530)
+	Bipolar Bounds		(-0.886, 0.524)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.980)
+	Horizontal Bounds	(-0.977, 0.348)
+	Bipolar Bounds		(-0.886, 0.578)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.447)
+	Bipolar Bounds		(-0.989, 0.231)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.717)
+	Bipolar Bounds		(-0.988, 0.700)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.544)
+	Bipolar Bounds		(-0.989, 0.630)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.275)
+	Horizontal Bounds	(-0.977, -0.239)
+	Bipolar Bounds		(-0.499, 0.098)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.276)
+	Horizontal Bounds	(-0.977, -0.128)
+	Bipolar Bounds		(-0.498, 0.312)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.276)
+	Horizontal Bounds	(-0.977, -0.145)
+	Bipolar Bounds		(-0.507, 0.301)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.469)
+	Bipolar Bounds		(-0.959, 0.178)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.688)
+	Bipolar Bounds		(-0.957, 0.705)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.643)
+	Bipolar Bounds		(-0.959, 0.626)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.779)
+	Bipolar Bounds		(-0.989, 0.251)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.908)
+	Bipolar Bounds		(-0.987, 0.885)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.856)
+	Bipolar Bounds		(-0.989, 0.809)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 1
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.300
+Horizontal Decay			0.010
+Horizontal Diffusion Radius (um)	20.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.360)
+	Horizontal Bounds	(-0.977, 0.000)
+	Bipolar Bounds		(-0.182, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.105)
+	Horizontal Bounds	(-0.977, -0.531)
+	Bipolar Bounds		(-0.515, 0.157)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.273)
+	Horizontal Bounds	(-0.977, -0.694)
+	Bipolar Bounds		(-0.328, 0.152)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.977, -0.511)
+	Bipolar Bounds		(-0.469, 0.064)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.497)
+	Horizontal Bounds	(-0.977, -0.298)
+	Bipolar Bounds		(-0.660, 0.231)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.215)
+	Horizontal Bounds	(-0.977, -0.471)
+	Bipolar Bounds		(-0.544, 0.264)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.977, -0.412)
+	Bipolar Bounds		(-0.589, 0.092)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.497)
+	Horizontal Bounds	(-0.977, -0.265)
+	Bipolar Bounds		(-0.621, 0.264)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.977, -0.360)
+	Bipolar Bounds		(-0.589, 0.320)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.977, -0.510)
+	Bipolar Bounds		(-0.412, 0.049)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.776)
+	Horizontal Bounds	(-0.977, -0.193)
+	Bipolar Bounds		(-0.598, 0.200)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.706)
+	Horizontal Bounds	(-0.977, -0.237)
+	Bipolar Bounds		(-0.565, 0.364)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, -0.095)
+	Bipolar Bounds		(-0.869, 0.107)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.163)
+	Bipolar Bounds		(-0.865, 0.416)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.152)
+	Bipolar Bounds		(-0.869, 0.489)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.143)
+	Bipolar Bounds		(-0.989, 0.195)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.353)
+	Bipolar Bounds		(-0.983, 0.564)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.339)
+	Bipolar Bounds		(-0.989, 0.550)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.977, -0.438)
+	Bipolar Bounds		(-0.544, 0.079)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.706)
+	Horizontal Bounds	(-0.977, -0.140)
+	Bipolar Bounds		(-0.663, 0.272)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.706)
+	Horizontal Bounds	(-0.977, -0.149)
+	Bipolar Bounds		(-0.680, 0.290)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.117)
+	Bipolar Bounds		(-0.966, 0.176)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.347)
+	Bipolar Bounds		(-0.949, 0.568)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.309)
+	Bipolar Bounds		(-0.966, 0.484)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.502)
+	Bipolar Bounds		(-0.989, 0.306)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.667)
+	Bipolar Bounds		(-0.980, 0.758)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.612)
+	Bipolar Bounds		(-0.989, 0.603)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 2
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.300
+Horizontal Decay			0.010
+Horizontal Diffusion Radius (um)	30.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.355)
+	Horizontal Bounds	(-0.977, 0.000)
+	Bipolar Bounds		(-0.221, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.128)
+	Horizontal Bounds	(-0.977, -0.569)
+	Bipolar Bounds		(-0.437, 0.099)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.333)
+	Horizontal Bounds	(-0.977, -0.741)
+	Bipolar Bounds		(-0.265, 0.097)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.230)
+	Horizontal Bounds	(-0.977, -0.549)
+	Bipolar Bounds		(-0.440, 0.048)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.538)
+	Horizontal Bounds	(-0.977, -0.375)
+	Bipolar Bounds		(-0.645, 0.195)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.215)
+	Horizontal Bounds	(-0.977, -0.552)
+	Bipolar Bounds		(-0.558, 0.203)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.977, -0.470)
+	Bipolar Bounds		(-0.509, 0.070)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.526)
+	Horizontal Bounds	(-0.977, -0.367)
+	Bipolar Bounds		(-0.590, 0.216)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.400)
+	Horizontal Bounds	(-0.977, -0.416)
+	Bipolar Bounds		(-0.541, 0.225)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.220)
+	Horizontal Bounds	(-0.977, -0.563)
+	Bipolar Bounds		(-0.465, 0.042)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.731)
+	Horizontal Bounds	(-0.977, -0.310)
+	Bipolar Bounds		(-0.481, 0.152)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.679)
+	Horizontal Bounds	(-0.977, -0.328)
+	Bipolar Bounds		(-0.531, 0.263)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, -0.189)
+	Bipolar Bounds		(-0.875, 0.097)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, -0.019)
+	Bipolar Bounds		(-0.867, 0.334)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, -0.022)
+	Bipolar Bounds		(-0.893, 0.384)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, -0.031)
+	Bipolar Bounds		(-0.964, 0.165)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.079)
+	Bipolar Bounds		(-0.945, 0.467)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.074)
+	Bipolar Bounds		(-0.964, 0.428)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.977, -0.506)
+	Bipolar Bounds		(-0.502, 0.062)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.679)
+	Horizontal Bounds	(-0.977, -0.251)
+	Bipolar Bounds		(-0.495, 0.235)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.679)
+	Horizontal Bounds	(-0.977, -0.263)
+	Bipolar Bounds		(-0.513, 0.194)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.001)
+	Bipolar Bounds		(-0.957, 0.157)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.158)
+	Bipolar Bounds		(-0.933, 0.499)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.118)
+	Bipolar Bounds		(-0.957, 0.361)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.266)
+	Bipolar Bounds		(-0.989, 0.244)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.387)
+	Bipolar Bounds		(-0.964, 0.632)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.977, 0.349)
+	Bipolar Bounds		(-0.989, 0.485)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 3
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.300
+Horizontal Decay			0.100
+Horizontal Diffusion Radius (um)	10.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.355)
+	Horizontal Bounds	(-0.811, 0.000)
+	Bipolar Bounds		(-0.081, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.027)
+	Horizontal Bounds	(-0.811, -0.306)
+	Bipolar Bounds		(-0.322, 0.227)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.405)
+	Horizontal Bounds	(-0.811, -0.558)
+	Bipolar Bounds		(-0.138, 0.212)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.215)
+	Horizontal Bounds	(-0.811, -0.200)
+	Bipolar Bounds		(-0.340, 0.185)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.545)
+	Horizontal Bounds	(-0.811, 0.056)
+	Bipolar Bounds		(-0.550, 0.373)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.215)
+	Horizontal Bounds	(-0.811, -0.272)
+	Bipolar Bounds		(-0.340, 0.320)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.811, -0.126)
+	Bipolar Bounds		(-0.448, 0.213)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.491)
+	Horizontal Bounds	(-0.811, 0.052)
+	Bipolar Bounds		(-0.480, 0.388)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.309)
+	Horizontal Bounds	(-0.811, -0.094)
+	Bipolar Bounds		(-0.448, 0.393)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.215)
+	Horizontal Bounds	(-0.811, -0.221)
+	Bipolar Bounds		(-0.340, 0.155)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.545)
+	Horizontal Bounds	(-0.811, 0.064)
+	Bipolar Bounds		(-0.385, 0.329)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.357)
+	Horizontal Bounds	(-0.811, -0.060)
+	Bipolar Bounds		(-0.452, 0.467)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.333)
+	Bipolar Bounds		(-0.819, 0.233)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.541)
+	Bipolar Bounds		(-0.819, 0.575)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.451)
+	Bipolar Bounds		(-0.819, 0.674)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.492)
+	Bipolar Bounds		(-0.885, 0.283)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.635)
+	Bipolar Bounds		(-0.885, 0.706)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.527)
+	Bipolar Bounds		(-0.885, 0.684)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.811, -0.142)
+	Bipolar Bounds		(-0.409, 0.161)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.491)
+	Horizontal Bounds	(-0.811, 0.082)
+	Bipolar Bounds		(-0.426, 0.393)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.491)
+	Horizontal Bounds	(-0.811, 0.073)
+	Bipolar Bounds		(-0.439, 0.351)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.455)
+	Bipolar Bounds		(-0.874, 0.249)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.642)
+	Bipolar Bounds		(-0.873, 0.711)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.618)
+	Bipolar Bounds		(-0.874, 0.580)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.702)
+	Bipolar Bounds		(-0.905, 0.281)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.781)
+	Bipolar Bounds		(-0.905, 0.849)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.752)
+	Bipolar Bounds		(-0.905, 0.700)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 4
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.300
+Horizontal Decay			0.100
+Horizontal Diffusion Radius (um)	20.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.365)
+	Horizontal Bounds	(-0.811, 0.000)
+	Bipolar Bounds		(-0.097, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.091)
+	Horizontal Bounds	(-0.811, -0.370)
+	Bipolar Bounds		(-0.339, 0.190)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.325)
+	Horizontal Bounds	(-0.811, -0.556)
+	Bipolar Bounds		(-0.213, 0.197)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.255)
+	Horizontal Bounds	(-0.811, -0.353)
+	Bipolar Bounds		(-0.425, 0.140)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.532)
+	Horizontal Bounds	(-0.811, -0.140)
+	Bipolar Bounds		(-0.527, 0.258)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.195)
+	Horizontal Bounds	(-0.811, -0.319)
+	Bipolar Bounds		(-0.425, 0.282)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.811, -0.298)
+	Bipolar Bounds		(-0.469, 0.159)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.519)
+	Horizontal Bounds	(-0.811, -0.130)
+	Bipolar Bounds		(-0.468, 0.337)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.811, -0.265)
+	Bipolar Bounds		(-0.469, 0.340)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.220)
+	Horizontal Bounds	(-0.811, -0.373)
+	Bipolar Bounds		(-0.490, 0.130)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.727)
+	Horizontal Bounds	(-0.811, -0.067)
+	Bipolar Bounds		(-0.490, 0.257)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.649)
+	Horizontal Bounds	(-0.811, -0.107)
+	Bipolar Bounds		(-0.490, 0.371)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.007)
+	Bipolar Bounds		(-0.880, 0.174)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.267)
+	Bipolar Bounds		(-0.879, 0.462)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.260)
+	Bipolar Bounds		(-0.880, 0.503)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.183)
+	Bipolar Bounds		(-0.893, 0.223)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.400)
+	Bipolar Bounds		(-0.890, 0.587)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.388)
+	Bipolar Bounds		(-0.893, 0.576)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.811, -0.299)
+	Bipolar Bounds		(-0.505, 0.151)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.649)
+	Horizontal Bounds	(-0.811, -0.031)
+	Bipolar Bounds		(-0.504, 0.312)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.649)
+	Horizontal Bounds	(-0.811, -0.037)
+	Bipolar Bounds		(-0.505, 0.294)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.223)
+	Bipolar Bounds		(-0.905, 0.227)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.403)
+	Bipolar Bounds		(-0.901, 0.595)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.377)
+	Bipolar Bounds		(-0.905, 0.477)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.490)
+	Bipolar Bounds		(-0.905, 0.292)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.625)
+	Bipolar Bounds		(-0.898, 0.748)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.591)
+	Bipolar Bounds		(-0.905, 0.610)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 5
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.300
+Horizontal Decay			0.100
+Horizontal Diffusion Radius (um)	30.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.355)
+	Horizontal Bounds	(-0.811, 0.000)
+	Bipolar Bounds		(-0.094, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.215)
+	Horizontal Bounds	(-0.811, -0.539)
+	Bipolar Bounds		(-0.184, 0.174)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.440)
+	Horizontal Bounds	(-0.811, -0.615)
+	Bipolar Bounds		(-0.185, 0.193)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.215)
+	Horizontal Bounds	(-0.811, -0.387)
+	Bipolar Bounds		(-0.388, 0.128)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.437)
+	Horizontal Bounds	(-0.811, -0.276)
+	Bipolar Bounds		(-0.385, 0.254)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.125)
+	Horizontal Bounds	(-0.811, -0.396)
+	Bipolar Bounds		(-0.429, 0.302)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.811, -0.327)
+	Bipolar Bounds		(-0.460, 0.148)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.368)
+	Horizontal Bounds	(-0.811, -0.259)
+	Bipolar Bounds		(-0.467, 0.303)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.325)
+	Horizontal Bounds	(-0.811, -0.285)
+	Bipolar Bounds		(-0.521, 0.342)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.200)
+	Horizontal Bounds	(-0.811, -0.412)
+	Bipolar Bounds		(-0.430, 0.122)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.437)
+	Horizontal Bounds	(-0.811, -0.283)
+	Bipolar Bounds		(-0.428, 0.253)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.170)
+	Horizontal Bounds	(-0.811, -0.383)
+	Bipolar Bounds		(-0.430, 0.239)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, -0.056)
+	Bipolar Bounds		(-0.865, 0.166)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.054)
+	Bipolar Bounds		(-0.858, 0.449)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.970)
+	Horizontal Bounds	(-0.811, -0.001)
+	Bipolar Bounds		(-0.865, 0.407)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.101)
+	Bipolar Bounds		(-0.868, 0.227)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.194)
+	Bipolar Bounds		(-0.854, 0.541)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.152)
+	Bipolar Bounds		(-0.868, 0.531)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.811, -0.339)
+	Bipolar Bounds		(-0.475, 0.144)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.368)
+	Horizontal Bounds	(-0.811, -0.249)
+	Bipolar Bounds		(-0.473, 0.346)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.368)
+	Horizontal Bounds	(-0.811, -0.257)
+	Bipolar Bounds		(-0.475, 0.274)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.124)
+	Bipolar Bounds		(-0.898, 0.217)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.199)
+	Bipolar Bounds		(-0.890, 0.571)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.172)
+	Bipolar Bounds		(-0.898, 0.452)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.358)
+	Bipolar Bounds		(-0.905, 0.273)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.424)
+	Bipolar Bounds		(-0.891, 0.686)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.811, 0.390)
+	Bipolar Bounds		(-0.905, 0.525)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 6
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.900
+Horizontal Decay			0.010
+Horizontal Diffusion Radius (um)	10.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.360)
+	Horizontal Bounds	(-0.999, 0.000)
+	Bipolar Bounds		(-0.107, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.111)
+	Horizontal Bounds	(-0.999, -0.137)
+	Bipolar Bounds		(-0.265, 0.188)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.435)
+	Horizontal Bounds	(-0.999, -0.467)
+	Bipolar Bounds		(-0.278, 0.266)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.230)
+	Horizontal Bounds	(-0.999, 0.168)
+	Bipolar Bounds		(-0.413, 0.186)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.535)
+	Horizontal Bounds	(-0.999, 0.500)
+	Bipolar Bounds		(-0.413, 0.505)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.200)
+	Horizontal Bounds	(-0.999, 0.141)
+	Bipolar Bounds		(-0.590, 0.568)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.999, 0.232)
+	Bipolar Bounds		(-0.519, 0.174)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.485)
+	Horizontal Bounds	(-0.999, 0.449)
+	Bipolar Bounds		(-0.519, 0.471)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.999, 0.218)
+	Bipolar Bounds		(-0.629, 0.609)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.220)
+	Horizontal Bounds	(-0.999, 0.159)
+	Bipolar Bounds		(-0.412, 0.124)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.485)
+	Horizontal Bounds	(-0.999, 0.441)
+	Bipolar Bounds		(-0.412, 0.387)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.323)
+	Horizontal Bounds	(-0.999, 0.277)
+	Bipolar Bounds		(-0.447, 0.473)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.935)
+	Bipolar Bounds		(-0.897, 0.225)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.981)
+	Bipolar Bounds		(-0.897, 0.775)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.930)
+	Bipolar Bounds		(-0.897, 0.788)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.964)
+	Bipolar Bounds		(-0.974, 0.232)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.986)
+	Bipolar Bounds		(-0.974, 0.928)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.981)
+	Bipolar Bounds		(-0.974, 0.929)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.999, 0.227)
+	Bipolar Bounds		(-0.477, 0.100)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.384)
+	Horizontal Bounds	(-0.999, 0.347)
+	Bipolar Bounds		(-0.477, 0.521)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.384)
+	Horizontal Bounds	(-0.999, 0.347)
+	Bipolar Bounds		(-0.483, 0.463)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.964)
+	Bipolar Bounds		(-0.931, 0.244)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.990)
+	Bipolar Bounds		(-0.931, 0.940)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.990)
+	Bipolar Bounds		(-0.931, 0.870)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.995)
+	Bipolar Bounds		(-0.999, 0.222)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.999)
+	Bipolar Bounds		(-0.999, 0.995)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.999)
+	Bipolar Bounds		(-0.999, 0.888)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 7
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.900
+Horizontal Decay			0.010
+Horizontal Diffusion Radius (um)	20.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.355)
+	Horizontal Bounds	(-0.999, 0.000)
+	Bipolar Bounds		(-0.117, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.105)
+	Horizontal Bounds	(-0.999, 0.029)
+	Bipolar Bounds		(-0.547, 0.336)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.273)
+	Horizontal Bounds	(-0.999, -0.328)
+	Bipolar Bounds		(-0.358, 0.336)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.275)
+	Horizontal Bounds	(-0.999, 0.173)
+	Bipolar Bounds		(-0.546, 0.177)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.497)
+	Horizontal Bounds	(-0.999, 0.410)
+	Bipolar Bounds		(-0.734, 0.430)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.165)
+	Horizontal Bounds	(-0.999, 0.069)
+	Bipolar Bounds		(-0.546, 0.502)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.999, 0.185)
+	Bipolar Bounds		(-0.588, 0.166)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.497)
+	Horizontal Bounds	(-0.999, 0.407)
+	Bipolar Bounds		(-0.723, 0.481)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.309)
+	Horizontal Bounds	(-0.999, 0.229)
+	Bipolar Bounds		(-0.605, 0.582)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.220)
+	Horizontal Bounds	(-0.999, 0.121)
+	Bipolar Bounds		(-0.431, 0.098)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.776)
+	Horizontal Bounds	(-0.999, 0.666)
+	Bipolar Bounds		(-0.544, 0.435)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.706)
+	Horizontal Bounds	(-0.999, 0.595)
+	Bipolar Bounds		(-0.548, 0.792)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.866)
+	Bipolar Bounds		(-0.938, 0.204)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.927)
+	Bipolar Bounds		(-0.938, 0.839)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.927)
+	Bipolar Bounds		(-0.938, 0.937)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.902)
+	Bipolar Bounds		(-0.996, 0.216)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.942)
+	Bipolar Bounds		(-0.996, 0.914)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.942)
+	Bipolar Bounds		(-0.996, 0.935)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.999, 0.183)
+	Bipolar Bounds		(-0.547, 0.098)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.706)
+	Horizontal Bounds	(-0.999, 0.615)
+	Bipolar Bounds		(-0.609, 0.593)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.706)
+	Horizontal Bounds	(-0.999, 0.614)
+	Bipolar Bounds		(-0.616, 0.614)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.914)
+	Bipolar Bounds		(-0.984, 0.199)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.960)
+	Bipolar Bounds		(-0.984, 0.946)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.955)
+	Bipolar Bounds		(-0.984, 0.802)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.964)
+	Bipolar Bounds		(-0.999, 0.216)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.991)
+	Bipolar Bounds		(-0.999, 0.982)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.987)
+	Bipolar Bounds		(-0.999, 0.882)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 8
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.900
+Horizontal Decay			0.010
+Horizontal Diffusion Radius (um)	30.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.380)
+	Horizontal Bounds	(-0.999, 0.000)
+	Bipolar Bounds		(-0.115, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.111)
+	Horizontal Bounds	(-0.999, -0.183)
+	Bipolar Bounds		(-0.399, 0.257)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.380)
+	Horizontal Bounds	(-0.999, -0.436)
+	Bipolar Bounds		(-0.281, 0.257)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.999, 0.156)
+	Bipolar Bounds		(-0.447, 0.182)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.535)
+	Horizontal Bounds	(-0.999, 0.414)
+	Bipolar Bounds		(-0.688, 0.543)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.190)
+	Horizontal Bounds	(-0.999, 0.087)
+	Bipolar Bounds		(-0.591, 0.543)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.999, 0.179)
+	Bipolar Bounds		(-0.599, 0.159)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.485)
+	Horizontal Bounds	(-0.999, 0.367)
+	Bipolar Bounds		(-0.632, 0.591)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.999, 0.181)
+	Bipolar Bounds		(-0.632, 0.591)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.999, 0.156)
+	Bipolar Bounds		(-0.429, 0.113)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.414)
+	Horizontal Bounds	(-0.999, 0.305)
+	Bipolar Bounds		(-0.429, 0.500)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.323)
+	Horizontal Bounds	(-0.999, 0.223)
+	Bipolar Bounds		(-0.501, 0.606)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.831)
+	Bipolar Bounds		(-0.897, 0.222)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.878)
+	Bipolar Bounds		(-0.897, 0.905)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.985)
+	Horizontal Bounds	(-0.999, 0.850)
+	Bipolar Bounds		(-0.920, 0.873)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.870)
+	Bipolar Bounds		(-0.999, 0.200)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.897)
+	Bipolar Bounds		(-0.999, 0.935)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.874)
+	Bipolar Bounds		(-0.999, 0.866)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.999, 0.163)
+	Bipolar Bounds		(-0.537, 0.098)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.384)
+	Horizontal Bounds	(-0.999, 0.291)
+	Bipolar Bounds		(-0.537, 0.521)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.384)
+	Horizontal Bounds	(-0.999, 0.290)
+	Bipolar Bounds		(-0.537, 0.454)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.851)
+	Bipolar Bounds		(-0.945, 0.179)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.909)
+	Bipolar Bounds		(-0.945, 0.920)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.902)
+	Bipolar Bounds		(-0.945, 0.834)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.924)
+	Bipolar Bounds		(-0.999, 0.204)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.953)
+	Bipolar Bounds		(-0.999, 0.964)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.999, 0.943)
+	Bipolar Bounds		(-0.999, 0.886)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 9
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.900
+Horizontal Decay			0.100
+Horizontal Diffusion Radius (um)	10.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.355)
+	Horizontal Bounds	(-0.989, 0.000)
+	Bipolar Bounds		(-0.104, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.091)
+	Horizontal Bounds	(-0.989, 0.062)
+	Bipolar Bounds		(-0.537, 0.415)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.140)
+	Horizontal Bounds	(-0.989, -0.170)
+	Bipolar Bounds		(-0.421, 0.415)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.989, 0.223)
+	Bipolar Bounds		(-0.582, 0.201)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.405)
+	Horizontal Bounds	(-0.989, 0.380)
+	Bipolar Bounds		(-0.687, 0.437)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.215)
+	Horizontal Bounds	(-0.989, 0.153)
+	Bipolar Bounds		(-0.595, 0.577)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.989, 0.224)
+	Bipolar Bounds		(-0.582, 0.187)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.405)
+	Horizontal Bounds	(-0.989, 0.377)
+	Bipolar Bounds		(-0.684, 0.610)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.309)
+	Horizontal Bounds	(-0.989, 0.266)
+	Bipolar Bounds		(-0.626, 0.610)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.989, 0.217)
+	Bipolar Bounds		(-0.582, 0.112)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.851)
+	Horizontal Bounds	(-0.989, 0.798)
+	Bipolar Bounds		(-0.582, 0.448)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.802)
+	Horizontal Bounds	(-0.989, 0.739)
+	Bipolar Bounds		(-0.582, 0.869)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.935)
+	Bipolar Bounds		(-0.992, 0.243)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.976)
+	Bipolar Bounds		(-0.992, 0.832)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.949)
+	Bipolar Bounds		(-0.992, 0.974)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.960)
+	Bipolar Bounds		(-0.992, 0.227)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.981)
+	Bipolar Bounds		(-0.992, 0.971)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.974)
+	Bipolar Bounds		(-0.992, 0.972)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.989, 0.226)
+	Bipolar Bounds		(-0.582, 0.109)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.802)
+	Horizontal Bounds	(-0.989, 0.751)
+	Bipolar Bounds		(-0.713, 0.722)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.802)
+	Horizontal Bounds	(-0.989, 0.751)
+	Bipolar Bounds		(-0.721, 0.747)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.957)
+	Bipolar Bounds		(-0.992, 0.224)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.981)
+	Bipolar Bounds		(-0.992, 0.973)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.981)
+	Bipolar Bounds		(-0.992, 0.868)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.985)
+	Bipolar Bounds		(-0.995, 0.232)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.989)
+	Bipolar Bounds		(-0.995, 0.991)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.989)
+	Bipolar Bounds		(-0.995, 0.901)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 10
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.900
+Horizontal Decay			0.100
+Horizontal Diffusion Radius (um)	20.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.355)
+	Horizontal Bounds	(-0.989, 0.000)
+	Bipolar Bounds		(-0.115, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.128)
+	Horizontal Bounds	(-0.989, 0.060)
+	Bipolar Bounds		(-0.340, 0.270)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.333)
+	Horizontal Bounds	(-0.989, -0.376)
+	Bipolar Bounds		(-0.291, 0.272)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.989, 0.173)
+	Bipolar Bounds		(-0.497, 0.156)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.538)
+	Horizontal Bounds	(-0.989, 0.454)
+	Bipolar Bounds		(-0.497, 0.574)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.145)
+	Horizontal Bounds	(-0.989, 0.076)
+	Bipolar Bounds		(-0.544, 0.513)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.989, 0.199)
+	Bipolar Bounds		(-0.577, 0.166)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.526)
+	Horizontal Bounds	(-0.989, 0.439)
+	Bipolar Bounds		(-0.577, 0.595)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.309)
+	Horizontal Bounds	(-0.989, 0.233)
+	Bipolar Bounds		(-0.621, 0.595)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.989, 0.173)
+	Bipolar Bounds		(-0.557, 0.103)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.731)
+	Horizontal Bounds	(-0.989, 0.629)
+	Bipolar Bounds		(-0.557, 0.540)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.679)
+	Horizontal Bounds	(-0.989, 0.576)
+	Bipolar Bounds		(-0.557, 0.568)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.866)
+	Bipolar Bounds		(-0.960, 0.191)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.925)
+	Bipolar Bounds		(-0.959, 0.909)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.925)
+	Bipolar Bounds		(-0.960, 0.844)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.904)
+	Bipolar Bounds		(-0.970, 0.213)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.945)
+	Bipolar Bounds		(-0.969, 0.952)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.933)
+	Bipolar Bounds		(-0.970, 0.876)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.989, 0.193)
+	Bipolar Bounds		(-0.595, 0.098)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.679)
+	Horizontal Bounds	(-0.989, 0.591)
+	Bipolar Bounds		(-0.594, 0.597)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.679)
+	Horizontal Bounds	(-0.989, 0.590)
+	Bipolar Bounds		(-0.595, 0.429)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.900)
+	Bipolar Bounds		(-0.995, 0.246)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.950)
+	Bipolar Bounds		(-0.994, 0.949)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.946)
+	Bipolar Bounds		(-0.995, 0.802)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.956)
+	Bipolar Bounds		(-0.995, 0.215)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.983)
+	Bipolar Bounds		(-0.994, 0.976)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.979)
+	Bipolar Bounds		(-0.995, 0.860)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Retina 11
+
+Retina Width (um)			200.000
+Retina Grid Size (um)			1.000
+Retina Timestep (ms)			10.000
+Cone Distance (um)			10.000
+Cone Density				100000.000
+Cone Input Size (um)			10.000
+Horizontal Input Strength (um)		0.900
+Horizontal Decay			0.100
+Horizontal Diffusion Radius (um)	30.000
+Bipolar Distance (um)			10.000
+Bipolar Density				100000.000
+Bipolar Input Size (um)			10.000
+
+
+--------Stimulus 0
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.360)
+	Horizontal Bounds	(-0.989, 0.000)
+	Bipolar Bounds		(-0.096, 0.500)
+
+
+
+--------Stimulus 1
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.339)
+	Horizontal Bounds	(-0.989, -0.386)
+	Bipolar Bounds		(-0.264, 0.215)
+
+
+
+--------Stimulus 2
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, -0.435)
+	Horizontal Bounds	(-0.989, -0.476)
+	Bipolar Bounds		(-0.276, 0.261)
+
+
+
+--------Stimulus 3
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.220)
+	Horizontal Bounds	(-0.989, 0.120)
+	Bipolar Bounds		(-0.441, 0.162)
+
+
+
+--------Stimulus 4
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.333)
+	Horizontal Bounds	(-0.989, 0.236)
+	Bipolar Bounds		(-0.441, 0.484)
+
+
+
+--------Stimulus 5
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.220)
+	Horizontal Bounds	(-0.989, 0.120)
+	Bipolar Bounds		(-0.599, 0.557)
+
+
+
+--------Stimulus 6
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.280)
+	Horizontal Bounds	(-0.989, 0.185)
+	Bipolar Bounds		(-0.467, 0.157)
+
+
+
+--------Stimulus 7
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.364)
+	Horizontal Bounds	(-0.989, 0.269)
+	Bipolar Bounds		(-0.578, 0.511)
+
+
+
+--------Stimulus 8
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(10.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.364)
+	Horizontal Bounds	(-0.989, 0.269)
+	Bipolar Bounds		(-0.667, 0.634)
+
+
+
+--------Stimulus 9
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.255)
+	Horizontal Bounds	(-0.989, 0.150)
+	Bipolar Bounds		(-0.455, 0.100)
+
+
+
+--------Stimulus 10
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.351)
+	Horizontal Bounds	(-0.989, 0.250)
+	Bipolar Bounds		(-0.454, 0.411)
+
+
+
+--------Stimulus 11
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.215)
+	Horizontal Bounds	(-0.989, 0.115)
+	Bipolar Bounds		(-0.510, 0.421)
+
+
+
+--------Stimulus 12
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.841)
+	Bipolar Bounds		(-0.915, 0.184)
+
+
+
+--------Stimulus 13
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.873)
+	Bipolar Bounds		(-0.914, 0.843)
+
+
+
+--------Stimulus 14
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.841)
+	Bipolar Bounds		(-0.915, 0.808)
+
+
+
+--------Stimulus 15
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.879)
+	Bipolar Bounds		(-0.938, 0.204)
+
+
+
+--------Stimulus 16
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.893)
+	Bipolar Bounds		(-0.938, 0.914)
+
+
+
+--------Stimulus 17
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(30.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.883)
+	Bipolar Bounds		(-0.938, 0.911)
+
+
+
+--------Stimulus 18
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.270)
+	Horizontal Bounds	(-0.989, 0.172)
+	Bipolar Bounds		(-0.495, 0.101)
+
+
+
+--------Stimulus 19
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.292)
+	Horizontal Bounds	(-0.989, 0.210)
+	Bipolar Bounds		(-0.494, 0.497)
+
+
+
+--------Stimulus 20
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 10.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 0.292)
+	Horizontal Bounds	(-0.989, 0.209)
+	Bipolar Bounds		(-0.550, 0.470)
+
+
+
+--------Stimulus 21
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.863)
+	Bipolar Bounds		(-0.958, 0.201)
+
+
+
+--------Stimulus 22
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.906)
+	Bipolar Bounds		(-0.957, 0.912)
+
+
+
+--------Stimulus 23
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 30.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.900)
+	Bipolar Bounds		(-0.958, 0.844)
+
+
+
+--------Stimulus 24
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		100.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.928)
+	Bipolar Bounds		(-0.995, 0.205)
+
+
+
+--------Stimulus 25
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		300.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.946)
+	Bipolar Bounds		(-0.993, 0.967)
+
+
+
+--------Stimulus 26
+
+	Movie Size (pixels)	(200.0, 200.0)
+	Bar Size (pixels)	(60.0, 60.0)
+	Bar Speed (p/s)		600.0
+	Pixel Size (rgu)	1.000
+
+	Cone Bounds		(-1.000, 1.000)
+	Horizontal Bounds	(-0.989, 0.942)
+	Bipolar Bounds		(-0.995, 0.891)
+

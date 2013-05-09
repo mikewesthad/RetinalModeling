@@ -33,9 +33,7 @@ class ConeLayer:
         self.neurons = len(self.locations)
 
         self.history_size = history_size
-        self.initializeActivties()
-
-        self.establishInputs()        
+        self.initializeActivties()     
     
     def loadPast(self, activity):
         self.activities[0] = activity

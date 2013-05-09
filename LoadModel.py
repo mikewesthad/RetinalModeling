@@ -1,9 +1,9 @@
-import pickle, os
+from Constants import *
 
-save_directory  = os.path.join("Saved Retinas", "Diffuse Bipolar")
-saved_path      = os.path.join(os.getcwd(), save_directory, "retina.p")
-retina = pickle.load(open(saved_path, "rb"))
+directory_name = "6"
+stimulus_name = "26"
 
-from Visualizer import Visualizer
+retina = Retina.loadRetina(directory_name)
+retina.loadActivities(directory_name, stimulus_name)
 
 v = Visualizer(retina)

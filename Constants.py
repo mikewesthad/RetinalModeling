@@ -73,6 +73,7 @@ from StarburstMorphology import StarburstMorphology
 from Starburst import Starburst
 from StarburstLayer import StarburstLayer
 from Retina import Retina
+from Visualizer import Visualizer
 
 
         

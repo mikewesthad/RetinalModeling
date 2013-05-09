@@ -1,18 +1,18 @@
 import math as m
-from RuntimeBarGenerator import RuntimeBarGenerator
 
-class BarStimulus:
+class Stimulus:
 
-    def __init__(self, position_on_retina=(0.0, 0.0), pixel_size=1.0, 
-                 bar_movie=RuntimeBarGenerator()):
+    def __init__(self, position_on_retina=(0.0, 0.0), pixel_size_in_rgu=1.0, 
+                 movie=None):
 
         self.position_on_retina     = position_on_retina
-        self.pixel_size             = pixel_size
-        self.bar_movie              = bar_movie
-        self.width_in_pixels        = bar_movie.movie_width
-        self.height_in_pixels       = bar_movie.movie_height
-        self.width_on_retina        = bar_movie.movie_width * pixel_size
-        self.height_on_retina       = bar_movie.movie_height * pixel_size
+        self.pixel_size             = pixel_size_in_rgu
+        
+        self.movie                  = movie
+        self.width_in_pixels        = movie.movie_width
+        self.height_in_pixels       = movie.movie_height
+        self.width_on_retina        = self.width_in_pixels * self.pixel_size
+        self.height_on_retina       = self.height_in_pixels * self.pixel_size
 
         left    = position_on_retina[0]
         right   = position_on_retina[0] + self.width_on_retina
@@ -30,20 +30,22 @@ class BarStimulus:
         string += "\nHeight (rgu):\t\t\t\t"+str(self.height_on_retina)
         string += str(self.bar_movie)
         return string
-        
+    
+    def loadMovie(self, movie):
+        self.movie = movie
+    
     """
     The module used for saving (pickle) can't handle pygame's surface, so it must
     be unloaded before saving
     """
     def unloadStimulusForSaving(self):
-        self.bar_movie.removeDisplay()
-        
+        self.movie.removeDisplay()
     
     """
     Update the bar_movie
     """
     def update(self, timestep):
-        self.bar_movie.update(timestep)
+        self.movie.update(timestep)
     
     """
     Get the intensity of a pixel with name pixel_ID from the bar_movie
@@ -51,7 +53,7 @@ class BarStimulus:
     def getPixelIntensity(self, pixel_ID):
         x, y = pixel_ID.split(".")
         x, y = int(x), int(y)
-        intensity = self.bar_movie.screen_array[x, y]
+        intensity = self.movie.screen_array[x, y]
         return intensity
 
     """
