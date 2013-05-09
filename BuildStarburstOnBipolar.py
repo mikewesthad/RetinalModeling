@@ -61,18 +61,18 @@ output_field_radius = 10 * UM_TO_M
 retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius, 
                          output_field_radius)
                          
-## Build the starburst layer
-#starburst_distance  = 50 * UM_TO_M
-#starburst_density   = 1.0 / (retina.area/retina.density_area)
-#average_wirelength  = 150 * UM_TO_M
-#step_size           = 15 * UM_TO_M
-#input_strength      = 1.0
-#decay_rate          = 0.0
-#diffusion_radius    = 15 * UM_TO_M
-#
-#retina.buildStarburstLayer(starburst_distance, starburst_density,
-#                           average_wirelength, step_size,
-#                           input_strength, decay_rate, diffusion_radius) 
+# Build the starburst layer
+starburst_distance  = 50 * UM_TO_M
+starburst_density   = 1.0 / (retina.area/retina.density_area)
+average_wirelength  = 150 * UM_TO_M
+step_size           = 15 * UM_TO_M
+input_strength      = 1.0
+decay_rate          = 0.0
+diffusion_radius    = 15 * UM_TO_M
+
+retina.buildStarburstLayer(starburst_distance, starburst_density,
+                           average_wirelength, step_size,
+                           input_strength, decay_rate, diffusion_radius) 
     
 retina.runModel(20*timestep)
 
