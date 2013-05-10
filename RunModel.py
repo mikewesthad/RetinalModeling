@@ -80,6 +80,6 @@ def loadModel(name):
     v = Visualizer(retina)
 
 
-
-runModel("test")
-loadModel("Test")                 
+dir_name = "Jason"
+runModel(dir_name)
+loadModel(dir_name)                 
