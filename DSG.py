@@ -21,6 +21,7 @@ class DSG(object):
         self.preferred_dir      = preferred_dir
         self.null_dir           = (preferred_dir + 180) % 360
         self.connection_heading_delta = 180
+        self.activities         = []
         
         self.ON_arbor = Starburst(self.layer,
                                   self.ON_morphology,
@@ -54,17 +55,20 @@ class DSG(object):
 
                 
     def isAppropriateInputON(self, neuron, compartment):
-        is_correct_neuron = isinstance(neuron, Starburst)
+        is_correct_neuron = isinstance(neuron, Starburst) or isinstance(neuron, Bipolar)
         is_correct_on_off = neuron.layer.on_off_type==self.ON_arbor.on_off_type            
         def isAppropriateHeading():
-            heading_max = (self.null_dir + self.connection_heading_delta - 1) % 360
-            heading_min = (self.null_dir - self.connection_heading_delta) % 360
-            print "heading_min =", heading_min, ":", "heading_max =", heading_max
-            print "compartment.heading =" , compartment.heading
-            if heading_max >= heading_min:            
-                return compartment.heading <= heading_max and compartment.heading >= heading_min
-            else:            
-                return compartment.heading < heading_max or compartment.heading > heading_min
+            if isinstance(neuron, Starburst):
+                heading_max = (self.null_dir + self.connection_heading_delta - 1) % 360
+                heading_min = (self.null_dir - self.connection_heading_delta) % 360
+                print "heading_min =", heading_min, ":", "heading_max =", heading_max
+                print "compartment.heading =" , compartment.heading
+                if heading_max >= heading_min:            
+                    return compartment.heading <= heading_max and compartment.heading >= heading_min
+                else:            
+                    return compartment.heading < heading_max or compartment.heading > heading_min  
+            else: #not concerned about headings of non-SAC inputs, so
+                return True
         is_correct_heading = isAppropriateHeading()
         is_appropriate = is_correct_neuron and is_correct_on_off and is_correct_heading     
         print "Inside isAppropriateInputON", is_correct_neuron, is_correct_on_off, is_correct_heading      
@@ -73,15 +77,18 @@ class DSG(object):
         return is_appropriate
                    
     def isAppropriateInputOFF(self, neuron, compartment):
-        is_correct_neuron = isinstance(neuron, Starburst)
+        is_correct_neuron = isinstance(neuron, Starburst) or isinstance(neuron, Bypolar)
         is_correct_on_off = neuron.layer.on_off_type==self.OFF_arbor.on_off_type            
         def isAppropriateHeading():
-            heading_max = (self.null_dir + self.connection_heading_delta - 1) % 360
-            heading_min = (self.null_dir - self.connection_heading_delta) % 360
-            if heading_max >= heading_min:            
-                return compartment.heading <= heading_max and compartment.heading >= heading_min
-            else:            
-                return compartment.heading < heading_max or compartment.heading > heading_min
+            if isinstance(neuron, Starburst):
+                heading_max = (self.null_dir + self.connection_heading_delta - 1) % 360
+                heading_min = (self.null_dir - self.connection_heading_delta) % 360
+                if heading_max >= heading_min:            
+                    return compartment.heading <= heading_max and compartment.heading >= heading_min
+                else:            
+                    return compartment.heading < heading_max or compartment.heading > heading_min
+            else: #not concerned about headings of non-SAC inputs, so
+                return True
         is_correct_heading = isAppropriateHeading()
         is_appropriate = is_correct_neuron and is_correct_on_off and is_correct_heading     
         print "Inside isAppropriateInputOFF", is_correct_neuron, is_correct_on_off, is_correct_heading      
@@ -94,9 +101,26 @@ class DSG(object):
         self.ON_arbor.draw(surface, scale, draw_segments, draw_points, draw_compartments)
         self.OFF_arbor.draw(surface, scale, draw_segments, draw_points, draw_compartments)
             
-            
-            
-        
+    def update(self):
+        #Update activity in the ON and OFF arbors of the DSG.        
+        self.ON_arbor.updateActivity()
+        self.OFF_arbor.updateActivity()
+        #Average the activities across the ON and oFF master branch compartments
+        #to determine the activity at the "soma."
+        potential_sum = 0.0
+        num_master_comps = 0
+        for master_comp in self.ON_arbor.morphology.master_compartments:
+            potential_sum += self.ON_arbor.activities(master_comp.index)
+            num_master_comps += 1
+        for master_comp in self.OFF_arbor.morphology.master_compartments:
+            potential_sum += self.OFF_arbor.activities(master_comp.index)
+            num_master_comps += 1
+        soma_potential = potential_sum / num_master_comps
+        #update the self.activities list
+        del self.activities[-1]
+        self.activities.insert(0, soma_potential)
+    
+    
     
         
         
