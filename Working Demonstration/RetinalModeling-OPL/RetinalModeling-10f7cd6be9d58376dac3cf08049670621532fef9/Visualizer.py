@@ -5,8 +5,8 @@ from pygame.locals import *
 
 class Visualizer:
     
-    def __init__(self, retina, visualization_width=1000, visualization_height=1000,
-                 visualization_background_color=pygame.Color(255,255,255), controls_width=250, 
+    def __init__(self, retina, visualization_width=700, visualization_height=700,
+                 visualization_background_color=pygame.Color(255,255,255), controls_width=175, 
                  controls_background_color=pygame.Color(245,245,245)):
                      
 
@@ -70,7 +70,7 @@ class Visualizer:
         buttons = []
         width, height = 200, 40
         dy = 40 + 20
-        x, y = int(self.controls_width/2.0-width/2.0), 400
+        x, y = int(self.controls_width/2.0-width/2.0), 300 #400
         for cell_type in cell_types:
             button = Button(self.controls_surface, text=cell_type, name=cell_type,
                             x=x, y=y)
@@ -83,8 +83,8 @@ class Visualizer:
         height  = 40        
         x1  = button.button_rectangle.left
         x2  = button.button_rectangle.right - width
-        y1  = 800
-        y2  = 800        
+        y1  = 600 #800
+        y2  = 600 #800        
         left    = Button(self.controls_surface, text="<-", name="Left", 
                          x=x1, y=y1, width=width, height=height)
         x, y = x+30, 800
