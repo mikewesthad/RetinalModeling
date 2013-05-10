@@ -156,10 +156,10 @@ class Retina:
         # Pickle the retina!
         pickle.dump(self, fh)
         
-        parameterPath = os.path.join(save_path, "parameters.txt")
-        parameterFile = open(parameterPath, "w")
-        parameterFile.write(str(self))
-        parameterFile.close()
+#        parameterPath = os.path.join(save_path, "parameters.txt")
+#        parameterFile = open(parameterPath, "w")
+#        parameterFile.write(str(self))
+#        parameterFile.close()
     
     
     @classmethod
