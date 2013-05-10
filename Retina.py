@@ -53,10 +53,17 @@ class Retina:
             self.grid_layers.append(grid)
     
     def loadStimulus(self, stimulus):
+        # Connect the stimulus to the cone layer
         self.stimulus = stimulus
         self.cone_layer.stimulus = stimulus
         self.cone_layer.establishInputs()
         self.clearActivity()
+        
+        # Initalize the cone and horizontal activities to the background intensity
+        background_color = self.stimulus.movie.background_color
+        intensity = (background_color[0] + background_color[1] + background_color[2])/(3.0 * 255.0)
+        self.horizontal_layer.activities[0] = ((0.5-intensity)*2.0) * np.ones((1, self.horizontal_layer.neurons))
+        self.cone_layer.activities[0] = ((0.5-intensity)*2.0) * np.ones((1, self.cone_layer.neurons)) 
     
     def clearActivity(self):
         self.cone_activities            = []
@@ -200,18 +207,28 @@ class Retina:
     """
     def runModel(self, duration):
         end_time = self.time + duration       
-        
         while self.time <= end_time:
             self.updateActivity()
             self.time += self.timestep
-    
         self.findRetinaActivityBounds()
+        
+        
+    """
+    This function runs the retina model until the stimulus is done running
+    """
+    def runModelForStimulus(self):
+        is_running = True
+        while is_running:
+            is_running = self.updateActivity()
+            self.time += self.timestep
+        self.findActivityBounds()
+        
         
     """
     This function updates each of the layers of the retina in turn
     """
     def updateActivity(self):        
-        self.stimulus.update(self.timestep) 
+        is_running = self.stimulus.update(self.timestep) 
         
         for layer_index in range(self.number_layers):
             layer           = self.layers[layer_index]
@@ -219,6 +236,8 @@ class Retina:
                 activities      = self.activities[layer_index]
                 new_activity    = layer.update()
                 activities.append(new_activity)
+        
+        return is_running
 
 
     def buildConeLayer(self, minimum_distance, minimum_density, input_field_size, verbose=True):
@@ -258,7 +277,8 @@ class Retina:
     
     def buildStarburstLayer(self, minimum_distance, minimum_density, 
                             average_wirelength, step_size, 
-                            input_strength, decay_rate, diffusion_width):
+                            input_strength, decay_rate, diffusion_width,
+                            build_on_and_off=True, verbose=True):
         input_delay = 1
         layer_depth = 0
         minimum_distance    /= self.grid_size
@@ -271,17 +291,19 @@ class Retina:
                                                  minimum_distance, minimum_density,
                                                  average_wirelength, step_size,
                                                  diffusion_width, decay_rate,
-                                                 input_strength)                                                    
-        self.off_starburst_layer = StarburstLayer(self, "Off", layer_depth, 
-                                                 self.history_size, input_delay, 
-                                                 minimum_distance, minimum_density,
-                                                 average_wirelength, step_size,
-                                                 diffusion_width, decay_rate,
-                                                 input_strength)              
-        print "On and Off Starburst Layers Construction Time", clock() - start_time
+                                                 input_strength)   
         self.layers[4] = self.on_starburst_layer
-        self.layers[5] = self.off_starburst_layer
-    
+
+        if build_on_and_off:                                                 
+            self.off_starburst_layer = StarburstLayer(self, "Off", layer_depth, 
+                                                     self.history_size, input_delay, 
+                                                     minimum_distance, minimum_density,
+                                                     average_wirelength, step_size,
+                                                     diffusion_width, decay_rate,
+                                                     input_strength)
+            self.layers[5] = self.off_starburst_layer
+           
+        if verbose: print "On and Off Starburst Layers Construction Time", clock() - start_time
     
     
     ###########################################################################

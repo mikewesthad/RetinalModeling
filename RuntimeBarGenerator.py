@@ -28,7 +28,7 @@ class RuntimeBarGenerator:
     def __init__(self, framerate=30.0, movie_size=(800,800), 
                  background_color=(255,255,255), bar_orientation=45.0,
                  bar_size=(20.0,60.0), bar_speed=20.0, bar_movement_distance=500.0,
-                 bar_color=(0,0,0), bar_position=(100,100)):       
+                 bar_color=(0,0,0), bar_position=(100,100), minimize=True):       
 
         # Initialize class variables
         self.framerate          = framerate
@@ -61,6 +61,7 @@ class RuntimeBarGenerator:
 
         # Create a pygame display surface
         self.display = pygame.display.set_mode(movie_size)
+        if minimize: pygame.display.iconify()
         self.drawBar()
 
         # Initialize run timing variables
@@ -146,6 +147,16 @@ class RuntimeBarGenerator:
         # The pygame array returned by pygame is of size (rows=width x cols=height) 
         screen_RGB = pygame.surfarray.pixels3d(self.display)                   
         self.screen_array = np.average(screen_RGB, 2) / 255.0
+        
+    def play(self, speed=1.0):
+        
+        clock = pygame.time.Clock()
+        elapsed = 0.0
+        is_running = True
+        while is_running:
+            is_running = self.update(elapsed)
+            elapsed = clock.tick(self.framerate) / 1000.0 * speed
+            
     
     """
     Given a specified change in world time, move the bar forward to the

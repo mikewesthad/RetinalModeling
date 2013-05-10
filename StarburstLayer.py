@@ -37,7 +37,7 @@ class StarburstLayer:
         self.minimum_required_cells     = int(minimum_required_density * (retina.area/retina.density_area))
         
 #        self.placeNeurons()
-        self.locations = [(int(retina.grid_width/2.0), int(retina.grid_height/2.0))]
+        self.locations = [Vector2D(int(retina.grid_width/2.0), int(retina.grid_height/2.0))]
         self.number_neurons = len(self.locations)
         
         # Instantiate starbursts

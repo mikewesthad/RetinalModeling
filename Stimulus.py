@@ -20,6 +20,9 @@ class Stimulus:
         down    = position_on_retina[1] + self.height_on_retina
         self.bounding_box = [left, right, up, down]
         
+    def play(self, speed=1.0):
+        self.movie.play(speed=speed)
+    
     def __str__(self):
         string = ""
         string += "\nPosition (rgu):\t\t\t\t"+str(self.position_on_retina)
@@ -45,7 +48,7 @@ class Stimulus:
     Update the bar_movie
     """
     def update(self, timestep):
-        self.movie.update(timestep)
+        return self.movie.update(timestep)
     
     """
     Get the intensity of a pixel with name pixel_ID from the bar_movie

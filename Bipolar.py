@@ -9,7 +9,7 @@ class Bipolar:
         
         self.layer  = layer
         self.retina = layer.retina
-        self.rectified = rectified        
+        self.rectified = rectified    
         
         self.history_size   = layer.history_size           
         
