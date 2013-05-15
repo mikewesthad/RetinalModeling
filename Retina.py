@@ -118,11 +118,9 @@ class Retina:
         string += "\nGrid Width (rgu)\t\t\t"+str(self.grid_width)
         string += "\nGrid Height (rgu)\t\t\t"+str(self.grid_height)
         string += "\nTimestep (ms)\t\t\t\t"+str(self.timestep * S_TO_MS)
-        string += "\nTime (ms)\t\t\t\t"+str(self.time * S_TO_MS)
         
-        string += "\n\n\n" + str(self.cone_layer)
-        string += "\n\n\n" + str(self.horizontal_layer)
-        string += "\n\n\n" + str(self.on_bipolar_layer)
+        for layer in self.layers:
+            string += "\n\n\n" + str(layer)
         return string  
        
     """
@@ -221,7 +219,7 @@ class Retina:
         while is_running:
             is_running = self.updateActivity()
             self.time += self.timestep
-        self.findActivityBounds()
+        self.findRetinaActivityBounds()
         
         
     """

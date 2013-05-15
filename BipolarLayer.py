@@ -6,7 +6,7 @@ class BipolarLayer:
     
     def __init__(self, retina, bipolar_type, cone_layer, horizontal_layer, history_size,
                  input_delay, layer_depth, nearest_neighbor_distance, minimum_required_density,
-                 input_field_radius, output_field_radius):
+                 input_field_radius, output_field_radius, rectified=True, recieves_input_from_horizontal=False):
                      
         self.retina             = retina
         self.cone_layer         = cone_layer
@@ -16,6 +16,10 @@ class BipolarLayer:
         self.history_size   = history_size
         self.input_delay    = input_delay
         self.layer_depth    = layer_depth
+        
+        self.rectified = rectified
+        
+        self.recieves_input_from_horizontal = recieves_input_from_horizontal
     
         self.nearest_neighbor_distance          = nearest_neighbor_distance
         self.nearest_neighbor_distance_gridded  = nearest_neighbor_distance / retina.grid_size
@@ -97,8 +101,9 @@ class BipolarLayer:
         string += "\nNearest Neightbor Distance (um)\t\t"+str(self.nearest_neighbor_distance * M_TO_UM)
         string += "\nInput Field Radius\t\t\t"+str(self.input_field_radius * M_TO_UM)
         string += "\nMinimum Required Density (cells/mm^2)\t"+str(self.minimum_required_density)
-        string += "\nNumber of Neurons\t\t\t"+str(self.neurons)
+        string += "\nNumber of Neurons\t\t\t"+str(self.number_neurons)
         string += "\nInput Delay (timesteps)\t\t\t"+str(self.input_delay)
+        string += "\nRectified (True/False)\t\t\t"+str(self.rectified)
         return string
         
     def neurotransmitterToPotential(self, nt):

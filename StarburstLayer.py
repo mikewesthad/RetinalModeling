@@ -165,6 +165,9 @@ class StarburstLayer:
         string += "Starburst {0} Layer\n".format(self.starburst_type)
         string += "\nNearest Neightbor Distance (um)\t\t{0}".format(self.nearest_neighbor_distance * M_TO_UM)
         string += "\nMinimum Required Density (cells/mm^2)\t{0}".format(self.minimum_required_density)
-        string += "\nNumber of Neurons\t\t\t{0}".format(self.neurons)
+        string += "\nNumber of Neurons\t\t\t{0}".format(self.number_neurons)
         string += "\nInput Delay (timesteps)\t\t\t{0}".format(self.input_delay)
+        string += "\nDiffusion Width (um))\t\t\t{0}".format(self.diffusion_width * M_TO_UM)
+        string += "\nDecay Rate\t\t\t\t{0}".format(self.decay_rate)
+        string += "\nInput Strength\t\t\t\t{0}".format(self.input_strength)
         return string

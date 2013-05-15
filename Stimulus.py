@@ -31,7 +31,7 @@ class Stimulus:
         string += "\nHeight (pixels):\t\t\t"+str(self.height_in_pixels)
         string += "\nWidth (rgu):\t\t\t\t"+str(self.width_on_retina)
         string += "\nHeight (rgu):\t\t\t\t"+str(self.height_on_retina)
-        string += str(self.bar_movie)
+        string += str(self.movie)
         return string
     
     def loadMovie(self, movie):

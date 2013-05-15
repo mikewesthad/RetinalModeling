@@ -1,6 +1,7 @@
 from Constants import *
 from CreateRetina import createStarburstRetina
 from CreateStimulus import createMultipleBars
+from Analysis import analyzeMultipleBars, analyzeMultipleBarsInOnePage, saveMorphology
 from time import clock
 
 
@@ -57,7 +58,7 @@ retina_parameters = [retina_width, retina_height, retina_grid_size, retina_times
    
 # Cone Layer
 cone_distance   = 10 * UM_TO_M
-cone_density    = 100000.0
+cone_density    = 10000.0
 cone_input_size = 10 * UM_TO_M
 cone_parameters = [cone_distance, cone_density, cone_input_size]
 
@@ -69,18 +70,19 @@ horizontal_parameters = [horizontal_input_strength, hoirzontal_decay_rate, horiz
 
 # Bipolar layer
 bipolar_distance        = 10 * UM_TO_M
-bipolar_density         = 100.0
+bipolar_density         = 10000.0
 bipolar_input_radius    = 10 * UM_TO_M
-bipolar_parameters = [bipolar_distance, bipolar_density, bipolar_input_radius]
+bipolar_output_radius   = 10 * UM_TO_M
+bipolar_parameters = [bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius]
 
 # Build the starburst layer
 starburst_distance  = 50 * UM_TO_M
-starburst_density   = 100.0
+starburst_density   = 10000.0
 average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
 input_strength      = 0.5
 decay_rate          = 0.01
-diffusion_radius    = 10 * UM_TO_M
+diffusion_radius    = 100 * UM_TO_M
 starburst_parameters = [starburst_distance, starburst_density, average_wirelength,
                         step_size, input_strength, decay_rate, diffusion_radius]
 
@@ -88,9 +90,9 @@ starburst_parameters = [starburst_distance, starburst_density, average_wirelengt
 framerate               = 30.0           
 movie_width             = 400        
 movie_height            = 400               
-bar_width               = 20.0#(20.0, 40.0, 100.0)        # Pixels (width = size in direction of motion)
+bar_width               = 100.0       # Pixels (width = size in direction of motion)
 bar_height              = 400
-bar_speed               = (400.0)#(400.0, 800.0, 2000.0)       
+bar_speed               = 250.0    
 bar_movement_distance   = 400.0         
 pixel_size_in_rgu       = 1.0                       # rgu
 stimulus_parameters = [framerate, movie_width, movie_height,
@@ -116,13 +118,21 @@ for retina_combination in retina_combinations:
     retina, retina_string = createStarburstRetina(*retina_combination)
     retina_index += 1
     
-    
     fh = open("output.txt", "a")
     fh.write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     fh.write("\n\nRetina {0}\n".format(retina_name))
     fh.write("\n{0}".format(retina_string))
     fh.close()
     
+    # Build the structure to hold the results data
+    layer_names     = ["Cone", "Horizontal", "Bipolar", "Starburst"]
+    directions      = ["0", "90", "180", "270"]
+    activities      = {}
+    for name in layer_names:    
+        activities[name] = {}
+        for direction in directions:
+            activities[name][direction] = []
+                        
     stimulus_index = 0
     for stimulus_combination in stimulus_combinations:
         
@@ -135,33 +145,19 @@ for retina_combination in retina_combinations:
         fh.write("\n\n--------Stimulus {0}\n\n{1}\n".format(stimulus_name, stimulus_string))
         fh.close()
         
-        activities = []
         for i in range(len(stimuli)):
             stimulus = stimuli[i]
             heading = headings[i]
             
             retina.loadStimulus(stimulus)  
-            retina.runModel(1000 * MS_TO_S)
-            retina.saveActivities(retina_name, stimulus_name+"_"+str(heading)) 
+            retina.runModelForStimulus()
+            retina.saveActivities(retina_name, stimulus_name+"_"+str(int(heading))) 
             stimulus_index += 1                           
             
-            fh = open("output.txt", "a")
-            fh.write("\tHeading {0}\n".format(heading))
-            
-#            results_string = ""
-#            cone_max, cone_min = np.max(retina.cone_activities), np.min(retina.cone_activities)
-#            results_string += "\n\tCone Bounds\t\t({0:.3f}, {1:.3f})".format(cone_min, cone_max)
-#            horizontal_max, horizontal_min = np.max(retina.horizontal_activities), np.min(retina.horizontal_activities)
-#            results_string += "\n\tHorizontal Bounds\t({0:.3f}, {1:.3f})".format(horizontal_min, horizontal_max)
-#            bipolar_max, bipolar_min = np.max(retina.on_bipolar_activities), np.min(retina.on_bipolar_activities)
-#            results_string += "\n\tBipolar Bounds\t\t({0:.3f}, {1:.3f})".format(bipolar_min, bipolar_max)
-#            
-#            fh.write("{0}\n\n".format(results_string))
-            fh.write("\t{0}\n\n".format("Results"))
-            fh.close()
-            retina.clearActivity()
+#            analyzeMultipleBars(retina, retina_name, stimulus_name, heading)
+            retina.clearActivity()       
         
-            
+        analyzeMultipleBarsInOnePage(retina, retina_name, stimulus_name, headings)
         
         elapsed = clock() - start
         print "Retina '{0}' stimulated in {1} seconds".format(retina_name, elapsed)

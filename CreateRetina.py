@@ -50,7 +50,7 @@ def createBipolarRetina(width, height, grid_size, timestep,
 def createStarburstRetina(width, height, grid_size, timestep,
                           cone_distance, cone_density, cone_input_size,
                           horizontal_input_strength, horizontal_decay, horizontal_diffusion_radius,
-                          bipolar_distance, bipolar_density, bipolar_input_radius, 
+                          bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius,
                           starburst_distance, starburst_density, starburst_wirelength,
                           starburst_step_size, starburst_input_strength, 
                           starburst_decay_rate, starburst_diffusion_radius,
@@ -63,14 +63,13 @@ def createStarburstRetina(width, height, grid_size, timestep,
     retina.buildConeLayer(cone_distance, cone_density, cone_input_size, verbose=False)
     retina.buildHorizontalLayer(horizontal_input_strength, horizontal_decay, 
                                 horizontal_diffusion_radius, verbose=False)
-    retina.buildBipolarLayer(bipolar_distance, bipolar_density, bipolar_input_radius, 
-                             build_on_and_off=False, verbose=False)
+    retina.buildBipolarLayer(bipolar_distance, bipolar_density, bipolar_input_radius,
+                             bipolar_output_radius, build_on_and_off=False, verbose=False)
     retina.buildStarburstLayer(starburst_distance, starburst_density,
                                starburst_wirelength, starburst_step_size,
                                starburst_input_strength, starburst_decay_rate, 
                                starburst_diffusion_radius, build_on_and_off=False, 
                                verbose=False) 
-                           
     
     # Save the morphology
     retina.saveRetina(retina_name)    

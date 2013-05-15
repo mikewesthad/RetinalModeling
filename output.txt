@@ -6,42 +6,30 @@ Retina Width (um)			400.000
 Retina Grid Size (um)			1.000
 Retina Timestep (ms)			10.000
 Cone Distance (um)			10.000
-Cone Density				100000.000
+Cone Density				10000.000
 Cone Input Size (um)			10.000
 Horizontal Input Strength		0.250
 Horizontal Decay			0.010
 Horizontal Diffusion Radius (um)	1.000
 Bipolar Distance (um)			10.000
-Bipolar Density				100.000
+Bipolar Density				10000.000
 Bipolar Input Size (um)			10.000
 Starburst Distance (um)			50.000
-Starburst Density			100.000
+Starburst Density			10000.000
 Starburst Wirelength (um)		150.000
 Starburst Step Size (um)		15.000
 Starburst Input Strength		0.500
 Starburst Decay				0.010
-Starburst Diffusion Radius (um)		10.000
+Starburst Diffusion Radius (um)		100.000
 
 
 --------Stimulus 0
 
 	Movie Size (pixels)	(400.0, 400.0)
 	Bar Position (pixels)	(200.0, 400.0)
-	Bar Size (pixels)	(20.0, 400.0)
-	Bar Speed (p/s)		400.0
+	Bar Size (pixels)	(100.0, 400.0)
+	Bar Speed (p/s)		250.0
 	Bar Color (rgb)	(255.0, 255.0, 255.0)
 	Background Color (rgb)	(0.0, 0.0, 0.0)
 	Pixel Size (rgu)	1.000
-
-	Heading 0.0
-	Results
-
-	Heading 90.0
-	Results
-
-	Heading 180.0
-	Results
-
-	Heading 270.0
-	Results
 

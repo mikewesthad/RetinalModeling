@@ -49,11 +49,15 @@ class Bipolar:
             horizontal_activity     = horizontal_activities[0, triad_number]
             
             if self.layer.bipolar_type == "On":
-#                triad_activity = -cone_activity 
-                triad_activity = -(cone_activity - horizontal_activity)/2.0  
+                if self.layer.recieves_input_from_horizontal:
+                    triad_activity = -(cone_activity - horizontal_activity)/2.0  
+                else:
+                    triad_activity = -cone_activity 
             else: 
-#                triad_activity = cone_activity
-                triad_activity = (cone_activity - horizontal_activity)/2.0
+                if self.layer.recieves_input_from_horizontal:
+                    triad_activity = (cone_activity - horizontal_activity)/2.0
+                else: 
+                    triad_activity = cone_activity
             
             new_activity += triad_weight * triad_activity
             
