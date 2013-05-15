@@ -22,14 +22,14 @@ screen_mid = screen_size/(2.0 * scale)
 screen_third = screen_size/(3.0 * scale)
 
 starburst_morphology1 = StarburstMorphology(retina,
-                                            visualize_growth=False,
+                                            visualize_growth=True,
                                             color_palette=REDS,
                                             display=display,
                                             draw_location=screen_third,
                                             scale=scale)
                                            
 starburst_morphology2 = StarburstMorphology(retina,
-                                            visualize_growth=False,
+                                            visualize_growth=True,
                                             color_palette=BLUES,
                                             display=display,
                                             draw_location=2*screen_third,
