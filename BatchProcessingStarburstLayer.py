@@ -58,7 +58,7 @@ retina_parameters = [retina_width, retina_height, retina_grid_size, retina_times
    
 # Cone Layer
 cone_distance   = 10 * UM_TO_M
-cone_density    = 10000.0
+cone_density    = 1000.0
 cone_input_size = 10 * UM_TO_M
 cone_parameters = [cone_distance, cone_density, cone_input_size]
 
@@ -70,7 +70,7 @@ horizontal_parameters = [horizontal_input_strength, hoirzontal_decay_rate, horiz
 
 # Bipolar layer
 bipolar_distance        = 10 * UM_TO_M
-bipolar_density         = 10000.0
+bipolar_density         = 1000.0
 bipolar_input_radius    = 10 * UM_TO_M
 bipolar_output_radius   = 10 * UM_TO_M
 bipolar_parameters = [bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius]

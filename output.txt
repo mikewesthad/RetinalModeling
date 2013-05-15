@@ -6,13 +6,13 @@ Retina Width (um)			400.000
 Retina Grid Size (um)			1.000
 Retina Timestep (ms)			10.000
 Cone Distance (um)			10.000
-Cone Density				10000.000
+Cone Density				1000.000
 Cone Input Size (um)			10.000
 Horizontal Input Strength		0.250
 Horizontal Decay			0.010
 Horizontal Diffusion Radius (um)	1.000
 Bipolar Distance (um)			10.000
-Bipolar Density				10000.000
+Bipolar Density				1000.000
 Bipolar Input Size (um)			10.000
 Starburst Distance (um)			50.000
 Starburst Density			10000.000
