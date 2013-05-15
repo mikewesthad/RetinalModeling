@@ -51,6 +51,22 @@ class StarburstLayer:
         self.inputs = {}
         
         self.establishInputs()
+        
+    def changeDiffusion(self, new_diffusion_width):
+        for morphology in self.morphologies:
+            morphology.changeDiffusion(new_diffusion_width / self.retina.grid_size)
+        self.input_strength = new_diffusion_width / self.retina.grid_size
+    
+    def changeInputStrength(self, new_input_strength):
+        for neuron in self.neurons:
+            neuron.input_strength = new_input_strength
+        self.input_strength = new_input_strength
+            
+    def changeDecayRate(self, new_decay_rate):
+        for neuron in self.neurons:
+            neuron.decay_rate = new_decay_rate
+        self.decay_rate = new_decay_rate
+        
     
     def loadPast(self, activity):
         for neuron_index in range(self.number_neurons):
@@ -163,11 +179,11 @@ class StarburstLayer:
     def __str__(self):
         string = ""
         string += "Starburst {0} Layer\n".format(self.starburst_type)
-        string += "\nNearest Neightbor Distance (um)\t\t{0}".format(self.nearest_neighbor_distance * M_TO_UM)
+        string += "\nNearest Neightbor Distance (um)\t\t{0}".format(self.nearest_neighbor_distance * self.retina.grid_size * M_TO_UM)
         string += "\nMinimum Required Density (cells/mm^2)\t{0}".format(self.minimum_required_density)
         string += "\nNumber of Neurons\t\t\t{0}".format(self.number_neurons)
         string += "\nInput Delay (timesteps)\t\t\t{0}".format(self.input_delay)
-        string += "\nDiffusion Width (um))\t\t\t{0}".format(self.diffusion_width * M_TO_UM)
+        string += "\nDiffusion Width (um)\t\t\t{0}".format(self.diffusion_width * self.retina.grid_size * M_TO_UM)
         string += "\nDecay Rate\t\t\t\t{0}".format(self.decay_rate)
         string += "\nInput Strength\t\t\t\t{0}".format(self.input_strength)
         return string

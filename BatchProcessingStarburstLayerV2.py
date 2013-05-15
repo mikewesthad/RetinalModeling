@@ -1,7 +1,7 @@
 from Constants import *
 from CreateRetina import createStarburstRetina
 from CreateStimulus import createMultipleBars
-from Analysis import analyzeMultipleBarsInOnePage
+from Analysis import *
 from time import clock
 
 
@@ -58,7 +58,7 @@ retina_parameters = [retina_width, retina_height, retina_grid_size, retina_times
    
 # Cone Layer
 cone_distance   = 10 * UM_TO_M
-cone_density    = 1000.0
+cone_density    = 100.0
 cone_input_size = 10 * UM_TO_M
 cone_parameters = [cone_distance, cone_density, cone_input_size]
 
@@ -70,7 +70,7 @@ horizontal_parameters = [horizontal_input_strength, hoirzontal_decay_rate, horiz
 
 # Bipolar layer
 bipolar_distance        = 10 * UM_TO_M
-bipolar_density         = 1000.0
+bipolar_density         = 100.0
 bipolar_input_radius    = 10 * UM_TO_M
 bipolar_output_radius   = 10 * UM_TO_M
 bipolar_parameters = [bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius]
@@ -80,11 +80,16 @@ starburst_distance  = 50 * UM_TO_M
 starburst_density   = 10000.0
 average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
-input_strength      = 0.5
+input_strength      = np.arange(0,.3,.1)
 decay_rate          = 0.01
 diffusion_radius    = 100 * UM_TO_M
-starburst_parameters = [starburst_distance, starburst_density, average_wirelength,
-                        step_size, input_strength, decay_rate, diffusion_radius]
+starburst_parameters = [starburst_distance, starburst_density, average_wirelength, step_size]
+# Set some default values in starburst parameters for the runtime parameters (so that the initial build retina will work)
+for parameter in [input_strength, decay_rate, diffusion_radius]:
+    if isinstance(parameter, (list, tuple, np.ndarray)): 
+        starburst_parameters.append(parameter[0])
+    else:
+        starburst_parameters.append(parameter)
 runtime_starburst_parameters = [input_strength, decay_rate, diffusion_radius]
 
 # Bar paramters
@@ -111,8 +116,6 @@ print "Runtime Combinations", len(runtime_combinations)
 print "Stimulus Combinations", len(stimulus_combinations)
 print "Combined Combinations", len(retina_combinations) * len(runtime_combinations) * len(stimulus_combinations)
 
-fh = open("output.txt", "w")
-fh.close()
                       
 retina_index = 0
 for retina_combination in retina_combinations:
@@ -122,48 +125,37 @@ for retina_combination in retina_combinations:
     retina, retina_string = createStarburstRetina(*retina_combination)
     retina_index += 1
     
-    fh = open("output.txt", "a")
-    fh.write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    fh.write("\n\nRetina {0}\n".format(retina_name))
-    fh.write("\n{0}".format(retina_string))
-    fh.close()
-    
-    # Build the structure to hold the results data
-    layer_names     = ["Cone", "Horizontal", "Bipolar", "Starburst"]
-    directions      = ["0", "90", "180", "270"]
-    activities      = {}
-    for name in layer_names:    
-        activities[name] = {}
-        for direction in directions:
-            activities[name][direction] = []
-                        
-    stimulus_index = 0
-    for stimulus_combination in stimulus_combinations:
+    runtime_index = 0
+    for runtime_combination in runtime_combinations: 
         
-        start = clock()
+        runtime_name = str(runtime_index)
+        retina.on_starburst_layer.changeInputStrength(runtime_combination[0])
+        retina.on_starburst_layer.changeDecayRate(runtime_combination[1])
+        retina.on_starburst_layer.changeDiffusion(runtime_combination[2])
+        runtime_index += 1
         
-        stimuli, headings, stimulus_string = createMultipleBars(*stimulus_combination)
+        retina.stimulus = None
+        retina.saveParameters(retina_name, runtime_name)
         
-        stimulus_name = str(stimulus_index)
-        fh = open("output.txt", "a")
-        fh.write("\n\n--------Stimulus {0}\n\n{1}\n".format(stimulus_name, stimulus_string))
-        fh.close()
-        
-        for i in range(len(stimuli)):
-            stimulus = stimuli[i]
-            heading = headings[i]
+        stimulus_index = 0
+        for stimulus_combination in stimulus_combinations:
             
-            retina.loadStimulus(stimulus)  
-            retina.runModelForStimulus()
-            retina.saveActivities(retina_name, stimulus_name+"_"+str(int(heading))) 
-            stimulus_index += 1                           
+            start = clock()
             
-#            analyzeMultipleBars(retina, retina_name, stimulus_name, heading)
-            retina.clearActivity()       
-        
-        analyzeMultipleBarsInOnePage(retina, retina_name, stimulus_name, headings)
-        
-        elapsed = clock() - start
-        print "Retina '{0}' stimulated in {1} seconds".format(retina_name, elapsed)
+            stimuli, headings, stimulus_string = createMultipleBars(*stimulus_combination)
+            stimulus_name = str(stimulus_index)        
+            for stimulus, heading in zip(stimuli, headings):
+                retina.loadStimulus(stimulus)  
+                retina.runModelForStimulus()
+                trial_name = runtime_name+"_"+stimulus_name+"_"+str(int(heading))
+                retina.saveActivities(retina_name, trial_name) 
+                stimulus_index += 1                           
+                retina.clearActivity()       
+            
+#            analyzeMultipleBarsInOnePage(retina, retina_name, stimulus_name, headings)
+            
+            elapsed = clock() - start
+            print "Retina '{0}' stimulated in {1} seconds".format(retina_name, elapsed)
 
-    
+
+analyzeEffectsOfRuntimeParameter(retina, retina_name, "Input Strength", input_strength, headings, stimulus_name)

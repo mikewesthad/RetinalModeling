@@ -1,33 +1,19 @@
 from Constants import *
 from random import randint, choice
-import matplotlib
 import matplotlib.pyplot as plt
 import math
 import os
 
-def drawSingleLineSubplot(fig, rows, cols, index, x_axis, y_axis, title, grid=True,
-                          y_lim=[-1.1, 1.1], x_label='Timesteps', y_label='Activity'):
-    ax = fig.add_subplot(rows, cols, index)
-    ax.plot(x_axis, y_axis)
-    ax.set_ylim(y_lim)
-    ax.set_xlabel(x_label, size='xx-small')
-    ax.set_ylabel(y_label, size='xx-small')
-    ax.set_title(title, size='xx-small')
-    ax.tick_params(labelsize='xx-small')
-    if grid: ax.grid()
+def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name, runtime_parameter_settings, headings, stimulus_name):
+    if isinstance(runtime_parameter_settings, np.ndarray):
+        runtime_parameter_settings = runtime_parameter_settings.tolist()
+    for i in range(len(runtime_parameter_settings)):
+        for heading in headings:            
+            directory_name = retina_name
+            trial_name = str(i) + "_" + stimulus_name + "_" + str(int(heading))
+            retina.loadActivities(directory_name, trial_name)
     
-def drawMultilineSubplot(fig, rows, cols, index, x_axis, y_axes, title, colors, grid=True,
-                          y_lim=[-1.1, 1.1], x_label='Timesteps', y_label='Activity'):
-    ax = fig.add_subplot(rows, cols, index)
-    ax.set_ylim(y_lim)
-    ax.set_xlabel(x_label, size='xx-small')
-    ax.set_ylabel(y_label, size='xx-small')
-    ax.set_title(title, size='xx-small')
-    ax.tick_params(labelsize='xx-small')
-    for y_axis, color in zip(y_axes, colors):
-        ax.plot(x_axis, y_axis, color=color)
-    if grid: ax.grid()                          
- 
+
 def analyzeMultipleBarsInOnePage(retina, retina_name, stimulus_name, headings):
     
     retina.loadActivities(retina_name, stimulus_name+"_"+str(int(headings[0])))
@@ -87,118 +73,7 @@ def analyzeMultipleBarsInOnePage(retina, retina_name, stimulus_name, headings):
     fig.savefig(fig_path)
 
     saveMorphology(retina, retina_name, stimulus_name, center_triad_index, center_bipolar_index, preferred_indicies, null_indicies)
-
-
-def analyzeMultipleBars(retina, directory, trial_num, direction):
-    
-    center_bipolar_index, center_triad_index = selectCenterOPLCells(retina)
-    
-    preferred_indicies  = selectStarburstCompartmentsAlongDendrite(retina, 0) 
-    null_indicies       = selectStarburstCompartmentsAlongDendrite(retina, 180) 
-    
-    cone_activities         = retina.cone_activities
-    horizontal_activities   = retina.horizontal_activities
-    bipolar_activities      = retina.on_bipolar_activities  
-    
-    center_cone_activity        = []
-    center_horizontal_activity  = []
-    center_bipolar_activity     = []
-    preferred_activities        = [[], [], []]
-    null_activities             = [[], [], []]
-    
-    timesteps = len(cone_activities)
-    for t in range(timesteps):
-        center_cone_activity.append(cone_activities[t][0, center_triad_index])
-        center_horizontal_activity.append(horizontal_activities[t][0, center_triad_index])
-        center_bipolar_activity.append(bipolar_activities[t][0, center_bipolar_index])
-        for i in range(3):
-            preferred_activities[i].append( retina.on_starburst_activities[t][0][0, preferred_indicies[i]] )
-            null_activities[i].append( retina.on_starburst_activities[t][0][0, null_indicies[i]] )
-        
-
-    fig = plt.figure(figsize=(8,8))
-    x_axis = range(timesteps)
-    
-    drawActivityPlot(fig, 3, 3, 1, center_cone_activity, x_axis, 'Center Photoreceptor Cell')
-    drawActivityPlot(fig, 3, 3, 4, center_horizontal_activity, x_axis, 'Center Horizontal Cell')
-    drawActivityPlot(fig, 3, 3, 7, center_bipolar_activity, x_axis, 'Center On Bipolar Cell')
-    
-    drawCombinedPlot(fig, 3, 3, 2, preferred_activities, [(.75,0,0),"b","k"], ["Proximal","Interm","Distal"], x_axis, 'Preferred Dendrite')
-#    drawActivityPlot(fig, 3, 3, 2, preferred_activities[0], x_axis, 'Preferred Proximal Compartment')
-#    drawActivityPlot(fig, 3, 3, 5, preferred_activities[1], x_axis, 'Preferred Intermediate Compartment')
-#    drawActivityPlot(fig, 3, 3, 8, preferred_activities[2], x_axis, 'Preferred Distal Compartment')
-    
-    drawCombinedPlot(fig, 3, 3, 3, null_activities, [(.75,0,0),"b","k"], ["Proximal","Interm","Distal"], x_axis, 'Null Dendrite')
-#    drawActivityPlot(fig, 3, 3, 3, null_activities[0], x_axis, 'Null Proximal Compartment')
-#    drawActivityPlot(fig, 3, 3, 6, null_activities[1], x_axis, 'Null Intermediate Compartment')
-#    drawActivityPlot(fig, 3, 3, 9, null_activities[2], x_axis, 'Null Distal Compartment')
-#    
-    fig.tight_layout()
-    fig_path = os.path.join("Saved Retinas", directory, trial_num+"_"+str(int(direction))+"_"+"Activity Plots.pdf")
-    fig.savefig(fig_path)
-    plt.close(fig)
-    
-    
-    
-    
-    # Draw the morphology with the cells that were graphed highlighted in black
-    pygame.init()    
-    
-    # Figure out scaling
-    max_size = Vector2D(1000.0, 1000.0)       
-    width_scale = max_size.x / float(retina.grid_width)
-    height_scale = max_size.y / float(retina.grid_height)
-    scale = min(width_scale, height_scale)    
-    
-    # Create a minimized display
-    display = pygame.display.set_mode(max_size.toIntTuple())
-    pygame.display.iconify()
-    
-    # Print the cone layer to a file
-    display.fill((255,255,255))
-    color = (0,0,0)
-    retina.cone_layer.draw(display, scale=scale)
-    radius = int(scale*retina.cone_layer.nearest_neighbor_distance_gridded/2.0)
-    x,y = retina.cone_layer.locations[center_triad_index]
-    x, y = int(x*scale), int(y*scale)
-    pygame.draw.circle(display, color, (x, y), radius) 
-    cone_path = os.path.join("Saved Retinas", directory, trial_num+"_"+str(int(direction))+"_Cone Plot.jpg")
-    pygame.image.save(display, cone_path)
-    
-    # Print the horizontal layer to a file
-    display.fill((255,255,255))
-    retina.horizontal_layer.draw(display, scale=scale)
-    radius = int(scale*retina.horizontal_layer.nearest_neighbor_distance_gridded/2.0)
-    x,y = retina.horizontal_layer.locations[center_triad_index]
-    x, y = int(x*scale), int(y*scale)
-    pygame.draw.circle(display, color, (x, y), radius) 
-    horizontal_path = os.path.join("Saved Retinas", directory, trial_num+"_"+str(int(direction))+"_Horizontal Plot.jpg")
-    pygame.image.save(display, horizontal_path)
-    
-    # Print the bipolar layer to a file
-    display.fill((255,255,255))
-    retina.on_bipolar_layer.draw(display, scale=scale)
-    retina.on_bipolar_layer.neurons[center_bipolar_index].draw(display, retina.on_bipolar_layer.nearest_neighbor_distance_gridded/2.0, color=(0,0,0), scale=scale)
-    bipolar_path = os.path.join("Saved Retinas", directory, trial_num+"_"+str(int(direction))+"_Bipolar Plot.jpg")
-    pygame.image.save(display, bipolar_path)
-    
-    # Print the starburst cell to a file
-    display.fill((255,255,255))
-    starburst = retina.on_starburst_layer.neurons[0]
-    starburst.draw(display, draw_compartments=True, scale=scale)
-    transparent_surf = pygame.Surface(max_size.toIntTuple())
-    transparent_surf.set_alpha(150)
-    transparent_surf.fill((255,255,255))
-    display.blit(transparent_surf, (0,0))
-    starburst.morphology.location = starburst.location
-    for i in range(3):
-        starburst.compartments[preferred_indicies[i]].draw(display, color=(255,0,0), scale=scale)
-        starburst.compartments[null_indicies[i]].draw(display, color=(0,0,255), scale=scale)
-    starburst.morphology.location = Vector2D()
-    starburst_path = os.path.join("Saved Retinas", directory, trial_num+"_"+str(int(direction))+"_Starburst Plot.jpg")
-    pygame.image.save(display, starburst_path)
-    
-    
+  
  
 def saveMorphology(retina, retina_name, stimulus_name, center_triad_index, center_bipolar_index, preferred_indicies, null_indicies):
      # Draw the morphology with the cells that were graphed highlighted in black
@@ -257,6 +132,30 @@ def saveMorphology(retina, retina_name, stimulus_name, center_triad_index, cente
     starburst.morphology.location = Vector2D()
     starburst_path = os.path.join("Saved Retinas", retina_name, stimulus_name+"_Starburst Plot.jpg")
     pygame.image.save(display, starburst_path)
+
+def drawSingleLineSubplot(fig, rows, cols, index, x_axis, y_axis, title, grid=True,
+                          y_lim=[-1.1, 1.1], x_label='Timesteps', y_label='Activity'):
+    ax = fig.add_subplot(rows, cols, index)
+    ax.plot(x_axis, y_axis)
+    ax.set_ylim(y_lim)
+    ax.set_xlabel(x_label, size='xx-small')
+    ax.set_ylabel(y_label, size='xx-small')
+    ax.set_title(title, size='xx-small')
+    ax.tick_params(labelsize='xx-small')
+    if grid: ax.grid()
+    
+def drawMultilineSubplot(fig, rows, cols, index, x_axis, y_axes, title, colors, grid=True,
+                          y_lim=[-1.1, 1.1], x_label='Timesteps', y_label='Activity'):
+    ax = fig.add_subplot(rows, cols, index)
+    ax.set_ylim(y_lim)
+    ax.set_xlabel(x_label, size='xx-small')
+    ax.set_ylabel(y_label, size='xx-small')
+    ax.set_title(title, size='xx-small')
+    ax.tick_params(labelsize='xx-small')
+    for y_axis, color in zip(y_axes, colors):
+        ax.plot(x_axis, y_axis, color=color)
+    if grid: ax.grid()                   
+    
 def selectStarburstCompartmentsAlongDendrite(retina, angle):
     starburst = retina.on_starburst_layer.neurons[0]
     
@@ -328,10 +227,7 @@ def selectStarburstCompartmentsAlongDendrite(retina, angle):
     random_distal   = choice(dendrite_path[distal_range[0]:distal_range[1]+1])
     
 
-    return random_proximal.index, random_interm.index, random_distal.index      
-            
-            
-            
+    return random_proximal.index, random_interm.index, random_distal.index                 
     
 def selectCenterOPLCells(retina):
     w, h = retina.grid_width,retina.grid_height
@@ -370,31 +266,3 @@ def selectCenterOPLCells(retina):
                 break
     
     return center_bipolar_index, center_triad_index
-
-def activity_plot(data, x_axis, labels):
-    fig     = plt.figure()
-    ax      = fig.add_subplot(111)
-    colors  = [(.75,0,0),"b","k"]
-    
-    for datum, color in zip(data, colors):
-        ax.plot(x_axis*100,datum,color=color)
-        
-    leg = ax.legend(labels, 'lower left', shadow=True)
-    
-    min_y = np.min(data) - 1
-    max_y = np.max(data) + 1
-    ax.set_ylim([min_y, max_y])
-    
-    ax.set_xlabel('Time (ms)')
-    ax.set_ylabel('Activity')
-    ax.set_title('Activity Over Time')
-        
-    # matplotlib.text.Text instances
-    for t in leg.get_texts():
-        t.set_fontsize('small')    # the legend text fontsize
-    
-    # matplotlib.lines.Line2D instances
-    for l in leg.get_lines():
-        l.set_linewidth(1.5)  # the legend line width
-        
-    plt.show()

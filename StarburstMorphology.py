@@ -75,7 +75,12 @@ class StarburstMorphology(object):
         # Establish variables needed for activity
         self.diffusion_width    = diffusion_width
         self.establisthLineSegmentDiffusionWeights()
-        
+
+
+    def changeDiffusion(self, new_diffusion_width):
+        self.diffusion_width = new_diffusion_width
+        self.establisthLineSegmentDiffusionWeights()
+
     def grow(self):
         
         active_dendrites = self.master_dendrites[:]

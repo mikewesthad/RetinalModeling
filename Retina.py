@@ -122,7 +122,16 @@ class Retina:
         for layer in self.layers:
             string += "\n\n\n" + str(layer)
         return string  
-       
+    
+    
+    def saveParameters(self, directory, trial_name):
+        parameterPath = os.path.join("Saved Retinas", directory, trial_name+"_parameters.txt")
+        parameterFile = open(parameterPath, "w")
+        parameterFile.write(str(self))
+        parameterFile.close()
+    
+        
+    
     """
     This function saves the current retina object using the Pickle module
     """ 
