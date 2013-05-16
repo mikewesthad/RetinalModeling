@@ -48,32 +48,28 @@ def generateCombinations(parameters, current_parameter_index,
 ###############################################################################
 # Retina Parameters
 ###############################################################################
-
+'print_start'
 # General retina
 retina_width        = 400 * UM_TO_M
 retina_height       = 400 * UM_TO_M
 retina_grid_size    = 1 * UM_TO_M
 retina_timestep     = 10 * MS_TO_S
-retina_parameters = [retina_width, retina_height, retina_grid_size, retina_timestep]
    
 # Cone Layer
 cone_distance   = 10 * UM_TO_M
 cone_density    = 100.0
 cone_input_size = 10 * UM_TO_M
-cone_parameters = [cone_distance, cone_density, cone_input_size]
 
 # Horizontal Layer
 horizontal_input_strength   = 0.25
 hoirzontal_decay_rate       = 0.01
 horizontal_diffusion_radius = 1 * UM_TO_M
-horizontal_parameters = [horizontal_input_strength, hoirzontal_decay_rate, horizontal_diffusion_radius]
 
 # Bipolar layer
 bipolar_distance        = 10 * UM_TO_M
 bipolar_density         = 100.0
 bipolar_input_radius    = 10 * UM_TO_M
 bipolar_output_radius   = 10 * UM_TO_M
-bipolar_parameters = [bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius]
 
 # Build the starburst layer
 starburst_distance  = 50 * UM_TO_M
@@ -83,7 +79,18 @@ step_size           = 15 * UM_TO_M
 input_strength      = np.arange(0,.3,.1)
 decay_rate          = 0.01
 diffusion_radius    = 100 * UM_TO_M
+'print_stop'
+
+
+
+# Put parameters into lists
+retina_parameters = [retina_width, retina_height, retina_grid_size, retina_timestep]
+cone_parameters = [cone_distance, cone_density, cone_input_size]
+horizontal_parameters = [horizontal_input_strength, hoirzontal_decay_rate, horizontal_diffusion_radius]
+bipolar_parameters = [bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius]
 starburst_parameters = [starburst_distance, starburst_density, average_wirelength, step_size]
+
+
 # Set some default values in starburst parameters for the runtime parameters (so that the initial build retina will work)
 for parameter in [input_strength, decay_rate, diffusion_radius]:
     if isinstance(parameter, (list, tuple, np.ndarray)): 
@@ -92,15 +99,17 @@ for parameter in [input_strength, decay_rate, diffusion_radius]:
         starburst_parameters.append(parameter)
 runtime_starburst_parameters = [input_strength, decay_rate, diffusion_radius]
 
+'print_start'
 # Bar paramters
 framerate               = 30.0           
 movie_width             = 400        
 movie_height            = 400               
-bar_width               = 100.0       # Pixels (width = size in direction of motion)
+bar_width               = 100.0  # Pixels (width = size in direction of motion)
 bar_height              = 400
 bar_speed               = 250.0    
 bar_movement_distance   = 400.0         
-pixel_size_in_rgu       = 1.0                       # rgu
+pixel_size_in_rgu       = 1.0    # rgu
+'print_stop'
 stimulus_parameters = [framerate, movie_width, movie_height,
                        bar_width, bar_height, bar_speed, bar_movement_distance,
                        pixel_size_in_rgu]
