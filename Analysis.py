@@ -4,6 +4,90 @@ import matplotlib.pyplot as plt
 import math
 import os
 
+
+def generateHistogramPlotsOfWeights(retina, retina_name, runtime_name, proximal, intermediate, distal):
+    morphology          = retina.on_starburst_layer.morphologies[0]
+    num_compartments    = len(morphology.compartments)
+    distances           = morphology.distances
+    weights             = morphology.diffusion_weights
+    step_size           = morphology.step_size
+    
+    max_distance = np.max(distances)
+    bins = max_distance/step_size * 2.0
+    
+    p_histogram, b = np.histogram(distances[proximal, :], bins=bins, range=(0, max_distance))
+    i_histogram, b = np.histogram(distances[intermediate, :], bins=bins, range=(0, max_distance))
+    d_histogram, b = np.histogram(distances[distal, :], bins=bins, range=(0, max_distance))
+    max_frequency = np.max(np.concatenate((p_histogram, i_histogram, d_histogram))) + 5
+    
+    fig = plt.figure(figsize=(10, 10))
+    rows, cols, index = 3, 3, 1
+    
+    for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Intermediate"), (distal, "Distal")]:
+        ax = fig.add_subplot(rows, cols, index)
+        ax.hist(distances[location, :], bins=bins, range=(0, max_distance))
+        ax.set_ylim([0, max_frequency])
+        ax.set_xlabel("Distance", size='xx-small')
+        ax.set_ylabel("Frequency", size='xx-small')
+        ax.set_title("Neighbor Distances for {0} Compartment".format(location_name), size='xx-small')
+        ax.tick_params(labelsize='xx-small')
+        index += 1
+        
+    
+    for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Intermediate"), (distal, "Distal")]:
+        compartment_distances   = distances[location, :]
+        compartment_weights     = weights[location, :]
+        
+        x_axis, y_axis = [], []
+        for i in range(num_compartments):
+            weight              = compartment_weights[i]
+            distance            = compartment_distances[i]
+            if distance not in x_axis:
+                x_axis.append(distance)
+                y_axis.append(weight)
+        
+        ax = fig.add_subplot(rows, cols, index)
+        ax.bar(x_axis, y_axis, 8)
+        ax.set_ylim([0, 1])
+        ax.set_xlim([0, max_distance])
+        ax.set_xlabel("Distance From Compartment", size='xx-small')
+        ax.set_ylabel("Output Diffusion Weight", size='xx-small')
+        ax.set_title("Neighbor Weights for {0} Compartment".format(location_name), size='xx-small')
+        ax.tick_params(labelsize='xx-small')
+        index += 1
+        
+        
+        
+    for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Intermediate"), (distal, "Distal")]:
+        compartment_distances   = distances[location, :]
+        compartment_weights     = weights[location, :]
+        
+        x_axis, y_axis = [], []
+        for i in range(num_compartments):
+            weight              = compartment_weights[i]
+            distance            = compartment_distances[i]
+            if distance not in x_axis:
+                x_axis.append(distance)
+                y_axis.append(weight)
+            else:
+                loc = x_axis.index(distance)
+                y_axis[loc] += weight
+        
+        ax = fig.add_subplot(rows, cols, index)
+        ax.bar(x_axis, y_axis, 8)
+        ax.set_ylim([0, 1])
+        ax.set_xlim([0, max_distance])
+        ax.set_xlabel("Distance From Compartment", size='xx-small')
+        ax.set_ylabel("Sum Output Diffusion Weights", size='xx-small')
+        ax.set_title("Sum Neighbor Weights for {0} Compartment".format(location_name), size='xx-small')
+        ax.tick_params(labelsize='xx-small')
+        index += 1
+        
+    fig.tight_layout()
+    fig_path = os.path.join("Saved Retinas", retina_name, runtime_name+"_Starburst Output Weights.pdf")
+    fig.savefig(fig_path)
+
+
 def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name, runtime_parameter_settings, headings, stimulus_name):
     if isinstance(runtime_parameter_settings, np.ndarray):
         runtime_parameter_settings = runtime_parameter_settings.tolist()
@@ -360,27 +444,11 @@ def selectStarburstCompartmentsAlongDendrite(retina, angle):
             has_reached_soma = True
         
     number_compartments = len(dendrite_path)
+    proximal = dendrite_path[0]
+    interm   = dendrite_path[int(round(number_compartments/2.0))]
+    distal   = dendrite_path[-1]
     
-    
-    # NO MORE RANDOM!
-    
-    random_proximal = dendrite_path[0]
-    random_interm   = dendrite_path[int(round(number_compartments/2.0))]
-    random_distal   = dendrite_path[-1]
-    
-#    one_third = int(math.floor(number_compartments/3.0))
-#    two_thirds = int(math.floor(2.0*number_compartments/3.0))
-#    
-#    proximal_range  = [0, one_third]
-#    interm_range    = [one_third+1, two_thirds]
-#    distal_range    = [two_thirds+1, number_compartments-1]
-#    
-#    random_proximal = choice(dendrite_path[proximal_range[0]:proximal_range[1]+1])
-#    random_interm   = choice(dendrite_path[interm_range[0]:interm_range[1]+1])
-#    random_distal   = choice(dendrite_path[distal_range[0]:])
-    
-
-    return random_proximal.index, random_interm.index, random_distal.index                 
+    return proximal.index, interm.index, distal.index                 
     
 def selectCenterOPLCells(retina):
     w, h = retina.grid_width,retina.grid_height

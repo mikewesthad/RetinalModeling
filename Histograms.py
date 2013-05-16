@@ -38,10 +38,11 @@ directory_name = "0"
 
 retina = Retina.loadRetina(directory_name)
 
-morphology  = retina.on_starburst_layer.morphologies[0]
-distances   = morphology.distances
-weights     = morphology.diffusion_weights
-step_size   = morphology.step_size
+morphology          = retina.on_starburst_layer.morphologies[0]
+num_compartments    = len(morphology.compartments)
+distances           = morphology.distances
+weights             = morphology.diffusion_weights
+step_size           = morphology.step_size
 
 proximal, intermediate, distal = selectStarburstCompartmentsAlongDendrite(morphology)
 
@@ -53,39 +54,72 @@ i_histogram, b = np.histogram(distances[intermediate, :], bins=bins, range=(0, m
 d_histogram, b = np.histogram(distances[distal, :], bins=bins, range=(0, max_distance))
 max_frequency = np.max(np.concatenate((p_histogram, i_histogram, d_histogram))) + 5
 
-fig = plt.figure(figsize=(8,8))
+fig = plt.figure(figsize=(10, 10))
 rows, cols, index = 3, 3, 1
 
-ax = fig.add_subplot(rows, cols, index)
-ax.hist(distances[proximal, :], bins=bins, range=(0, max_distance))
-ax.set_ylim([0, max_frequency])
-ax.set_xlabel("Distance", size='small')
-ax.set_ylabel("Frequency", size='small')
-ax.set_title("Proximal", size='small')
-ax.tick_params(labelsize='small')
-index += 1
+for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Intermediate"), (distal, "Distal")]:
+    ax = fig.add_subplot(rows, cols, index)
+    ax.hist(distances[location, :], bins=bins, range=(0, max_distance))
+    ax.set_ylim([0, max_frequency])
+    ax.set_xlabel("Distance", size='xx-small')
+    ax.set_ylabel("Frequency", size='xx-small')
+    ax.set_title("Neighbor Distances for {0} Compartment".format(location_name), size='xx-small')
+    ax.tick_params(labelsize='xx-small')
+    index += 1
+    
 
-ax = fig.add_subplot(rows, cols, index)
-ax.hist(distances[intermediate, :], bins=bins, range=(0, max_distance))
-ax.set_ylim([0, max_frequency])
-ax.set_xlabel("Distance", size='small')
-ax.set_ylabel("Frequency", size='small')
-ax.set_title("Intermediate", size='small')
-ax.tick_params(labelsize='small')
-index += 1
-
-ax = fig.add_subplot(rows, cols, index)
-ax.hist(distances[distal, :], bins=bins, range=(0, max_distance))
-ax.set_ylim([0, max_frequency])
-ax.set_xlabel("Distance", size='small')
-ax.set_ylabel("Frequency", size='small')
-ax.set_title("Distal", size='small')
-ax.tick_params(labelsize='small')
-index += 1
-
-
-plt.show()
-
+for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Intermediate"), (distal, "Distal")]:
+    compartment_distances   = distances[location, :]
+    compartment_weights     = weights[location, :]
+    
+    x_axis, y_axis = [], []
+    for i in range(num_compartments):
+        weight              = compartment_weights[i]
+        distance            = compartment_distances[i]
+        if distance not in x_axis:
+            x_axis.append(distance)
+            y_axis.append(weight)
+    
+    ax = fig.add_subplot(rows, cols, index)
+    ax.bar(x_axis, y_axis, 8)
+    ax.set_ylim([0, 1])
+    ax.set_xlim([0, max_distance])
+    ax.set_xlabel("Distance From Compartment", size='xx-small')
+    ax.set_ylabel("Output Diffusion Weight", size='xx-small')
+    ax.set_title("Neighbor Weights for {0} Compartment".format(location_name), size='xx-small')
+    ax.tick_params(labelsize='xx-small')
+    index += 1
+    
+    
+    
+for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Intermediate"), (distal, "Distal")]:
+    compartment_distances   = distances[location, :]
+    compartment_weights     = weights[location, :]
+    
+    x_axis, y_axis = [], []
+    for i in range(num_compartments):
+        weight              = compartment_weights[i]
+        distance            = compartment_distances[i]
+        if distance not in x_axis:
+            x_axis.append(distance)
+            y_axis.append(weight)
+        else:
+            loc = x_axis.index(distance)
+            y_axis[loc] += weight
+    
+    ax = fig.add_subplot(rows, cols, index)
+    ax.bar(x_axis, y_axis, 8)
+    ax.set_ylim([0, 1])
+    ax.set_xlim([0, max_distance])
+    ax.set_xlabel("Distance From Compartment", size='xx-small')
+    ax.set_ylabel("Sum Output Diffusion Weights", size='xx-small')
+    ax.set_title("Sum Neighbor Weights for {0} Compartment".format(location_name), size='xx-small')
+    ax.tick_params(labelsize='xx-small')
+    index += 1
+    
+fig.tight_layout()
+fig_path = os.path.join("Saved Retinas", "0","Output Weights.pdf")
+fig.savefig(fig_path)
 
 
 

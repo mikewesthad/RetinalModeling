@@ -73,7 +73,7 @@ bipolar_output_radius   = 10 * UM_TO_M
 
 # Build the starburst layer
 starburst_distance  = 50 * UM_TO_M
-starburst_density   = 10000.0
+starburst_density   = 1000.0
 average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
 input_strength      = 0.5
@@ -134,6 +134,8 @@ for retina_combination in retina_combinations:
     retina, retina_string = createStarburstRetina(*retina_combination)
     retina_index += 1
     
+    proximal, intermediate, distal = selectStarburstCompartmentsAlongDendrite(retina, 0)
+    
     runtime_index = 0
     for runtime_combination in runtime_combinations: 
         
@@ -145,6 +147,8 @@ for retina_combination in retina_combinations:
         
         retina.stimulus = None
         retina.saveParameters(retina_name, runtime_name)
+        
+        generateHistogramPlotsOfWeights(retina, retina_name, runtime_name, proximal, intermediate, distal)        
         
         stimulus_index = 0
         for stimulus_combination in stimulus_combinations:
@@ -168,4 +172,4 @@ for retina_combination in retina_combinations:
 
 
 
-x = analyzeEffectsOfRuntimeParameter(retina, retina_name, "Diffusion Radius", diffusion_radius, headings, stimulus_name)
+analyzeEffectsOfRuntimeParameter(retina, retina_name, "Diffusion Radius", diffusion_radius, headings, stimulus_name)
