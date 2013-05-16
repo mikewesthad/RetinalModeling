@@ -7,11 +7,157 @@ import os
 def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name, runtime_parameter_settings, headings, stimulus_name):
     if isinstance(runtime_parameter_settings, np.ndarray):
         runtime_parameter_settings = runtime_parameter_settings.tolist()
+           
+    starburst_activities = {heading:{} for heading in headings}
+    
+    max_timesteps = 0
+        
     for i in range(len(runtime_parameter_settings)):
         for heading in headings:            
             directory_name = retina_name
             trial_name = str(i) + "_" + stimulus_name + "_" + str(int(heading))
             retina.loadActivities(directory_name, trial_name)
+            
+            # Pull the starburst activity for this particular trial and store it
+            activities = retina.on_starburst_activities
+            max_timesteps = max(max_timesteps, len(activities))
+            starburst_activities[heading][i] = activities
+            
+    # Same stimulus for all runs, so common x-axis
+    x_axis = range(max_timesteps)
+    
+    # Create y-axes for three selected comparments
+    proximal, intermediate, distal = selectStarburstCompartmentsAlongDendrite(retina, 0) 
+    proximal_y_axes     = {heading:[] for heading in headings}
+    intermediate_y_axes = {heading:[] for heading in headings}
+    distal_y_axes       = {heading:[] for heading in headings}
+    for i in range(len(runtime_parameter_settings)):
+        for heading in headings:    
+            
+            activities = starburst_activities[heading][i]
+            timesteps = len(activities)
+            
+            # Grab data for all available existing timesteps
+            p_y_axis = [activities[t][0, 0, proximal] for t in range(timesteps)]
+            i_y_axis = [activities[t][0, 0, intermediate] for t in range(timesteps)]
+            d_y_axis = [activities[t][0, 0, distal] for t in range(timesteps)]
+            
+            # Padd the data to have a common number of data points
+            p_y_axis = p_y_axis + [activities[-1][0, 0, proximal] for t in range(max_timesteps-timesteps)]
+            i_y_axis = i_y_axis + [activities[-1][0, 0, proximal] for t in range(max_timesteps-timesteps)]
+            d_y_axis = d_y_axis + [activities[-1][0, 0, proximal] for t in range(max_timesteps-timesteps)]
+            
+            proximal_y_axes[heading].append(p_y_axis)
+            intermediate_y_axes[heading].append(i_y_axis)
+            distal_y_axes[heading].append(d_y_axis)          
+             
+             
+    # Summary plot
+    
+    fig = plt.figure(figsize=(11,3/4.0*11.0))
+    
+    rows, cols, index = 3, 4, 1  
+    y_lim = [-1.1, 1.1]
+    x_label = "Timesteps"
+    y_label = "Activity"
+    
+    # Rearrange headings so that they display in the order [0, 180, 90, 270]
+    headings = [headings[0], headings[2], headings[1], headings[3]]
+    for (location_name, data) in [("Proximal", proximal_y_axes), ("Intermediate", intermediate_y_axes), ("Distal", distal_y_axes)]:
+        for heading in headings:
+            y_axes = data[heading]            
+            title = "{0} Degrees, {1} Location".format(int(heading), location_name)
+            
+            ax = fig.add_subplot(rows, cols, index)
+            ax.set_ylim(y_lim)
+            ax.set_xlabel(x_label, size='xx-small')
+            ax.set_ylabel(y_label, size='xx-small')
+            ax.set_title(title, size='xx-small')
+            ax.tick_params(labelsize='xx-small')
+            lines = []       
+            for y_axis in y_axes:
+                line, = ax.plot(x_axis, y_axis)
+                lines.append(line)
+            ax.grid()    
+            
+            index += 1
+            
+    ax.legend(lines, runtime_parameter_settings, loc='lower left', prop={'size': 10})
+
+    fig.tight_layout()
+    fig_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Summary_"+"Activity.pdf")
+    fig.savefig(fig_path)
+    
+    
+    # Details moving along a dendrite    
+    
+    rows, cols, index = len(runtime_parameter_settings), len(headings), 1  
+    fig = plt.figure(figsize=(11,float(rows)/cols*11.0))
+    
+    y_lim = [-1.1, 1.1]
+    x_label = "Timesteps"
+    y_label = "Activity"
+    
+    
+    for i in range(len(runtime_parameter_settings)):
+        for heading in headings:    
+            title = "{0} {1}, {2} Degrees".format(runtime_parameter_settings[i], runtime_parameter_name, int(heading))
+            ax = fig.add_subplot(rows, cols, index)
+            ax.set_ylim(y_lim)
+            ax.set_xlabel(x_label, size='xx-small')
+            ax.set_ylabel(y_label, size='xx-small')
+            ax.set_title(title, size='xx-small')
+            ax.tick_params(labelsize='xx-small')
+            
+            line1, = ax.plot(x_axis, proximal_y_axes[heading][i])
+            line2, = ax.plot(x_axis, intermediate_y_axes[heading][i])
+            line3, = ax.plot(x_axis, distal_y_axes[heading][i])
+            ax.grid()    
+            
+            index += 1
+            
+    
+    ax.legend(lines, ["Proximal", "Intermediate", "Distal"], loc='lower left', prop={'size': 10})
+
+    fig.tight_layout()
+    fig_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Along Dendrite_"+"Activity.pdf")
+    fig.savefig(fig_path)
+    
+    
+     # Distal Compartments   
+    
+    rows, cols, index = len(runtime_parameter_settings), 3, 1 
+    fig = plt.figure(figsize=(11.0, float(rows)/cols*11.0))
+    
+    y_lim = [-1.1, 1.1]
+    x_label = "Timesteps"
+    y_label = "Activity"
+    
+    
+    for i in range(len(runtime_parameter_settings)):
+        for (location_name, data) in [("Proximal", proximal_y_axes), ("Intermediate", intermediate_y_axes), ("Distal", distal_y_axes)]:
+            title = "{0} {1}, {2} Location".format(runtime_parameter_settings[i], runtime_parameter_name, location_name)
+            ax = fig.add_subplot(rows, cols, index)
+            ax.set_ylim(y_lim)
+            ax.set_xlabel(x_label, size='xx-small')
+            ax.set_ylabel(y_label, size='xx-small')
+            ax.set_title(title, size='xx-small')
+            ax.tick_params(labelsize='xx-small')
+            
+            lines = []
+            for heading in headings:    
+                line, = ax.plot(x_axis, data[heading][i])
+                lines.append(line)
+            ax.grid()    
+            
+            index += 1
+            
+    
+    ax.legend(lines, headings, loc='lower left', prop={'size': 10})
+
+    fig.tight_layout()
+    fig_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Distal Compartment_"+"Activity.pdf")
+    fig.savefig(fig_path)
     
 
 def analyzeMultipleBarsInOnePage(retina, retina_name, stimulus_name, headings):
@@ -212,19 +358,26 @@ def selectStarburstCompartmentsAlongDendrite(retina, angle):
         
         if new_proximal_compartment in starburst.morphology.master_compartments:
             has_reached_soma = True
-            
+        
     number_compartments = len(dendrite_path)
     
-    one_third = int(math.floor(number_compartments/3.0))
-    two_thirds = int(math.floor(2.0*number_compartments/3.0))
     
-    proximal_range  = [0, one_third]
-    interm_range    = [one_third+1, two_thirds]
-    distal_range    = [two_thirds+1, number_compartments-1]
+    # NO MORE RANDOM!
     
-    random_proximal = choice(dendrite_path[proximal_range[0]:proximal_range[1]+1])
-    random_interm   = choice(dendrite_path[interm_range[0]:interm_range[1]+1])
-    random_distal   = choice(dendrite_path[distal_range[0]:distal_range[1]+1])
+    random_proximal = dendrite_path[0]
+    random_interm   = dendrite_path[int(round(number_compartments/2.0))]
+    random_distal   = dendrite_path[-1]
+    
+#    one_third = int(math.floor(number_compartments/3.0))
+#    two_thirds = int(math.floor(2.0*number_compartments/3.0))
+#    
+#    proximal_range  = [0, one_third]
+#    interm_range    = [one_third+1, two_thirds]
+#    distal_range    = [two_thirds+1, number_compartments-1]
+#    
+#    random_proximal = choice(dendrite_path[proximal_range[0]:proximal_range[1]+1])
+#    random_interm   = choice(dendrite_path[interm_range[0]:interm_range[1]+1])
+#    random_distal   = choice(dendrite_path[distal_range[0]:])
     
 
     return random_proximal.index, random_interm.index, random_distal.index                 

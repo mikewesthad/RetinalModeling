@@ -55,7 +55,9 @@ class StarburstLayer:
     def changeDiffusion(self, new_diffusion_width):
         for morphology in self.morphologies:
             morphology.changeDiffusion(new_diffusion_width / self.retina.grid_size)
-        self.input_strength = new_diffusion_width / self.retina.grid_size
+        self.diffusion_width = new_diffusion_width / self.retina.grid_size
+        for neuron in self.neurons:
+            neuron.diffusion_weights = neuron.morphology.diffusion_weights
     
     def changeInputStrength(self, new_input_strength):
         for neuron in self.neurons:

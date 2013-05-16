@@ -58,7 +58,7 @@ retina_parameters = [retina_width, retina_height, retina_grid_size, retina_times
    
 # Cone Layer
 cone_distance   = 10 * UM_TO_M
-cone_density    = 100.0
+cone_density    = 10000.0
 cone_input_size = 10 * UM_TO_M
 cone_parameters = [cone_distance, cone_density, cone_input_size]
 
@@ -70,7 +70,7 @@ horizontal_parameters = [horizontal_input_strength, hoirzontal_decay_rate, horiz
 
 # Bipolar layer
 bipolar_distance        = 10 * UM_TO_M
-bipolar_density         = 100.0
+bipolar_density         = 10000.0
 bipolar_input_radius    = 10 * UM_TO_M
 bipolar_output_radius   = 10 * UM_TO_M
 bipolar_parameters = [bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius]
@@ -80,9 +80,9 @@ starburst_distance  = 50 * UM_TO_M
 starburst_density   = 10000.0
 average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
-input_strength      = np.arange(0,.3,.1)
+input_strength      = 0.5
 decay_rate          = 0.01
-diffusion_radius    = 100 * UM_TO_M
+diffusion_radius    = [10 * UM_TO_M, 30 * UM_TO_M, 50 * UM_TO_M]
 starburst_parameters = [starburst_distance, starburst_density, average_wirelength, step_size]
 # Set some default values in starburst parameters for the runtime parameters (so that the initial build retina will work)
 for parameter in [input_strength, decay_rate, diffusion_radius]:
@@ -98,7 +98,7 @@ movie_width             = 400
 movie_height            = 400               
 bar_width               = 100.0       # Pixels (width = size in direction of motion)
 bar_height              = 400
-bar_speed               = 250.0    
+bar_speed               = 1000.0    
 bar_movement_distance   = 400.0         
 pixel_size_in_rgu       = 1.0                       # rgu
 stimulus_parameters = [framerate, movie_width, movie_height,
@@ -158,4 +158,5 @@ for retina_combination in retina_combinations:
             print "Retina '{0}' stimulated in {1} seconds".format(retina_name, elapsed)
 
 
-analyzeEffectsOfRuntimeParameter(retina, retina_name, "Input Strength", input_strength, headings, stimulus_name)
+
+x = analyzeEffectsOfRuntimeParameter(retina, retina_name, "Diffusion Radius", diffusion_radius, headings, stimulus_name)
