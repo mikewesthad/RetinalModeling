@@ -1,9 +1,27 @@
-from Constants import *
+import os
+import math
 from random import randint, choice
 import matplotlib.pyplot as plt
-import math
-import os
+import pyPdf
+from Constants import *
 
+def mergePDFs(output_path, filepaths):
+    output      = pyPdf.PdfFileWriter()
+
+    filehandles = []
+    for filepath in filepaths:
+        fh  = file(filepath, "rb")
+        pdf = pyPdf.PdfFileReader(fh)
+        output.addPage(pdf.getPage(0))
+        filehandles.append(fh)
+    
+    outputStream = file(output_path, "wb")
+    output.write(outputStream)
+    outputStream.close()
+    
+    for (fh, filepath) in zip(filehandles, filepaths): 
+        fh.close()
+        os.remove(filepath)
 
 def generateHistogramPlotsOfWeights(retina, retina_name, runtime_name, proximal, intermediate, distal):
     morphology          = retina.on_starburst_layer.morphologies[0]

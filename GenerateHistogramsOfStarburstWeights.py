@@ -3,6 +3,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 from Constants import *
 from random import randint
+import pyPdf
+ 
+
+def mergePDFs(output_path, filepaths):
+    output      = pyPdf.PdfFileWriter()
+
+    filehandles = []
+    for filepath in filepaths:
+        fh  = file(filepath, "rb")
+        pdf = pyPdf.PdfFileReader(fh)
+        output.addPage(pdf.getPage(0))
+        filehandles.append(fh)
+    
+    outputStream = file(output_path, "wb")
+    output.write(outputStream)
+    outputStream.close()
+    
+    for (fh, filepath) in zip(filehandles, filepaths): 
+        fh.close()
+        os.remove(filepath)
 
 def selectStarburstCompartmentsAlongDendrite(morphology):
     
@@ -276,28 +296,32 @@ fig5.savefig(fig5_path)
 
 
 # Merge two PDFs
-from pyPdf import PdfFileReader, PdfFileWriter
-import os
- 
-output      = PdfFileWriter()
+#output      = PdfFileWriter()
+#
+#file_handles = []
+#for file_path in [fig_path, fig2_path, fig3_path, fig4_path, fig5_path]:
+#    fh  = file(file_path, "rb")
+#    pdf = PdfFileReader(fh)
+#    output.addPage(pdf.getPage(0))
+#    file_handles.append(fh)
+#    
+#    
+#final_path = os.path.join("Saved Retinas", "0", "Diffusion Weight Statistics.pdf")
+#outputStream = file(final_path, "wb")
+#output.write(outputStream)
+#outputStream.close()
+#
+#for fh in file_handles: 
+#    fh.close()
+#for file_path in [fig_path, fig2_path, fig3_path, fig4_path, fig5_path]:
+#    os.remove(file_path)
 
-file_handles = []
-for file_path in [fig_path, fig2_path, fig3_path, fig4_path, fig5_path]:
-    fh  = file(file_path, "rb")
-    pdf = PdfFileReader(fh)
-    output.addPage(pdf.getPage(0))
-    file_handles.append(fh)
+save_path = os.path.join("Saved Retinas", "0",
+                         "Diffusion Weight Statistics.pdf")
+mergePDFs(save_path, [fig_path, fig2_path, fig3_path, fig4_path, fig5_path])
+
     
     
-final_path = os.path.join("Saved Retinas", "0", "Diffusion Weight Statistics.pdf")
-outputStream = file(final_path, "wb")
-output.write(outputStream)
-outputStream.close()
-
-for fh in file_handles: 
-    fh.close()
-for file_path in [fig_path, fig2_path, fig3_path, fig4_path, fig5_path]:
-    os.remove(file_path)
 
 # Vertical Lines
 
