@@ -9,7 +9,7 @@ class StarburstMorphology(object):
     def __init__(self, retina, history_size=4, location=Vector2D(0.0, 0.0), average_wirelength=50, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=15, max_segment_length=35*UM_TO_M, children_deviation=20, 
-                 dendrite_vision_radius=30*UM_TO_M, diffusion_width=15*UM_TO_M,
+                 dendrite_vision_radius=30*UM_TO_M, diffusion_method="linear", diffusion_parameters=[150.0*UM_TO_M, 1.0*UM_TO_M],
                  color_palette=GOLDFISH, draw_location=Vector2D(0.0,0.0), visualize_growth=False, scale=1.0,
                  display=None):
         
@@ -73,13 +73,64 @@ class StarburstMorphology(object):
         self.establishCompartmentSynapses()
         
         # Establish variables needed for activity
-        self.diffusion_width    = diffusion_width
-        self.establisthLineSegmentDiffusionWeights()
-
-
-    def changeDiffusion(self, new_diffusion_width):
-        self.diffusion_width = new_diffusion_width
-        self.establisthLineSegmentDiffusionWeights()
+        self.changeDiffusion(diffusion_method, diffusion_parameters)
+        
+        
+    def changingDiffusionSigma(distance, curve_type, curve_parameters):
+        
+        if curve_type.lower() == "Flat":
+            sigma = curve_parameters[0]
+            
+        elif curve_type.lower() == "linear":
+            start_sigma, end_sigma = curve_parameters
+            min_distance = 0.0
+            max_distance = self.bounding_radius
+            percent_distance = (distance - min_distance) / (max_distance - min_distance)
+            sigma = percent_distance * (end_sigma - start_sigma) + start_sigma
+            
+        elif curve_type.lower() == "exponential":
+            start_sigma, base = curve_parameters
+            sigma = start_sigma * base ** distance
+            
+        elif curve_type.lower() == "sigmoidal":
+            center, width, start_sigma, end_sigma = curve_parameters
+            sigma = (end_sigma - start_sigma) * 1.0 / (1.0 + np.exp(-(distance-center)/width)) + start_sigma
+            
+        return sigma
+        
+    def changeDiffusion(self, diffusion_method, diffusion_parameters):
+        self.diffusion_method       = diffusion_method
+        self.diffusion_parameters   = diffusion_parameters
+        self.establisthLineSegmentDiffusionWeights(diffusion_method, diffusion_parameters)
+        
+    def calculateDistanceFromSoma(self, compartment_index):
+        distance = 0.0
+        for master_compartment in self.master_compartments:
+            master_index = master_compartment.index
+            distance += float(self.distances[compartment_index][master_index])
+        distance /= len(self.master_compartments)
+        return distance
+            
+    def establisthLineSegmentDiffusionWeights(self, diffusion_method, diffusion_parameters):
+        number_segments         = len(self.compartments)
+        self.diffusion_weights  = np.zeros((number_segments, number_segments))
+        
+        for row in range(number_segments):
+            distance_from_soma  = self.calculateDistanceFromSoma(row)
+            row_sigma           = changingDiffusionSigma(distance_from_soma, diffusion_method, diffusion_parameters)
+            for col in range(number_segments):
+                distance = float(self.distances[row][col])
+                self.diffusion_weights[row, col] = np.exp(-distance**2.0/(2.0*row_sigma**2.0)) 
+                                
+        # Get the sum of each row
+        row_sum = np.sum(self.diffusion_weights, 1)
+        
+        # Reshape the rowSum into a column vector since sum removes a dimension
+        row_sum.shape = (len(self.compartments), 1)
+        
+        # Normalize the weight matrix
+        self.diffusion_weights = self.diffusion_weights / row_sum
+            
 
     def grow(self):
         
@@ -211,46 +262,6 @@ class StarburstMorphology(object):
         for row in range(number_segments):
             col = row
             self.distances[row][col] = 0.0
-            
-    def establisthLineSegmentDiffusionWeights(self, diffusion_method="Gaussian Distance"):
-        number_segments         = len(self.compartments)
-        self.diffusion_weights  = np.zeros((number_segments, number_segments))
-        sigma                   = self.diffusion_width
-        
-        np_distances    = np.array(self.distances)
-        np_lengths      = np.array(np.ones((1, number_segments))) * self.step_size
-        
-        for row in range(number_segments):
-            for col in range(number_segments):
-                distance = float(self.distances[row][col])
-                volume = 0.0
-                np_distance_row = np_distances[row,:]
-                matching_cols, = np.where(np_distance_row<=distance)
-                volume += np.sum(np_lengths[0, matching_cols])
-                
-                if diffusion_method == "Gaussian Volume":
-                    self.diffusion_weights[row, col] = volume
-                elif diffusion_method == "Gaussian Distance":
-                    self.diffusion_weights[row, col] = distance
-                elif diffusion_method == "Average Everyone":
-                    self.diffusion_weights[row, col] = 1.0
-                elif diffusion_method == "Nearest Neighbor Average":
-                    if distance <= self.step_size: 
-                        self.diffusion_weights[row, col] = 1.0
-                    else: 
-                        self.diffusion_weights[row, col] = 0.0
-        
-        if (diffusion_method == "Gaussian Volume") or (diffusion_method == "Gaussian Distance"): 
-            self.diffusion_weights = np.exp(-self.diffusion_weights**2.0/(2.0*sigma**2.0))
-            
-        # Get the sum of each row
-        row_sum = np.sum(self.diffusion_weights, 1)
-        
-        # Reshape the rowSum into a column vector since sum removes a dimension
-        row_sum.shape = (len(self.compartments), 1)
-        
-        # Normalize the weight matrix
-        self.diffusion_weights = self.diffusion_weights / row_sum
             
     def branchProbability(self, segment_length):
         return 1.05**(segment_length-self.max_segment_length)

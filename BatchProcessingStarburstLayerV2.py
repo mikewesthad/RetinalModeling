@@ -78,7 +78,7 @@ average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
 input_strength      = 0.5
 decay_rate          = 0.01
-diffusion_radius    = [10 * UM_TO_M, 30 * UM_TO_M, 50 * UM_TO_M]
+diffusion_radius    = [10 * UM_TO_M, 30 * UM_TO_M]
 'print_stop'
 
 
@@ -124,8 +124,8 @@ print "Retina Combinations", len(retina_combinations)
 print "Runtime Combinations", len(runtime_combinations)
 print "Stimulus Combinations", len(stimulus_combinations)
 print "Combined Combinations", len(retina_combinations) * len(runtime_combinations) * len(stimulus_combinations)
+                   
 
-                      
 retina_index = 0
 for retina_combination in retina_combinations:
     
@@ -169,7 +169,6 @@ for retina_combination in retina_combinations:
             
             elapsed = clock() - start
             print "Retina '{0}' stimulated in {1} seconds".format(retina_name, elapsed)
-
 
 
 analyzeEffectsOfRuntimeParameter(retina, retina_name, "Diffusion Radius", diffusion_radius, headings, stimulus_name)

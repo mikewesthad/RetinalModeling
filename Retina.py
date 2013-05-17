@@ -284,12 +284,11 @@ class Retina:
     
     def buildStarburstLayer(self, minimum_distance, minimum_density, 
                             average_wirelength, step_size, 
-                            input_strength, decay_rate, diffusion_width,
+                            input_strength, decay_rate, diffusion_method, diffusion_parameters,
                             build_on_and_off=True, verbose=True):
         input_delay = 1
         layer_depth = 0
         minimum_distance    /= self.grid_size
-        diffusion_width     /= self.grid_size
         average_wirelength  /= self.grid_size
         step_size           /= self.grid_size
         start_time = clock()
