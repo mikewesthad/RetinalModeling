@@ -29,8 +29,8 @@ class RuntimeBarGenerator:
     def __init__(self, framerate=30.0, movie_size=(800,800), 
                  flash_shape="Rectangle", flash_size=(20.0,60.0),
                  background_color=(255,255,255), flash_color=(0,0,0),
-                 flash_position=(100,100), flash_duration=1000*MS_TO_S,
-                 delay_before_flash=10*MS_TO_S, delay_after_flash=10*MS_TO_S,
+                 flash_position=(100,100), flash_duration=5000*MS_TO_S,
+                 delay_before_flash=1000*MS_TO_S, delay_after_flash=2000*MS_TO_S,
                  minimize=True):       
 
         # Initialize class variables
