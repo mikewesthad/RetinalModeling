@@ -31,19 +31,20 @@ bipolar_density     = 10000.0
 input_field_radius  = 10 * UM_TO_M
 output_field_radius = 10 * UM_TO_M
 retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius, 
-                         output_field_radius)
+                         output_field_radius, build_on_and_off=False)
                          
 # Build the starburst layer
 starburst_distance  = 50 * UM_TO_M
-starburst_density   = 1.0 / (retina.area/retina.density_area)
+starburst_density   = 1000.0
 average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
 input_strength      = 0.5
-decay_rate          = 0.01
-diffusion_radius    = 10 * UM_TO_M
+decay_rate          = 0.1
+diffusion           = ("Flat", [60 * UM_TO_M / grid_size])
 retina.buildStarburstLayer(starburst_distance, starburst_density,
                            average_wirelength, step_size,
-                           input_strength, decay_rate, diffusion_radius) 
+                           input_strength, decay_rate, diffusion[0], diffusion[1],
+                           build_on_and_off=False)
                        
                            
 
@@ -51,8 +52,8 @@ retina.buildStarburstLayer(starburst_distance, starburst_density,
 framerate               = 30.0              # Fps
 movie_size              = (400, 400)        # pixels
 bar_orientation         = 0.0              # Degrees clockwise on circle
-bar_size                = (20.0, 400.0)     # Pixels (width = size in direction of motion)
-bar_speed               = 400.0              # Pixels/second
+bar_size                = (100.0, 400.0)     # Pixels (width = size in direction of motion)
+bar_speed               = 1000.0              # Pixels/second
 bar_movement_distance   = 500.0             # Pixels
 bar_position            = (0, 200)        # Pixels
 bar_color               = (255, 255, 255)        # (R,G,B)
@@ -72,31 +73,19 @@ stimulus = Stimulus(position_on_retina=position_on_retina,
                     pixel_size_in_rgu=pixel_size_in_rgu, movie=bar_movie)
 retina.loadStimulus(stimulus)                           
 
+retina.runModelForStimulus()
 
-                           
-retina.runModel(20*timestep)
+from Analysis import *
+retina_name = "Test"
+runtime_name = "0"
+retina.saveRetina(retina_name)    
+retina.saveActivities(retina_name, runtime_name)   
+analyzeSingleRun(retina, retina_name, runtime_name)
 
-  
-## Testing analysis function
-#pygame.init()
-#surf = pygame.display.set_mode((400,400))
-#surf.fill((255,255,255))
-#proximal, interm, distal = selectStarburstCompartmentsAlongDendrite(retina, 90)
-#starburst = retina.on_starburst_layer.neurons[0]
-#starburst.compartments[proximal].color = (0,0,0)
-#starburst.compartments[interm].color = (0,0,0)
-#starburst.compartments[distal].color = (0,0,0)
+
+## Save the morphology 
+#loaded_retina = Retina.loadRetina("Test")
+#loaded_retina.loadActivities("Test", "0")
 #
-#while True:
-#    pygame.display.update()
-#    starburst.draw(surf, draw_compartments=True)
-
-
-# Save the morphology
-retina.saveRetina("Test")    
-retina.saveActivities("Test", "0")    
-loaded_retina = Retina.loadRetina("Test")
-loaded_retina.loadActivities("Test", "0")
-
-from Visualizer import Visualizer
-v = Visualizer(retina)
+#from Visualizer import Visualizer
+#v = Visualizer(retina)

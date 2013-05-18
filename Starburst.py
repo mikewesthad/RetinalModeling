@@ -152,8 +152,9 @@ class Starburst(object):
         d = self.decay_rate
         i = self.input_strength
         equilibrium = 1.0
+        conductance = input_activity/2.0
 #        new_activity = i * input_activity + (1.0-i) * (1.0-d) * diffusion_activity
-        new_activity = equilibrium * input_activity + (1.0-np.abs(input_activity)) * (1.0-d) * diffusion_activity
+        new_activity = equilibrium * conductance + (1.0-np.abs(conductance)) * (1.0-d) * diffusion_activity
         
         
 #        np.set_printoptions(precision=3, suppress=True, linewidth=300)

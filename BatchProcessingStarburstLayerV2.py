@@ -77,11 +77,11 @@ starburst_density   = 1000.0
 average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
 input_strength      = 0.5
-decay_rate          = 0.4
+decay_rate          = 0.2
 diffusion           = [("Flat", [30 * UM_TO_M / retina_grid_size]),
                        ("Linear", [150 * UM_TO_M/retina_grid_size, 1 * UM_TO_M/retina_grid_size]),
                        ("Exponential", [150 * UM_TO_M/retina_grid_size, 0.96])]    
-'print_stop'
+'print_stop'    
 
 
 
@@ -102,12 +102,12 @@ for parameter in runtime_starburst_parameters:
 
 'print_start'
 # Bar paramters
-framerate               = 30.0           
+framerate               = 60.0           
 movie_width             = 400        
 movie_height            = 400               
-bar_width               = 100.0  # Pixels (width = size in direction of motion)
+bar_width               = 50.0  # Pixels (width = size in direction of motion)
 bar_height              = 400
-bar_speed               = 1000.0    
+bar_speed               = 2000.0    
 bar_movement_distance   = 400.0         
 pixel_size_in_rgu       = 1.0    # rgu
 'print_stop'

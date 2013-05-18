@@ -23,6 +23,46 @@ def mergePDFs(output_path, filepaths):
         fh.close()
         os.remove(filepath)
 
+def analyzeSingleRun(retina, retina_name, runtime_name):
+    
+    proximal, intermediate, distal = selectStarburstCompartmentsAlongDendrite(retina, 0)
+    generateHistogramPlotsOfWeights(retina, retina_name, runtime_name, proximal, intermediate, distal)
+    
+    activities = retina.on_starburst_activities
+    timesteps = len(activities)    
+    
+    # Same stimulus for all runs, so common x-axis
+    x_axis = range(timesteps)
+    
+    # Create y-axes for three selected comparments
+    proximal_y_axis     = [activities[t][0][0, proximal] for t in range(timesteps)]
+    intermediate_y_axis = [activities[t][0][0, intermediate] for t in range(timesteps)]
+    distal_y_axis       = [activities[t][0][0, distal] for t in range(timesteps)]
+                 
+    fig = plt.figure(figsize=(8,8/3))
+    
+    rows, cols, index = 1, 3, 1  
+    y_lim = [-1.1, 1.1]
+    x_label = "Timesteps"
+    y_label = "Activity"
+    
+    for (location_name, y_axis) in [("Proximal", proximal_y_axis), ("Intermediate", intermediate_y_axis), ("Distal", distal_y_axis)]:
+        title = "{0} Location".format(location_name)
+        ax = fig.add_subplot(rows, cols, index)
+        ax.set_ylim(y_lim)
+        ax.set_xlabel(x_label, size='xx-small')
+        ax.set_ylabel(y_label, size='xx-small')
+        ax.set_title(title, size='xx-small')
+        ax.tick_params(labelsize='xx-small')
+        ax.plot(x_axis, y_axis)
+        ax.grid()    
+        
+        index += 1
+    
+    fig.tight_layout()
+    fig_path = os.path.join("Saved Retinas", retina_name, runtime_name+"_Summary_"+"Activity.pdf")
+    fig.savefig(fig_path)
+
 def generateHistogramPlotsOfWeights(retina, retina_name, runtime_name, proximal, intermediate, distal):
     morphology          = retina.on_starburst_layer.morphologies[0]
     num_compartments    = len(morphology.compartments)
