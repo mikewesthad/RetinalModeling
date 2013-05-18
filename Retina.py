@@ -66,6 +66,8 @@ class Retina:
         self.cone_layer.activities[0] = ((0.5-intensity)*2.0) * np.ones((1, self.cone_layer.neurons)) 
     
     def clearActivity(self):
+        for layer in self.layers:
+            if layer!= None: layer.clearActivities()
         self.cone_activities            = []
         self.horizontal_activities      = []
         self.on_bipolar_activities      = []
@@ -291,13 +293,14 @@ class Retina:
         minimum_distance    /= self.grid_size
         average_wirelength  /= self.grid_size
         step_size           /= self.grid_size
+#        diffusion_parameters = StarburstMorphology.convertDiffusionParametersToGridUnits(diffusion_method, diffusion_parameters, self.grid_size)
         start_time = clock()
         self.on_starburst_layer = StarburstLayer(self, "On", layer_depth, 
                                                  self.history_size, input_delay, 
                                                  minimum_distance, minimum_density,
                                                  average_wirelength, step_size,
-                                                 diffusion_width, decay_rate,
-                                                 input_strength)   
+                                                 diffusion_method, diffusion_parameters,
+                                                 decay_rate, input_strength)   
         self.layers[4] = self.on_starburst_layer
 
         if build_on_and_off:                                                 
@@ -305,8 +308,8 @@ class Retina:
                                                      self.history_size, input_delay, 
                                                      minimum_distance, minimum_density,
                                                      average_wirelength, step_size,
-                                                     diffusion_width, decay_rate,
-                                                     input_strength)
+                                                     diffusion_method, diffusion_parameters,
+                                                     decay_rate, input_strength)
             self.layers[5] = self.off_starburst_layer
            
         if verbose: print "On and Off Starburst Layers Construction Time", clock() - start_time

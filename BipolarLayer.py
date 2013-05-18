@@ -54,6 +54,10 @@ class BipolarLayer:
         self.compartmentalize()
         self.establishInputs()
     
+    def clearActivities(self):
+        for neuron in self.neurons:
+            neuron.clearActivities()
+    
     def establishInputs(self):
         for neuron in self.neurons:
             neuron.establishInputs()

@@ -30,8 +30,8 @@ y_axis = []
 for x in x_axis: 
 #    y_axis.append(changingDiffusionSigma(x, "Linear", [0.0, 200.0]))
 #    y_axis.append(changingDiffusionSigma(x, "Linear", [150.0, 1.0]))
-#    y_axis.append(changingDiffusionSigma(x, "Exponential", [150.0, 0.96]))
-    y_axis.append(changingDiffusionSigma(x, "Sigmoidal", [75.0, 15.0, 150.0, 1.0]))
+    y_axis.append(changingDiffusionSigma(x, "Exponential", [150.0, 0.96]))
+#    y_axis.append(changingDiffusionSigma(x, "Sigmoidal", [75.0, 15.0, 150.0, 1.0]))
 
 
 

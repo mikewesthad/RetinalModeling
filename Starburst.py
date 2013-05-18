@@ -20,6 +20,9 @@ class Starburst(object):
         self.decay_rate             = layer.decay_rate
         self.diffusion_weights      = self.morphology.diffusion_weights
         
+        self.clearActivities()
+        
+    def clearActivities(self):        
         self.activities = []
         self.neurotransmitter_ouputs = []
         for i in range(self.history_size):
@@ -30,6 +33,7 @@ class Starburst(object):
             for c in range(self.number_compartments):
                 self.neurotransmitter_ouputs[-1].append({})
         
+    
     def loadPast(self, activity):
         self.activities[0] = activity
         
@@ -147,7 +151,9 @@ class Starburst(object):
         # Calcualte the new activity
         d = self.decay_rate
         i = self.input_strength
-        new_activity = i * input_activity + (1.0-i) * (1.0-d) * diffusion_activity
+        equilibrium = 1.0
+#        new_activity = i * input_activity + (1.0-i) * (1.0-d) * diffusion_activity
+        new_activity = equilibrium * input_activity + (1.0-np.abs(input_activity)) * (1.0-d) * diffusion_activity
         
         
 #        np.set_printoptions(precision=3, suppress=True, linewidth=300)

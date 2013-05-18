@@ -13,14 +13,18 @@ class Bipolar:
         
         self.history_size   = layer.history_size           
         
+        self.clearActivities()
+            
+        self.inputs = []
+
+    def clearActivities(self):
         self.activities = []
         self.neurotransmitter_ouputs = []
         for step in range(self.history_size):
             self.activities.append([0.0])
             self.neurotransmitter_ouputs.append([{}])
-            
-        self.inputs = []
-    
+        
+
     def loadPast(self, activity):
         self.activities[0] = activity
     

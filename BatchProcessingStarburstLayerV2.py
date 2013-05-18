@@ -25,7 +25,7 @@ def generateCombinations(parameters, current_parameter_index,
     # Get the next collection of parameter values
     #   If a paramter is a single value, then add it to the current combination
     parameter_options = parameters[current_parameter_index]
-    while not(isinstance(parameter_options, (np.ndarray, list, tuple))):
+    while not(isinstance(parameter_options, (np.ndarray, list))):
         current_parameter_combination.append(parameter_options) 
         current_parameter_index += 1
         if current_parameter_index >= len(parameters): break
@@ -77,8 +77,10 @@ starburst_density   = 1000.0
 average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
 input_strength      = 0.5
-decay_rate          = 0.01
-diffusion_radius    = [10 * UM_TO_M, 30 * UM_TO_M]
+decay_rate          = 0.4
+diffusion           = [("Flat", [30 * UM_TO_M / retina_grid_size]),
+                       ("Linear", [150 * UM_TO_M/retina_grid_size, 1 * UM_TO_M/retina_grid_size]),
+                       ("Exponential", [150 * UM_TO_M/retina_grid_size, 0.96])]    
 'print_stop'
 
 
@@ -89,15 +91,14 @@ cone_parameters = [cone_distance, cone_density, cone_input_size]
 horizontal_parameters = [horizontal_input_strength, hoirzontal_decay_rate, horizontal_diffusion_radius]
 bipolar_parameters = [bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius]
 starburst_parameters = [starburst_distance, starburst_density, average_wirelength, step_size]
-
+runtime_starburst_parameters = [input_strength, decay_rate, diffusion]
 
 # Set some default values in starburst parameters for the runtime parameters (so that the initial build retina will work)
-for parameter in [input_strength, decay_rate, diffusion_radius]:
-    if isinstance(parameter, (list, tuple, np.ndarray)): 
+for parameter in runtime_starburst_parameters:
+    if isinstance(parameter, (list, np.ndarray)): 
         starburst_parameters.append(parameter[0])
     else:
         starburst_parameters.append(parameter)
-runtime_starburst_parameters = [input_strength, decay_rate, diffusion_radius]
 
 'print_start'
 # Bar paramters
@@ -114,6 +115,7 @@ stimulus_parameters = [framerate, movie_width, movie_height,
                        bar_width, bar_height, bar_speed, bar_movement_distance,
                        pixel_size_in_rgu]
 
+# Tuples consitute a single item
 retina_parameters = retina_parameters + cone_parameters + horizontal_parameters + bipolar_parameters + starburst_parameters
 runtime_parameters = runtime_starburst_parameters
 retina_combinations = generateCombinations(retina_parameters, 0, [], [])
@@ -131,7 +133,7 @@ for retina_combination in retina_combinations:
     
     retina_name = str(retina_index)
     retina_combination.append(retina_name)    
-    retina, retina_string = createStarburstRetina(*retina_combination)
+    retina = createStarburstRetina(*retina_combination)
     retina_index += 1
     
     proximal, intermediate, distal = selectStarburstCompartmentsAlongDendrite(retina, 0)
@@ -142,7 +144,7 @@ for retina_combination in retina_combinations:
         runtime_name = str(runtime_index)
         retina.on_starburst_layer.changeInputStrength(runtime_combination[0])
         retina.on_starburst_layer.changeDecayRate(runtime_combination[1])
-        retina.on_starburst_layer.changeDiffusion(runtime_combination[2])
+        retina.on_starburst_layer.changeDiffusion(runtime_combination[2][0], runtime_combination[2][1])
         runtime_index += 1
         
         retina.stimulus = None
@@ -171,4 +173,4 @@ for retina_combination in retina_combinations:
             print "Retina '{0}' stimulated in {1} seconds".format(retina_name, elapsed)
 
 
-analyzeEffectsOfRuntimeParameter(retina, retina_name, "Diffusion Radius", diffusion_radius, headings, stimulus_name)
+analyzeEffectsOfRuntimeParameter(retina, retina_name, "Diffusion", diffusion, headings, stimulus_name)

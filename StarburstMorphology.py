@@ -73,12 +73,36 @@ class StarburstMorphology(object):
         self.establishCompartmentSynapses()
         
         # Establish variables needed for activity
-        self.changeDiffusion(diffusion_method, diffusion_parameters)
+        self.diffusion_method       = diffusion_method
+        self.diffusion_parameters   = diffusion_parameters
+        self.establisthLineSegmentDiffusionWeights(diffusion_method, diffusion_parameters)
         
         
-    def changingDiffusionSigma(distance, curve_type, curve_parameters):
+#    @classmethod
+#    def convertDiffusionParametersToGridUnits(ClassReference, curve_type, curve_parameters, grid_size):     
+#        if curve_type.lower() == "Flat":
+#            curve_parameters[0] /= grid_size
+#            
+#        elif curve_type.lower() == "linear":
+#            curve_parameters[0] /= grid_size
+#            curve_parameters[1] /= grid_size
+#            
+#        elif curve_type.lower() == "exponential":
+#            curve_parameters[0] /= grid_size
+#            # Don't convert ther second element - that's the exp base
+#            
+#        elif curve_type.lower() == "sigmoidal":
+#            curve_parameters[0] /= grid_size            
+#            curve_parameters[1] /= grid_size
+#            curve_parameters[2] /= grid_size
+#            curve_parameters[3] /= grid_size
+#            
+#        return curve_parameters
+            
         
-        if curve_type.lower() == "Flat":
+    def changingDiffusionSigma(self, distance, curve_type, curve_parameters):
+        
+        if curve_type.lower() == "flat":
             sigma = curve_parameters[0]
             
         elif curve_type.lower() == "linear":
@@ -96,9 +120,14 @@ class StarburstMorphology(object):
             center, width, start_sigma, end_sigma = curve_parameters
             sigma = (end_sigma - start_sigma) * 1.0 / (1.0 + np.exp(-(distance-center)/width)) + start_sigma
             
+        else:
+            print "Curve type '{0}' undefined".format(curve_type)
+            
         return sigma
         
     def changeDiffusion(self, diffusion_method, diffusion_parameters):
+#        diffusion_parameters = self.convertDiffusionParametersToGridUnits(diffusion_method, diffusion_parameters, self.retina.grid_size)
+        
         self.diffusion_method       = diffusion_method
         self.diffusion_parameters   = diffusion_parameters
         self.establisthLineSegmentDiffusionWeights(diffusion_method, diffusion_parameters)
@@ -117,7 +146,7 @@ class StarburstMorphology(object):
         
         for row in range(number_segments):
             distance_from_soma  = self.calculateDistanceFromSoma(row)
-            row_sigma           = changingDiffusionSigma(distance_from_soma, diffusion_method, diffusion_parameters)
+            row_sigma           = self.changingDiffusionSigma(distance_from_soma, diffusion_method, diffusion_parameters)
             for col in range(number_segments):
                 distance = float(self.distances[row][col])
                 self.diffusion_weights[row, col] = np.exp(-distance**2.0/(2.0*row_sigma**2.0)) 

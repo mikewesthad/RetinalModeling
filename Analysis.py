@@ -104,6 +104,8 @@ def generateHistogramPlotsOfWeights(retina, retina_name, runtime_name, proximal,
     fig.tight_layout()
     fig_path = os.path.join("Saved Retinas", retina_name, runtime_name+"_Starburst Output Weights.pdf")
     fig.savefig(fig_path)
+    
+    return fig_path
 
 
 def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name, runtime_parameter_settings, headings, stimulus_name):
@@ -184,7 +186,7 @@ def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name
             
             index += 1
             
-    ax.legend(lines, runtime_parameter_settings, loc='lower left', prop={'size': 10})
+    ax.legend(lines, runtime_parameter_settings, loc='lower left', prop={'size': 8})
 
     fig.tight_layout()
     fig_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Summary_"+"Activity.pdf")
@@ -194,7 +196,7 @@ def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name
     # Details moving along a dendrite    
     
     rows, cols, index = len(runtime_parameter_settings), len(headings), 1  
-    fig = plt.figure(figsize=(11,float(rows)/cols*11.0))
+    fig2 = plt.figure(figsize=(11,float(rows)/cols*11.0))
     
     y_lim = [-1.1, 1.1]
     x_label = "Timesteps"
@@ -204,7 +206,7 @@ def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name
     for i in range(len(runtime_parameter_settings)):
         for heading in headings:    
             title = "{0} {1}, {2} Degrees".format(runtime_parameter_settings[i], runtime_parameter_name, int(heading))
-            ax = fig.add_subplot(rows, cols, index)
+            ax = fig2.add_subplot(rows, cols, index)
             ax.set_ylim(y_lim)
             ax.set_xlabel(x_label, size='xx-small')
             ax.set_ylabel(y_label, size='xx-small')
@@ -219,17 +221,17 @@ def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name
             index += 1
             
     
-    ax.legend(lines, ["Proximal", "Intermediate", "Distal"], loc='lower left', prop={'size': 10})
+    ax.legend(lines, ["Proximal", "Intermediate", "Distal"], loc='lower left', prop={'size': 8})
 
-    fig.tight_layout()
-    fig_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Along Dendrite_"+"Activity.pdf")
-    fig.savefig(fig_path)
+    fig2.tight_layout()
+    fig2_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Along Dendrite_"+"Activity.pdf")
+    fig2.savefig(fig2_path)
     
     
      # Distal Compartments   
     
     rows, cols, index = len(runtime_parameter_settings), 3, 1 
-    fig = plt.figure(figsize=(11.0, float(rows)/cols*11.0))
+    fig3 = plt.figure(figsize=(11.0, float(rows)/cols*11.0))
     
     y_lim = [-1.1, 1.1]
     x_label = "Timesteps"
@@ -239,7 +241,7 @@ def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name
     for i in range(len(runtime_parameter_settings)):
         for (location_name, data) in [("Proximal", proximal_y_axes), ("Intermediate", intermediate_y_axes), ("Distal", distal_y_axes)]:
             title = "{0} {1}, {2} Location".format(runtime_parameter_settings[i], runtime_parameter_name, location_name)
-            ax = fig.add_subplot(rows, cols, index)
+            ax = fig3.add_subplot(rows, cols, index)
             ax.set_ylim(y_lim)
             ax.set_xlabel(x_label, size='xx-small')
             ax.set_ylabel(y_label, size='xx-small')
@@ -255,11 +257,15 @@ def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name
             index += 1
             
     
-    ax.legend(lines, headings, loc='lower left', prop={'size': 10})
+    ax.legend(lines, headings, loc='lower left', prop={'size': 8})
 
-    fig.tight_layout()
-    fig_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Distal Compartment_"+"Activity.pdf")
-    fig.savefig(fig_path)
+    fig3.tight_layout()
+    fig3_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Distal Compartment_"+"Activity.pdf")
+    fig3.savefig(fig3_path)
+    
+    
+    final_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Activity.pdf")
+    mergePDFs(final_path, [fig_path, fig2_path, fig3_path])
     
 
 def analyzeMultipleBarsInOnePage(retina, retina_name, stimulus_name, headings):

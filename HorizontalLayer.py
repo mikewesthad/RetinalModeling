@@ -29,6 +29,8 @@ class HorizontalLayer:
         self.decay_rate         = decay_rate
         self.input_strength     = input_strength
         
+    def clearActivities(self):
+        self.initializeActivties()
         
     def loadPast(self, activity):
         self.activities[0] = activity
