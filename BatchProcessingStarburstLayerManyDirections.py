@@ -1,6 +1,6 @@
 from Constants import *
 from CreateRetina import createStarburstRetina
-from CreateStimulus import createMultipleBars
+from CreateStimulus import createManyBars
 from Analysis import *
 from time import clock
 from fpdf import FPDF
@@ -90,18 +90,14 @@ def generatePDF(retina_name):
     pdf.output(output_path, 'F')
     return output_path
 
-def run(retina_parameters, runtime_parameters, stimulus_parameters, parameter_name, parameter_settings):
+def run(retina_parameters, stimulus_parameters):
 
-    # Tuples consitute a single item
-    retina_parameters = retina_parameters + cone_parameters + horizontal_parameters + bipolar_parameters + starburst_parameters
     retina_combinations = generateCombinations(retina_parameters, 0, [], [])
-    runtime_combinations = generateCombinations(runtime_starburst_parameters, 0, [], [])
     stimulus_combinations = generateCombinations(stimulus_parameters, 0, [], [])
     
     print "Retina Combinations", len(retina_combinations)
-    print "Runtime Combinations", len(runtime_combinations)
     print "Stimulus Combinations", len(stimulus_combinations)
-    print "Combined Combinations", len(retina_combinations) * len(runtime_combinations) * len(stimulus_combinations)
+    print "Combined Combinations", len(retina_combinations) * len(stimulus_combinations)
                      
     retina_index = 0
     for retina_combination in retina_combinations:
@@ -110,58 +106,27 @@ def run(retina_parameters, runtime_parameters, stimulus_parameters, parameter_na
         retina_combination.append(retina_name)    
         retina = createStarburstRetina(*retina_combination)
         retina_index += 1
-        
-        proximal, intermediate, distal = selectStarburstCompartmentsAlongDendrite(retina, 0)
-          
-        weight_paths = []
-        runtime_index = 0
-        for runtime_combination in runtime_combinations: 
             
-            runtime_name = str(runtime_index)
-            retina.on_starburst_layer.changeInputStrength(runtime_combination[0])
-            retina.on_starburst_layer.changeDecayRate(runtime_combination[1])
-            retina.on_starburst_layer.changeDiffusion(runtime_combination[2][0], runtime_combination[2][1])
-            runtime_index += 1
+        stimulus_index = 0
+        for stimulus_combination in stimulus_combinations:
             
-            retina.stimulus = None
-            retina.saveParameters(retina_name, runtime_name)
-                
-            path = generateHistogramPlotsOfWeights(retina, retina_name, runtime_name, proximal, intermediate, distal)   
-            weight_paths.append(path)
             
-            stimulus_index = 0
-            for stimulus_combination in stimulus_combinations:
+            stimuli, headings = createManyBars(*stimulus_combination)
+            stimulus_name = str(stimulus_index)        
+            for stimulus, heading in zip(stimuli, headings):
                 
                 start = clock()
                 
-                stimuli, headings, stimulus_string = createMultipleBars(*stimulus_combination)
-                stimulus_name = str(stimulus_index)        
-                for stimulus, heading in zip(stimuli, headings):
-                    retina.loadStimulus(stimulus)  
-                    retina.runModelForStimulus()
-                    trial_name = runtime_name+"_"+stimulus_name+"_"+str(int(heading))
-                    retina.saveActivities(retina_name, trial_name) 
-                    stimulus_index += 1                           
-                    retina.clearActivity()       
-                
-    #            analyzeMultipleBarsInOnePage(retina, retina_name, stimulus_name, headings)
-                
+                retina.loadStimulus(stimulus)  
+                retina.runModelForStimulus()
+                trial_name = stimulus_name+"_"+str(int(heading))
+                retina.saveActivities(retina_name, trial_name) 
+                stimulus_index += 1                           
+                retina.clearActivity()       
+            
                 elapsed = clock() - start
                 print "Retina '{0}' stimulated in {1} seconds".format(retina_name, elapsed)
         
-        
-        saveMorphology(retina, retina_name, proximal, intermediate, distal)
-        
-        paths = []
-        p = generatePDF(retina_name)
-        paths.append(p)
-        paths.extend(weight_paths)
-        ps = analyzeEffectsOfRuntimeParameter(retina, retina_name, parameter_name, parameter_settings, headings, stimulus_name)
-        paths.extend(ps)        
-        
-        retina_output_path = os.path.join("Saved Retinas", retina_name, parameter_name+"_Results.pdf")
-        mergePDFs(retina_output_path, paths)
-
 
 ###############################################################################
 # Retina Parameters
@@ -196,23 +161,21 @@ average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
 decay_rate          = 0.2
 input_strength      = 0.5
-diffusion           = [("Flat", [30 * UM_TO_M / retina_grid_size]),
-                       ("Linear", [70 * UM_TO_M / retina_grid_size, 10 * UM_TO_M / retina_grid_size]),
-                       ("Linear", [150 * UM_TO_M / retina_grid_size, 10 * UM_TO_M / retina_grid_size]),
-                       ("Linear", [70 * UM_TO_M / retina_grid_size, 1 * UM_TO_M / retina_grid_size])]   
+diffusion           = ("Flat", [30 * UM_TO_M / retina_grid_size])
 
 # Bar paramters
+bars                    = 12
 framerate               = 60.0           
 movie_width             = 400        
 movie_height            = 400               
 bar_width               = 50.0
-bar_height              = 400
+bar_height              = 600
 bar_speed               = 2000.0    
-bar_movement_distance   = 400.0         
+bar_movement_distance   = 600.0         
 pixel_size_in_rgu       = 1.0
 'print_stop'    
 
-stimulus_parameters = [framerate, movie_width, movie_height,
+stimulus_parameters = [bars, framerate, movie_width, movie_height,
                        bar_width, bar_height, bar_speed, bar_movement_distance,
                        pixel_size_in_rgu]
 
@@ -222,15 +185,7 @@ retina_parameters = [retina_width, retina_height, retina_grid_size, retina_times
 cone_parameters = [cone_distance, cone_density, cone_input_size]
 horizontal_parameters = [horizontal_input_strength, hoirzontal_decay_rate, horizontal_diffusion_radius]
 bipolar_parameters = [bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius]
-starburst_parameters = [starburst_distance, starburst_density, average_wirelength, step_size]
-runtime_starburst_parameters = [input_strength, decay_rate, diffusion]
+starburst_parameters = [starburst_distance, starburst_density, average_wirelength, step_size, decay_rate, input_strength, diffusion]
+retina_parameters = retina_parameters + cone_parameters + horizontal_parameters + bipolar_parameters + starburst_parameters
 
-# Set some default values in starburst parameters for the runtime parameters (so that the initial build retina will work)
-for parameter in runtime_starburst_parameters:
-    if isinstance(parameter, (list, np.ndarray)): 
-        starburst_parameters.append(parameter[0])
-    else:
-        starburst_parameters.append(parameter)
-
-
-run(retina_parameters, runtime_starburst_parameters, stimulus_parameters, "Diffusion", diffusion)
+run(retina_parameters, stimulus_parameters)

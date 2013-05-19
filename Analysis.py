@@ -22,6 +22,8 @@ def mergePDFs(output_path, filepaths):
     for (fh, filepath) in zip(filehandles, filepaths): 
         fh.close()
         os.remove(filepath)
+    
+    return output_path
 
 def analyzeSingleRun(retina, retina_name, runtime_name):
     
@@ -303,11 +305,8 @@ def analyzeEffectsOfRuntimeParameter(retina, retina_name, runtime_parameter_name
     fig3_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Distal Compartment_"+"Activity.pdf")
     fig3.savefig(fig3_path)
     
+    return [fig_path, fig2_path, fig3_path]    
     
-    final_path = os.path.join("Saved Retinas", retina_name, runtime_parameter_name+"_Activity.pdf")
-    mergePDFs(final_path, [fig_path, fig2_path, fig3_path])
-    
-
 def analyzeMultipleBarsInOnePage(retina, retina_name, stimulus_name, headings):
     
     retina.loadActivities(retina_name, stimulus_name+"_"+str(int(headings[0])))
@@ -369,7 +368,36 @@ def analyzeMultipleBarsInOnePage(retina, retina_name, stimulus_name, headings):
     saveMorphology(retina, retina_name, stimulus_name, center_triad_index, center_bipolar_index, preferred_indicies, null_indicies)
   
  
-def saveMorphology(retina, retina_name, stimulus_name, center_triad_index, center_bipolar_index, preferred_indicies, null_indicies):
+def saveStarburstMorphology(retina, retina_name, proximal, intermediate, distal): 
+    pygame.init()    
+    
+    # Figure out scaling
+    max_size = Vector2D(1000.0, 1000.0)       
+    width_scale = max_size.x / float(retina.grid_width)
+    height_scale = max_size.y / float(retina.grid_height)
+    scale = min(width_scale, height_scale)    
+    
+    # Create a minimized display
+    display = pygame.display.set_mode(max_size.toIntTuple())
+    pygame.display.iconify()
+    
+    # Print the starburst cell to a file
+    display.fill((255,255,255))
+    starburst = retina.on_starburst_layer.neurons[0]
+    starburst.draw(display, draw_compartments=True, scale=scale)
+    transparent_surf = pygame.Surface(max_size.toIntTuple())
+    transparent_surf.set_alpha(150)
+    transparent_surf.fill((255,255,255))
+    display.blit(transparent_surf, (0,0))
+    starburst.morphology.location = starburst.location
+    starburst.compartments[proximal].draw(display, color=(255,0,0), scale=scale)
+    starburst.compartments[intermediate].draw(display, color=(255,0,0), scale=scale)
+    starburst.compartments[distal].draw(display, color=(255,0,0), scale=scale)
+    starburst.morphology.location = Vector2D()
+    starburst_path = os.path.join("Saved Retinas", retina_name, "StarburstMorphology.jpg")
+    pygame.image.save(display, starburst_path)
+    
+def saveMorphology(retina, retina_name, proximal, intermediate, distal):
      # Draw the morphology with the cells that were graphed highlighted in black
     pygame.init()    
     
@@ -385,30 +413,20 @@ def saveMorphology(retina, retina_name, stimulus_name, center_triad_index, cente
     
     # Print the cone layer to a file
     display.fill((255,255,255))
-    color = (0,0,0)
     retina.cone_layer.draw(display, scale=scale)
-    radius = int(scale*retina.cone_layer.nearest_neighbor_distance_gridded/2.0)
-    x,y = retina.cone_layer.locations[center_triad_index]
-    x, y = int(x*scale), int(y*scale)
-    pygame.draw.circle(display, color, (x, y), radius) 
-    cone_path = os.path.join("Saved Retinas", retina_name, stimulus_name+"_Cone Plot.jpg")
+    cone_path = os.path.join("Saved Retinas", retina_name, "Cone.jpg")
     pygame.image.save(display, cone_path)
     
     # Print the horizontal layer to a file
     display.fill((255,255,255))
     retina.horizontal_layer.draw(display, scale=scale)
-    radius = int(scale*retina.horizontal_layer.nearest_neighbor_distance_gridded/2.0)
-    x,y = retina.horizontal_layer.locations[center_triad_index]
-    x, y = int(x*scale), int(y*scale)
-    pygame.draw.circle(display, color, (x, y), radius) 
-    horizontal_path = os.path.join("Saved Retinas", retina_name, stimulus_name+"_Horizontal Plot.jpg")
+    horizontal_path = os.path.join("Saved Retinas", retina_name, "Horizontal.jpg")
     pygame.image.save(display, horizontal_path)
     
     # Print the bipolar layer to a file
     display.fill((255,255,255))
     retina.on_bipolar_layer.draw(display, scale=scale)
-    retina.on_bipolar_layer.neurons[center_bipolar_index].draw(display, retina.on_bipolar_layer.nearest_neighbor_distance_gridded/2.0, color=(0,0,0), scale=scale)
-    bipolar_path = os.path.join("Saved Retinas", retina_name, stimulus_name+"_Bipolar Plot.jpg")
+    bipolar_path = os.path.join("Saved Retinas", retina_name, "Bipolar.jpg")
     pygame.image.save(display, bipolar_path)
     
     # Print the starburst cell to a file
@@ -420,11 +438,10 @@ def saveMorphology(retina, retina_name, stimulus_name, center_triad_index, cente
     transparent_surf.fill((255,255,255))
     display.blit(transparent_surf, (0,0))
     starburst.morphology.location = starburst.location
-    for i in range(3):
-        starburst.compartments[preferred_indicies[i]].draw(display, color=(255,0,0), scale=scale)
-        starburst.compartments[null_indicies[i]].draw(display, color=(0,0,255), scale=scale)
+    for i in [proximal, intermediate, distal]:
+        starburst.compartments[i].draw(display, color=(0,0,0), scale=scale)
     starburst.morphology.location = Vector2D()
-    starburst_path = os.path.join("Saved Retinas", retina_name, stimulus_name+"_Starburst Plot.jpg")
+    starburst_path = os.path.join("Saved Retinas", retina_name, "Starburst.jpg")
     pygame.image.save(display, starburst_path)
 
 def drawSingleLineSubplot(fig, rows, cols, index, x_axis, y_axis, title, grid=True,
