@@ -161,7 +161,7 @@ average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
 decay_rate          = 0.2
 input_strength      = 0.5
-diffusion           = ("Flat", [30 * UM_TO_M / retina_grid_size])
+diffusion           = ("Flat", [10 * UM_TO_M / retina_grid_size])
 
 # Bar paramters
 bars                    = 12
@@ -170,7 +170,7 @@ movie_width             = 400
 movie_height            = 400               
 bar_width               = 50.0
 bar_height              = 600
-bar_speed               = 2000.0    
+bar_speed               = 1000.0    
 bar_movement_distance   = 600.0         
 pixel_size_in_rgu       = 1.0
 'print_stop'    

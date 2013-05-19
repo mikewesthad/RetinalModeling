@@ -1,3 +1,76 @@
+import matplotlib.pyplot as plt
+from random import randint 
+import numpy as np
+
+from matplotlib.projections.polar import PolarAxes
+from matplotlib.projections import register_projection
+
+
+def radar_factory(num_vars):    
+    # calculate evenly-spaced axis angles
+    theta = 2*np.pi * np.linspace(0, 1-1./num_vars, num_vars)
+    
+    class RadarAxes(PolarAxes):
+        name = 'radar'
+        # use 1 line segment to connect specified points
+        RESOLUTION = 1
+
+        def fill(self, *args, **kwargs):
+            """Override fill so that line is closed by default"""
+            closed = kwargs.pop('closed', True)
+            return super(RadarAxes, self).fill(closed=closed, *args, **kwargs)
+
+        def plot(self, *args, **kwargs):
+            """Override plot so that line is closed by default"""
+            lines = super(RadarAxes, self).plot(*args, **kwargs)
+            for line in lines:
+                self._close_line(line)
+
+        def _close_line(self, line):
+            x, y = line.get_data()
+            # FIXME: markers at x[0], y[0] get doubled-up
+            if x[0] != x[-1]:
+                x = np.concatenate((x, [x[0]]))
+                y = np.concatenate((y, [y[0]]))
+                line.set_data(x, y)
+
+        def set_varlabels(self, labels):
+            self.set_thetagrids(theta * 180/np.pi, labels)
+
+        def _gen_axes_patch(self):
+            return plt.Circle((0.5, 0.5), 0.5)
+
+        def _gen_axes_spines(self):
+            return PolarAxes._gen_axes_spines(self)
+
+    register_projection(RadarAxes)
+    return theta
+
+
+def radar_plot(data):
+    spoke_labels = data.pop(0)[1]
+    N = len(spoke_labels)
+    theta = radar_factory(N)
+    fig = plt.figure(figsize=(9, 9))
+    fig.subplots_adjust(wspace=0.25, hspace=0.20, top=0.85, bottom=0.05)
+
+    color = 'r'
+    
+    # Plot the four cases from the example data on separate axes
+    for index in range(len(data)):
+        title, datum = data[index]
+        ax = fig.add_subplot(2, 2, index, projection='radar')
+        plt.rgrids([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+        ax.set_title(title, weight='bold', size='medium', position=(0.5, 1.1),
+                     horizontalalignment='center', verticalalignment='center')
+        ax.plot(theta, datum, color=color)
+        ax.fill(theta, datum, facecolor=color, alpha=0.25)
+        ax.set_varlabels(spoke_labels)
+
+    plt.figtext(0.5, 0.965, 'Title Title Title',
+                ha='center', color='black', weight='bold', size='large')
+    plt.show()
+
 def analyzeStarburst(retina, retina_name, headings, stimulus_name):
     
     stored_activities = []
@@ -112,12 +185,100 @@ def analyzeStarburst(retina, retina_name, headings, stimulus_name):
     pygame.display.update()
     
     while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                 break
         pygame.display.update()
+    proximal, intermediate, distal = selectStarburstCompartmentsAlongDendrite(retina, 0)
+    
+#    compartment = compartment_lengths.index(max(compartment_lengths))
+    compartment = distal
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    x_axis = range(max_timesteps)
+    for i in range(number_headings):
+        y_axis = all_activities[i, :, compartment]
+        ax.plot(x_axis, y_axis)
+    ax.legend(headings)
+    plt.show()
+    
+    
+    data = [['column names', headings],
+            ['Proximal', [np.max(all_activities[i,:,proximal]) for i in range(number_headings)]],
+            ['Intermedate', [np.max(all_activities[i,:,intermediate]) for i in range(number_headings)]],
+            ['Distal', [np.max(all_activities[i,:,distal]) for i in range(number_headings)]]]
+            
+    radar_plot(data)
+    
+    
+def selectStarburstCompartmentsAlongDendrite(retina, angle):
+    starburst = retina.on_starburst_layer.neurons[0]
+    
+    acceptable_deviation = 10
+    min_angle = angle - acceptable_deviation
+    max_angle = angle + acceptable_deviation
+    if max_angle > 360: max_angle -= 360
+    if min_angle < 0: min_angle = 360 + min_angle    
         
+    starburst_center = Vector2D()
+       
+    acceptable_compartment = False
+    number_tries = 0
+    max_tries = 1000
+    while not(acceptable_compartment):        
+        random_compartment_index = randint(0, starburst.number_compartments-1)
+        random_compartment = starburst.compartments[random_compartment_index]
+        
+        # Check if terminal compartment        
+        if random_compartment.distal_neighbors == []:
+            
+            # Check angle heading
+            terminal_point = random_compartment.line_points[-1]
+            compartment_heading = starburst_center.angleHeadingTo(terminal_point)
+            is_angle_acceptable = False            
+            
+            if max_angle < min_angle:
+                is_angle_acceptable = compartment_heading <= max_angle or compartment_heading >= min_angle
+            else:
+                is_angle_acceptable = compartment_heading <= max_angle and compartment_heading >= min_angle
+                
+            if is_angle_acceptable:
+                terminal_compartment = random_compartment
+                acceptable_compartment = True
+        
+        number_tries += 1
+        if number_tries > max_tries:
+            print "Increased acceptable deviation", acceptable_deviation
+            number_tries = 0
+            acceptable_deviation += 10
+            min_angle = angle - acceptable_deviation
+            max_angle = angle + acceptable_deviation
+            if max_angle > 360: max_angle -= 360
+            if min_angle < 0: min_angle = 360 + min_angle
+            
+    dendrite_path = [terminal_compartment]
+    has_reached_soma = False
+    while not(has_reached_soma):
+        most_proximal_compartment = dendrite_path[0]
+        proximal_neighbors = most_proximal_compartment.proximal_neighbors
+        
+        new_proximal_compartment = proximal_neighbors[0]
+        dendrite_path.insert(0, new_proximal_compartment)
+        
+        if new_proximal_compartment in starburst.morphology.master_compartments:
+            has_reached_soma = True
+        
+    number_compartments = len(dendrite_path)
+    proximal = dendrite_path[0]
+    interm   = dendrite_path[int(round(number_compartments/2.0))]
+    distal   = dendrite_path[-1]
+    
+    return proximal.index, interm.index, distal.index                 
+    
         
     
 from Constants import *
-retina_name = "12 Directions"
+retina_name = "0"
 retina = Retina.loadRetina(retina_name)
 
 analyzeStarburst(retina, retina_name, np.arange(0.0, 360.0, 360.0/12.0) , "0")
