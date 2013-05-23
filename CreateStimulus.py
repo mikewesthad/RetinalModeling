@@ -57,6 +57,7 @@ def createManyBars(bars, framerate, movie_width, movie_height,
         bar_heading     = bar_headings[i]   
         bar_position    = bar_positions[i]  
         
+#        print "Generating bar at ({0},{1})".format(bar_position[0], bar_position[1])
         bar_movie = RuntimeBarGenerator(framerate=framerate, movie_size=(movie_width, movie_height),
                                         bar_orientation=bar_heading, 
                                         bar_size=(bar_width, bar_height), bar_speed=bar_speed, 
@@ -64,9 +65,11 @@ def createManyBars(bars, framerate, movie_width, movie_height,
                                         bar_position=bar_position, bar_color=bar_color,
                                         background_color=background_color,
                                         minimize=False)
-        
+#        bar_movie.playFrameByFrame()
         stimulus = Stimulus(position_on_retina=position_on_retina,
                             pixel_size_in_rgu=pixel_size_in_rgu, movie=bar_movie)
+                            
+        
         stimuli.append(stimulus)
         
     return stimuli, bar_headings

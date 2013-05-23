@@ -161,16 +161,16 @@ average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
 decay_rate          = 0.2
 input_strength      = 0.5
-diffusion           = ("Flat", [10 * UM_TO_M / retina_grid_size])
+diffusion           = ("Flat", [70 * UM_TO_M / retina_grid_size])
 
 # Bar paramters
 bars                    = 12
-framerate               = 60.0           
+framerate               = 100.0           
 movie_width             = 400        
 movie_height            = 400               
 bar_width               = 50.0
-bar_height              = 600
-bar_speed               = 1000.0    
+bar_height              = 400
+bar_speed               = 2000.0    
 bar_movement_distance   = 600.0         
 pixel_size_in_rgu       = 1.0
 'print_stop'    
@@ -185,7 +185,7 @@ retina_parameters = [retina_width, retina_height, retina_grid_size, retina_times
 cone_parameters = [cone_distance, cone_density, cone_input_size]
 horizontal_parameters = [horizontal_input_strength, hoirzontal_decay_rate, horizontal_diffusion_radius]
 bipolar_parameters = [bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius]
-starburst_parameters = [starburst_distance, starburst_density, average_wirelength, step_size, decay_rate, input_strength, diffusion]
+starburst_parameters = [starburst_distance, starburst_density, average_wirelength, step_size, input_strength, decay_rate, diffusion]
 retina_parameters = retina_parameters + cone_parameters + horizontal_parameters + bipolar_parameters + starburst_parameters
 
 run(retina_parameters, stimulus_parameters)

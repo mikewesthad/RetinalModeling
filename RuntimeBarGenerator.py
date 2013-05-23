@@ -158,26 +158,36 @@ class RuntimeBarGenerator:
             elapsed = clock.tick(self.framerate) / 1000.0 * speed
             
     
+    def playFrameByFrame(self, speed=1.0):
+        
+        is_running = True
+        while is_running:
+            is_running = self.update(.01)
+            
+    
     """
     Given a specified change in world time, move the bar forward to the
     appropriate position.  If the bar has moved it's maximum distance, return
     false; otherwise, return true.
     """   
     def update(self, timestep):
-
         self.time += timestep
+#        print self.time,'\t', timestep
 
         # Find the elapsed frame time since last update and set the new frame number
+            # Must ask it to round in order to avoid floating point inaccuracies 
         elapsed_time        = 0.0
-        frame_from_time     = int(self.time * self.framerate)
+        frame_from_time     = int(round(self.time,10) * self.framerate)
         if frame_from_time != self.frame:
             frame_difference    = frame_from_time - self.frame
             elapsed_time        = frame_difference * self.frame_duration
             self.frame          = frame_from_time
+#        print "\t",self.frame,'\t', elapsed_time
 
         # Move the bar
         dx = self.heading_x * (elapsed_time * self.bar_speed)
         dy = self.heading_y * (elapsed_time * self.bar_speed)
+#        print "\t",dx,'\t', dy
         self.moveBar(dx, dy)
 
         # Check bar movement distance

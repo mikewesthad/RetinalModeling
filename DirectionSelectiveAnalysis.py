@@ -180,15 +180,70 @@ def analyzeStarburst(retina, retina_name, headings, stimulus_name):
         # Find the start and end of the line
         start_point = average_compartment_position.toTuple()
         end_point = (average_compartment_position + direction_vector).toTuple()
-        pygame.draw.line(display, (255,0,0), start_point, end_point, 5)
+        pygame.draw.line(display, (255,0,0), start_point, end_point, 3)
+        pygame.draw.circle(display, (255,0,0), average_compartment_position.toIntTuple(), 4)
         
     pygame.display.update()
     
-    while True:
+    running=True
+    while running:
         for event in pygame.event.get():
             if event.type == QUIT:
-                 break
+                 running = False
         pygame.display.update()
+        
+    pygame.init()    
+    
+    
+    
+    
+    # Figure out scaling
+    max_size = Vector2D(1000.0, 1000.0)       
+    width_scale = max_size.x / float(retina.grid_width)
+    height_scale = max_size.y / float(retina.grid_height)
+    scale = min(width_scale, height_scale)   
+    starburst.morphology.location = max_size/scale/2.0
+    
+    # Create a minimized display
+    display = pygame.display.set_mode(max_size.toIntTuple())
+    for compartment in starburst.compartments:
+        # Draw the compartment
+        compartment.draw(display, color=(255,255,255), scale=scale)
+        
+        # Draw the vector average of the responses in each direction
+        index = compartment.index
+        vector_average = Vector2D()
+        for heading, heading_index in zip(headings, range(len(headings))):
+            vector_average = vector_average + Vector2D.generateHeadingFromAngle(float(heading)) * np.max(all_activities[heading_index,:,index])
+        vector_average = vector_average / float(len(headings))
+            
+        vector_average = vector_average * 1000.0
+        
+        # Find the centroid of the compartment
+        average_compartment_position = Vector2D()
+        num_positions = len(compartment.gridded_locations)
+        for pos in compartment.gridded_locations: 
+            average_compartment_position = average_compartment_position + (pos * scale)
+        average_compartment_position = max_size/2.0 + (average_compartment_position / num_positions) 
+        
+        # Find the start and end of the line
+        start_point = average_compartment_position.toTuple()
+        end_point = (average_compartment_position + vector_average).toTuple()
+        pygame.draw.line(display, (255,0,0), start_point, end_point, 3)
+        pygame.draw.circle(display, (255,0,0), average_compartment_position.toIntTuple(), 4)
+        
+    pygame.display.update()
+    
+    running=True
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                 running = False
+        pygame.display.update()     
+        
+        
+        
+        
     proximal, intermediate, distal = selectStarburstCompartmentsAlongDendrite(retina, 0)
     
 #    compartment = compartment_lengths.index(max(compartment_lengths))
