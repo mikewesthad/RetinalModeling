@@ -1,6 +1,6 @@
 from Constants import *
 
-retina_name = "Flash_Center_No_Decay"
+retina_name = "Test"
 stimulus_name = "0"
 retina = Retina.loadRetina(retina_name)
 retina.loadActivities(retina_name, stimulus_name)
