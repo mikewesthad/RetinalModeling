@@ -24,12 +24,14 @@ Methods:
     update(deltaTime) - this will update the frame if necessary
 
 """
-class RuntimeFlashGenerator:
+class RuntimeApparentMotionGenerator:
 
     def __init__(self, framerate=30.0, movie_size=(800,800), 
                  flash_shape="Rectangle", flash_size=(20.0,60.0),
                  background_color=(255,255,255), flash_color=(0,0,0),
-                 flash_position=(100,100), flash_duration=5000*MS_TO_S,
+                 flash_1_position=(100,100), flash_2_position=(300,100),
+                 flash_1_duration=5000*MS_TO_S, flash_2_duration=3000*MS_TO_S,
+                 delay_between_flashes=1000*MS_TO_S,
                  delay_before_flash=1000*MS_TO_S, delay_after_flash=2000*MS_TO_S,
                  minimize=True):       
 
@@ -40,12 +42,15 @@ class RuntimeFlashGenerator:
         self.movie_height       = movie_size[1]
         self.flash_color        = flash_color    
         self.background_color   = background_color
-        self.flash_position     = flash_position
+        self.flash_1_position   = flash_1_position
+        self.flash_2_position   = flash_2_position
         self.flash_size         = flash_size
         self.flash_shape        = flash_shape.lower()
-        self.flash_duration     = flash_duration
+        self.flash_1_duration   = flash_1_duration
+        self.flash_2_duration   = flash_2_duration
         self.delay_before_flash = delay_before_flash
-        self.delay_after_flash  = delay_after_flash
+        self.delay_after_flash  = delay_after_flash        
+        self.delay_between_flashes = delay_between_flashes
         
         # Initialize the pygame module
         pygame.init()
@@ -64,12 +69,17 @@ class RuntimeFlashGenerator:
     def drawBackground(self):
         self.display.fill(self.background_color)
         
-    def drawFlash(self):
+    def drawFlash(self, flash_number):
+        if flash_number == 1:
+            flash_position = self.flash_1_position
+        else:
+            flash_position = self.flash_2_position
+        
         if self.flash_shape == "rectangle":
-            rect = self.flash_position + self.flash_size
+            rect = flash_position + self.flash_size
             pygame.draw.rect(self.display, self.flash_color, rect)
         elif self.flash_shape == "circle":
-            pos     = self.flash_position
+            pos     = flash_position
             radius  = int(self.flash_size)
             pygame.draw.circle(self.display, self.flash_color, pos, radius)
         else:
@@ -101,11 +111,18 @@ class RuntimeFlashGenerator:
         self.time += timestep
         
         self.drawBackground()
-        if self.time >= self.delay_before_flash:
-            if self.time <= (self.delay_before_flash + self.flash_duration):
-                self.drawFlash()
-            elif self.time > (self.delay_before_flash + self.flash_duration + self.delay_after_flash):
-                is_running = False
+        flash_1_start_time = self.delay_before_flash
+        flash_1_end_time = flash_1_start_time + self.flash_1_duration
+        flash_2_start_time = flash_1_end_time + self.delay_between_flashes
+        flash_2_end_time = flash_2_start_time + self.flash_2_duration
+        stimulus_end_time = flash_2_end_time + self.delay_after_flash
+        
+        if (self.time >= flash_1_start_time) and (self.time <= flash_1_end_time):
+            self.drawFlash(1)            
+        elif (self.time >= flash_2_start_time) and (self.time <= flash_2_end_time):
+            self.drawFlash(2)            
+        elif self.time > stimulus_end_time:
+            is_running = False
         
         pygame.display.update()
         self.updateScreenArray()
@@ -123,19 +140,12 @@ class RuntimeFlashGenerator:
         string += "\nFlash Size\t\t\t\t"+str(self.flash_size)
         string += "\nFlash Color\t\t\t\t"+str(self.flash_color)
         string += "\nBackground Color\t\t\t"+str(self.background_color)        
-        string += "\nFlash Position\t\t\t"+str(self.flash_position)       
-        string += "\nFlash Duration\t\t\t\t"+str(self.flash_duration)    
+        string += "\nFlash 1 Position\t\t\t"+str(self.flash_1_position)        
+        string += "\nFlash 2 Position\t\t\t"+str(self.flash_2_position)        
+        string += "\nFlash 1 Duration\t\t\t\t"+str(self.flash_1_duration)       
+        string += "\nFlash 2 Duration\t\t\t\t"+str(self.flash_2_duration)   
         string += "\nDelay Before Flash\t\t\t\t"+str(self.delay_before_flash)
         string += "\nDelay After Flash\t\t\t\t"+str(self.delay_after_flash)
+        string += "\nDelay Between Flash\t\t\t\t"+str(self.delay_between_flashes)
         return string
 
-
-
-
-
-
-"""
-Linear distance between two points
-"""
-def linearDistance(x1, y1, x2, y2):
-    return ((x2-x1)**2.0 + (y2-y1)**2.0)**0.5

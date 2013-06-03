@@ -46,50 +46,6 @@ def generateCombinations(parameters, current_parameter_index,
     return combinations
 
 
-def generatePDF(retina_name):
-    cone_path       = os.path.join("Saved Retinas", retina_name, "Cone.jpg")
-    bipolar_path    = os.path.join("Saved Retinas", retina_name, "Horizontal.jpg")
-    horizontal_path = os.path.join("Saved Retinas", retina_name, "Bipolar.jpg")
-    starburst_path  = os.path.join("Saved Retinas", retina_name, "Starburst.jpg")
-    output_path = os.path.join("Saved Retinas", retina_name, "Parameters.pdf")     
-    
-    lines = open("BatchPRocessingStarburstLayerV2.py").readlines()
-    
-    # A4 is 210mm by 297mm
-    w, h = 210, 297
-    
-    pdf = FPDF(orientation = 'P', unit = 'mm', format = 'A4')
-    pdf.add_page()
-    
-    # Image is draw as a square
-    image_size  = w/3.0
-    offset      = (w/2.0 - image_size) / 2.0
-    pdf.image(cone_path, offset, 0, w=image_size, h=image_size)
-    pdf.image(bipolar_path, w/2.0+offset, 0, w=image_size, h=image_size)
-    pdf.image(horizontal_path, offset,  image_size, w=image_size, h=image_size)
-    pdf.image(starburst_path, w/2.0+offset, image_size, w=image_size, h=image_size)
-    
-    # Default margin is 10cm
-    pdf.set_xy(10, 2*image_size)
-    pdf.set_font('Arial', size=10)
-    start_printing = False 
-    left_column = True
-    for line in lines:
-        line = line.rstrip()
-        if not(left_column):
-            pdf.set_x(w/2.0)
-        if line == "'print_stop'":
-            start_printing = False        
-        if start_printing:
-            pdf.cell(0, 5, line, 0, 1)
-        if line == "'print_start'":
-            start_printing = True
-        if pdf.get_y() > h - 30:
-            left_column = False
-            pdf.set_xy(w/2.0, 2*image_size)
-    pdf.output(output_path, 'F')
-    return output_path
-
 def run(retina_parameters, stimulus_parameters):
 
     retina_combinations = generateCombinations(retina_parameters, 0, [], [])
@@ -161,17 +117,19 @@ average_wirelength  = 150 * UM_TO_M
 step_size           = 15 * UM_TO_M
 decay_rate          = 0.2
 input_strength      = 0.5
-diffusion           = ("Flat", [70 * UM_TO_M / retina_grid_size])
+diffusion           = [("Flat", [20 * UM_TO_M / retina_grid_size]),
+                       ("Flat", [40 * UM_TO_M / retina_grid_size]),
+                       ("Flat", [60 * UM_TO_M / retina_grid_size])]
 
 # Bar paramters
 bars                    = 12
 framerate               = 100.0           
 movie_width             = 400        
 movie_height            = 400               
-bar_width               = 50.0
+bar_width               = [50.0, 100.0, 200.0]
 bar_height              = 400
-bar_speed               = 2000.0    
-bar_movement_distance   = 600.0         
+bar_speed               = [1000.0, 2000.0]    
+bar_movement_distance   = 1000.0         
 pixel_size_in_rgu       = 1.0
 'print_stop'    
 

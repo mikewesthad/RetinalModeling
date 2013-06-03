@@ -6,7 +6,7 @@ from Constants import *
 
 class StarburstMorphology(object):
     
-    def __init__(self, retina, history_size=4, location=Vector2D(0.0, 0.0), average_wirelength=50, 
+    def __init__(self, retina, history_size=4, location=Vector2D(0.0, 0.0), average_wirelength=150, 
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=15, max_segment_length=35*UM_TO_M, children_deviation=20, 
                  dendrite_vision_radius=30*UM_TO_M, diffusion_method="linear", diffusion_parameters=[150.0*UM_TO_M, 1.0*UM_TO_M],
