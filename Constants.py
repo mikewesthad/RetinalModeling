@@ -57,7 +57,7 @@ from Stimulus import Stimulus
 from RuntimeBarGenerator import RuntimeBarGenerator
 from RuntimeFlashGenerator import RuntimeFlashGenerator
 from RuntimeApparentMotionGenerator import RuntimeApparentMotionGenerator
-
+from RuntimeAnnulusGenerator import RuntimeAnnulusGenerator
 
 from Vector2D import Vector2D
 

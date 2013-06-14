@@ -2,7 +2,8 @@ from Constants import *
 
 class Starburst(object):
     
-    def __init__(self, layer, morphology, location, starburst_type="On", input_delay=1, layer_depth=0):
+    def __init__(self, layer, morphology, location, starburst_type="On", 
+                 input_delay=1, layer_depth=0, conductance_factor=0.5):
     
         # General neuron variables
         self.layer              = layer
@@ -13,10 +14,10 @@ class Starburst(object):
         self.retina             = layer.retina
         self.history_size       = layer.history_size
         self.starburst_type     = starburst_type
+        self.conductance_factor = conductance_factor
         
         self.compartments           = self.morphology.compartments
         self.number_compartments    = len(self.compartments)
-        self.input_strength         = layer.input_strength
         self.decay_rate             = layer.decay_rate
         self.diffusion_weights      = self.morphology.diffusion_weights
         
@@ -150,9 +151,8 @@ class Starburst(object):
         
         # Calcualte the new activity
         d = self.decay_rate
-        i = self.input_strength
         equilibrium = 1.0
-        conductance = input_activity/2.0
+        conductance = input_activity * self.conductance_factor
 #        new_activity = i * input_activity + (1.0-i) * (1.0-d) * diffusion_activity
         new_activity = equilibrium * conductance + (1.0-np.abs(conductance)) * (1.0-d) * diffusion_activity
         

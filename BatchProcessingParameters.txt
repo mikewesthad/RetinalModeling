@@ -1,0 +1,60 @@
+# Parameter Settings for Batch Processing
+#   The "#" character indicates that a line should be ignored 
+#   If the setting is a tuple or a numeric value, it is considered a single value
+#   If the setting is a list, it is considered a collection of single values
+#   If the setting is either a list or a tuple, the elements must be denoted as strings with single quotations
+#   If the setting is a tuple and there is a nested list within it, it must be a string with single quotations
+
+# General retina
+retina_width        = 400 um
+retina_height       = 400 um
+retina_grid_size    = 1 um
+retina_timestep     = 10 ms
+   
+# Cone Layer
+cone_distance   = 10 um
+cone_density    = 10000.0
+cone_input_size = 10 um
+
+# Horizontal Layer
+horizontal_input_strength   = 0.25
+hoirzontal_decay_rate       = 0.01
+horizontal_diffusion_radius = 1 um
+
+# Bipolar layer
+bipolar_distance        = 10 um
+bipolar_density         = 10000.0
+bipolar_input_radius    = 10 um
+bipolar_output_radius   = 10 um
+
+# Starburst layer
+starburst_distance      = 50 um
+starburst_density       = 1000.0
+starburst_wirelength    = 150 um
+starburt_step_size      = 15 um
+starburt_decay_rate     = 0.2
+starburt_diffusion      = ('Flat', "['70 um']")
+heading_deviation       = 10
+children_deviation      = 20
+max_segment_length      = 35 um
+conductance_factor      = 0.5
+
+# Bar parameters
+bars                    = 12
+framerate               = 100
+movie_width             = 400
+movie_height            = 400
+bar_width               = 40
+bar_height              = 400
+bar_speed               = ['500','1000','2000','3000','10000']
+bar_movement_distance   = 600
+pixel_size_in_rgu       = 1.0
+
+# Annulus paramters
+#pixel_size_in_rgu       = 1.0
+#framerate               = 100
+#duration                = 1000 ms
+#stimulus_frequency      = 2
+#max_radius              = 200
+#radius_filter_factor    = 0.5
+#width_filter_factor     = 1.0

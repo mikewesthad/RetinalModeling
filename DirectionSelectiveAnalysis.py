@@ -472,8 +472,8 @@ def selectStarburstCompartmentsAlongDendrite(retina, angle):
 from Constants import *
 #retina_name = "12 Direction - 100 FPS Remove Stutter From Floating Point Inaccuracies Increased Diffusion Radius (Best DS 5-22-13)"
 #retina_name = "12 Direction - 100 FPS Remove Stutter From Floating Point Inaccuracies Increased Diffusion Radius (Longer stimulus time)"
-retina_name = "2"
+retina_name = "0"
 retina = Retina.loadRetina(retina_name)
 
-for stim_name in ["0","12","24","36","48","60"]:
-    analyzeStarburst(retina, retina_name, np.arange(0.0, 360.0, 360.0/12.0) , stim_name)
+for stim_name in ["0"]:
+    analyzeStarburst(retina, retina_name, np.arange(0.0, 360.0, 360.0/8.0) , stim_name)

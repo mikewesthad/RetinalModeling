@@ -49,6 +49,7 @@ class Stimulus:
     """
     def update(self, timestep):
         return self.movie.update(timestep)
+        
     
     """
     Get the intensity of a pixel with name pixel_ID from the bar_movie

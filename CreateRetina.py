@@ -52,9 +52,9 @@ def createStarburstRetina(width, height, grid_size, timestep,
                           horizontal_input_strength, horizontal_decay, horizontal_diffusion_radius,
                           bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius,
                           starburst_distance, starburst_density, starburst_wirelength,
-                          starburst_step_size, starburst_input_strength, 
-                          starburst_decay_rate, starburst_diffusion,
-                          retina_name):
+                          starburst_step_size, starburst_decay_rate, starburst_diffusion, 
+                          heading_deviation, children_deviation, max_segment_length,
+                          conductance_factor, retina_name):
     
     start = clock()                            
     
@@ -68,13 +68,11 @@ def createStarburstRetina(width, height, grid_size, timestep,
     retina.buildBipolarLayer(bipolar_distance, bipolar_density, bipolar_input_radius,
                              bipolar_output_radius, build_on_and_off=False, verbose=False)
     retina.buildStarburstLayer(starburst_distance, starburst_density,
-                               starburst_wirelength, starburst_step_size,
-                               starburst_input_strength, starburst_decay_rate, 
-                               diffusion_method, diffusion_parameters, build_on_and_off=False, 
+                               starburst_wirelength, starburst_step_size, starburst_decay_rate, 
+                               diffusion_method, diffusion_parameters, heading_deviation, 
+                               children_deviation, max_segment_length, 
+                               conductance_factor, build_on_and_off=False, 
                                verbose=False) 
-    
-    # Save the morphology
-    retina.saveRetina(retina_name)        
     
     elapsed = clock() - start
     print "Retina '{0}' generated in {1} seconds".format(retina_name, elapsed)

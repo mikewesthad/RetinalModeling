@@ -8,9 +8,10 @@ class StarburstLayer:
     
     def __init__(self, retina, starburst_type, layer_depth, history_size,
                  input_delay, nearest_neighbor_distance, minimum_required_density,
-                 average_wirelength, step_size, diffusion_method, diffusion_parameters, decay_rate, 
-                 input_strength, number_morphologies=1, visualize_growth=False, display=None):
-                     
+                 average_wirelength, step_size, diffusion_method, diffusion_parameters, 
+                 decay_rate, heading_deviation=10, max_segment_length=35*UM_TO_M,
+                 children_deviation=20, conductance_factor=0.5, number_morphologies=1, 
+                 visualize_growth=False, display=None):
         self.retina                 = retina
         self.starburst_type         = starburst_type
         self.layer_depth            = layer_depth
@@ -19,8 +20,8 @@ class StarburstLayer:
         self.diffusion_method       = diffusion_method
         self.diffusion_parameters   = diffusion_parameters
         self.decay_rate             = decay_rate
-        self.input_strength         = input_strength
-    
+        self.conductance_factor     = conductance_factor
+        
         # Generate unique morphologies
         self.morphologies = []
         for i in range(number_morphologies):
@@ -29,6 +30,9 @@ class StarburstLayer:
                                              diffusion_parameters=diffusion_parameters,
                                              average_wirelength=average_wirelength,
                                              step_size=step_size,
+                                             heading_deviation=heading_deviation, 
+                                             max_segment_length=max_segment_length,
+                                             children_deviation=children_deviation,
                                              visualize_growth=visualize_growth,
                                              display=display)
             self.morphologies.append(morphology)    
@@ -47,7 +51,8 @@ class StarburstLayer:
         for i in range(self.number_neurons):
             location    = self.locations[i]
             morphology  = choice(self.morphologies)
-            starburst   = Starburst(self, morphology, location, starburst_type, input_delay, layer_depth)
+            starburst   = Starburst(self, morphology, location, starburst_type, input_delay, layer_depth,
+                                    conductance_factor=self.conductance_factor)
             self.neurons.append(starburst)
     
         self.inputs = {}
@@ -65,11 +70,6 @@ class StarburstLayer:
         self.diffusion_parameters   = diffusion_parameters
         for neuron in self.neurons:
             neuron.diffusion_weights = neuron.morphology.diffusion_weights
-    
-    def changeInputStrength(self, new_input_strength):
-        for neuron in self.neurons:
-            neuron.input_strength = new_input_strength
-        self.input_strength = new_input_strength
             
     def changeDecayRate(self, new_decay_rate):
         for neuron in self.neurons:
@@ -195,5 +195,4 @@ class StarburstLayer:
         string += "\nDiffusion Method\t\t\t{0}".format(self.diffusion_method)
         string += "\nDiffusion Parameters\t\t\t{0}".format(self.diffusion_parameters)
         string += "\nDecay Rate\t\t\t\t{0}".format(self.decay_rate)
-        string += "\nInput Strength\t\t\t\t{0}".format(self.input_strength)
         return string

@@ -137,18 +137,12 @@ class Retina:
     """
     This function saves the current retina object using the Pickle module
     """ 
-    def saveRetina(self, name):        
+    def saveRetina(self, directory_name, retina_name="retina"):        
         if not(os.path.exists("Saved Retinas")):
             os.mkdir("Saved Retinas")
         
-        # Create a new directory with run_name
-        directory_name = os.path.join("Saved Retinas", name)
-        
-        # Add underscores to the name until it is unique
-        while os.path.exists(directory_name):
-            directory_name += "_"    
-            
-        # Make the directory
+        # Create a new directory
+        directory_name = os.path.join("Saved Retinas", directory_name)
         os.mkdir(directory_name)
         
         # Get the path information
@@ -156,7 +150,7 @@ class Retina:
         save_path       = os.path.join(current_path, directory_name)
         
         # Create the save file where the retina object will be stored
-        save_file   = os.path.join(save_path, "retina.p")
+        save_file   = os.path.join(save_path, retina_name+".p")
         fh          = open(save_file, "wb") 
         
         # Unload pygame surface which cannot be handled by pickle
@@ -165,15 +159,15 @@ class Retina:
         # Pickle the retina!
         pickle.dump(self, fh)
         
-        parameterPath = os.path.join(save_path, "parameters.txt")
+        parameterPath = os.path.join(save_path, retina_name+" Parameters.txt")
         parameterFile = open(parameterPath, "w")
         parameterFile.write(str(self))
         parameterFile.close()
     
     
     @classmethod
-    def loadRetina(classReference, directory_name):
-        filename    = os.path.join("Saved Retinas", directory_name, "retina.p")
+    def loadRetina(classReference, directory_name, retina_name="retina"):
+        filename    = os.path.join("Saved Retinas", directory_name, retina_name+".p")
         retina_file = open(filename, "rb")
         retina      = pickle.load(retina_file)
         retina_file.close()
@@ -286,7 +280,9 @@ class Retina:
     
     def buildStarburstLayer(self, minimum_distance, minimum_density, 
                             average_wirelength, step_size, 
-                            input_strength, decay_rate, diffusion_method, diffusion_parameters,
+                            decay_rate, diffusion_method, diffusion_parameters,
+                            heading_deviation=10, children_deviation=20,
+                            max_segment_length=35*UM_TO_M, conductance_factor=0.5, 
                             build_on_and_off=True, verbose=True):
         input_delay = 1
         layer_depth = 0
@@ -300,7 +296,10 @@ class Retina:
                                                  minimum_distance, minimum_density,
                                                  average_wirelength, step_size,
                                                  diffusion_method, diffusion_parameters,
-                                                 decay_rate, input_strength)   
+                                                 decay_rate, heading_deviation=heading_deviation,
+                                                 max_segment_length=max_segment_length,
+                                                 children_deviation=children_deviation,
+                                                 conductance_factor=conductance_factor)   
         self.layers[4] = self.on_starburst_layer
 
         if build_on_and_off:                                                 
@@ -309,7 +308,10 @@ class Retina:
                                                      minimum_distance, minimum_density,
                                                      average_wirelength, step_size,
                                                      diffusion_method, diffusion_parameters,
-                                                     decay_rate, input_strength)
+                                                     decay_rate, heading_deviation=heading_deviation,
+                                                     max_segment_length=max_segment_length,
+                                                     children_deviation=children_deviation,
+                                                     conductance_factor=conductance_factor)
             self.layers[5] = self.off_starburst_layer
            
         if verbose: print "On and Off Starburst Layers Construction Time", clock() - start_time

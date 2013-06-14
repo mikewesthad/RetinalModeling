@@ -1,6 +1,17 @@
 from Constants import *
 import math
 
+def createAnnulus(direction, pixel_size_in_rgu, framerate, duration, stimulus_frequency,
+                 max_radius, radius_filter_factor, width_filter_factor):
+    annulus = RuntimeAnnulusGenerator(framerate=framerate, duration=duration, 
+                                      direction=direction,
+                                      stimulus_frequency=stimulus_frequency,
+                                      max_radius=max_radius,
+                                      radius_filter_factor=radius_filter_factor,
+                                      width_filter_factor=width_filter_factor) 
+    annulus_stimulus = Stimulus(position_on_retina=(0,0), pixel_size_in_rgu=pixel_size_in_rgu, movie=annulus)
+    return annulus_stimulus
+
 def createBarStimulus(framerate, movie_width, movie_height, bar_orientation,
                        bar_width, bar_height, bar_speed, bar_movement_distance, 
                        pixel_size_in_rgu):
@@ -53,12 +64,13 @@ def createManyBars(bars, framerate, movie_width, movie_height,
     position_on_retina      = (0.0, 0.0)                # rgu
     
     stimuli = []
-    for i in range(bars):
+    for i in range(int(bars)):
         bar_heading     = bar_headings[i]   
         bar_position    = bar_positions[i]  
         
 #        print "Generating bar at ({0},{1})".format(bar_position[0], bar_position[1])
-        bar_movie = RuntimeBarGenerator(framerate=framerate, movie_size=(movie_width, movie_height),
+        bar_movie = RuntimeBarGenerator(framerate=framerate, 
+                                        movie_size=(int(movie_width), int(movie_height)),
                                         bar_orientation=bar_heading, 
                                         bar_size=(bar_width, bar_height), bar_speed=bar_speed, 
                                         bar_movement_distance=bar_movement_distance,
