@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib 
 from matplotlib.projections.polar import PolarAxes
 from matplotlib.projections import register_projection
+import math
 
 
 def radar_factory(num_vars):    
@@ -77,18 +78,20 @@ def radar_plot(headings, compartment_data):
 #                ha='center', color='black', weight='bold', size='large')
     return fig
 
-def analyzeStarburst(retina, retina_name, headings, stimulus_name):
+def analyzeStarburst(retina, trial_name, retina_name, headings, stimulus_name):
     
     # Create a save folder for this retina and stimulus    
-    save_path = os.path.join("Directionally Selective Analysis", retina_name+"_"+stimulus_name)
+    save_trial_path = os.path.join("Directionally Selective Analysis", trial_name)
+    if not(os.path.exists(save_trial_path)): os.mkdir(save_trial_path)
+    save_path = os.path.join("Directionally Selective Analysis", trial_name, retina_name+"_"+stimulus_name)
     if not(os.path.exists(save_path)): os.mkdir(save_path)
     
     stored_activities = []
     max_timesteps = 0        
     for heading in headings:          
         # Load the retina with activities from one of the headings
-        trial_name = stimulus_name +"_"+ str(int(heading))
-        retina.loadActivities(retina_name, trial_name)
+        stim_name = stimulus_name +"_"+ str(int(heading))
+        retina.loadActivities(os.path.join(trial_name, retina_name), stim_name)
         
         # Pull the starburst activity for this particular trial and store it
         activities = retina.on_starburst_activities
@@ -192,12 +195,16 @@ def analyzeStarburst(retina, retina_name, headings, stimulus_name):
         preferred_response = np.max(all_activities[preferred_heading_index, :, compartment_index])
         null_response = np.max(all_activities[null_heading_index, :, compartment_index])
         DSI = (preferred_response - null_response) / (preferred_response + null_response)
+        if math.isnan(DSI):
+            DSI = 0.0
+            print preferred_response, null_response
         DSIs.append(DSI)
         
         
         
     # Create a (scaled) pygame display
     pygame.init()    
+    pygame.display.iconify()
     max_size = Vector2D(1000.0, 1000.0)       
     width_scale = max_size.x / float(retina.grid_width)
     height_scale = max_size.y / float(retina.grid_height)
@@ -230,6 +237,7 @@ def analyzeStarburst(retina, retina_name, headings, stimulus_name):
             # Find the start and end of the line
             start_point = centroid.toTuple()
             end_point = (centroid + direction_vector).toTuple()
+#            print preferred_heading, magnitude, end_point, DSIs[index], max(DSIs)
             pygame.draw.line(display, line_color, start_point, end_point, 4)
             pygame.draw.circle(display, circle_color, centroid.toIntTuple(), 5)
     
@@ -266,19 +274,20 @@ def analyzeStarburst(retina, retina_name, headings, stimulus_name):
             
             # Draw a vector in the direction of the preferred heading with magnitude 
             # set by DSI
-            vector_average = vector_averages[index].copy().normalize()
-            magnitude = vector_average_magnitudes[index]/max(vector_average_magnitudes)
-            vector_average = vector_average * magnitude * 50.0
-            
-            # Find the centroid of the compartment
-            centroid = centroids[index]   
-            centroid = scale * (centroid + starburst.morphology.location)
-            
-            # Find the start and end of the line
-            start_point = centroid.toTuple()
-            end_point = (centroid + vector_average).toTuple()
-            pygame.draw.line(display, line_color, start_point, end_point, 4)
-            pygame.draw.circle(display, circle_color, centroid.toIntTuple(), 5)
+            if vector_averages[index].length() != 0:
+                vector_average = vector_averages[index].copy().normalize()
+                magnitude = vector_average_magnitudes[index]/max(vector_average_magnitudes)
+                vector_average = vector_average * magnitude * 50.0
+                
+                # Find the centroid of the compartment
+                centroid = centroids[index]   
+                centroid = scale * (centroid + starburst.morphology.location)
+                
+                # Find the start and end of the line
+                start_point = centroid.toTuple()
+                end_point = (centroid + vector_average).toTuple()
+                pygame.draw.line(display, line_color, start_point, end_point, 4)
+                pygame.draw.circle(display, circle_color, centroid.toIntTuple(), 5)
         
 #    running=True
 #    draw_morphology = True
@@ -472,8 +481,14 @@ def selectStarburstCompartmentsAlongDendrite(retina, angle):
 from Constants import *
 #retina_name = "12 Direction - 100 FPS Remove Stutter From Floating Point Inaccuracies Increased Diffusion Radius (Best DS 5-22-13)"
 #retina_name = "12 Direction - 100 FPS Remove Stutter From Floating Point Inaccuracies Increased Diffusion Radius (Longer stimulus time)"
+trial_name = "Test"
 retina_name = "0"
-retina = Retina.loadRetina(retina_name)
+num_retinas = 12
+num_stimuli = 1
 
-for stim_name in ["0"]:
-    analyzeStarburst(retina, retina_name, np.arange(0.0, 360.0, 360.0/8.0) , stim_name)
+for retina_name in range(num_retinas):
+    retina_name = str(retina_name)
+    retina = Retina.loadRetina(os.path.join(trial_name, retina_name))
+    for stim_name in range(num_stimuli):
+        stim_name = str(stim_name)
+        analyzeStarburst(retina, trial_name, retina_name, np.arange(0.0, 360.0, 360.0/12.0) , stim_name)

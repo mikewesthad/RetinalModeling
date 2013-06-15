@@ -158,7 +158,7 @@ def stripUnits(string):
 
 
 # User controlled variables
-trial_name = "Bar_Speed_Batch_2_12_Directions"
+trial_name = "Bar_Diffusion_Batch_8_12_Directions"
 parameter_filename = "BatchProcessingParameters.txt"
 
 # Create a directory to store this trial run

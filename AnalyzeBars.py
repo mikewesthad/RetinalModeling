@@ -217,7 +217,7 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
                     ax.plot(x_axis, y_axis, c=c, ls=ls, label=label)
                     max_activity = np.max(y_axis)
                     time_of_max = np.argmax(y_axis)
-                    ax.axhline(max_activity, xmin=0, xmax=time_of_max/float(max_timesteps), ls=ls, c=c)
+                    ax.axhline(max_activity, xmin=0, xmax=(time_of_max-1.0)/float(max_timesteps), ls=ls, c=c)
                 ax.set_title(compartment_name)
                 ax.set_ylabel("Activity")
                 ax.set_xlabel("Timesteps")
@@ -306,9 +306,9 @@ def selectStarburstCompartmentsAlongDendrite(retina, angle):
         
     
 from Constants import *
-trial_name = "Bar_Speed_Batch_2_12_Directions"
+trial_name = "12 Direction - 100 FPS Remove Stutter From Floating Point Inaccuracies Increased Diffusion Radius (Longer stimulus time)"
 number_bars = 12
-number_stimulus_variations = 4
+number_stimulus_variations = 1
 
 trial_path = os.path.join(os.getcwd(), "Saved Retinas", trial_name)
 entries = os.listdir(trial_path)
