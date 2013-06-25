@@ -55,6 +55,16 @@ def createStarburstRetina(width, height, grid_size, timestep,
                           starburst_step_size, starburst_decay_rate, starburst_diffusion, 
                           heading_deviation, children_deviation, max_segment_length,
                           conductance_factor, retina_name):
+    a = [width, height, grid_size, timestep,
+          cone_distance, cone_density, cone_input_size,
+          horizontal_input_strength, horizontal_decay, horizontal_diffusion_radius,
+          bipolar_distance, bipolar_density, bipolar_input_radius, bipolar_output_radius,
+          starburst_distance, starburst_density, starburst_wirelength,
+          starburst_step_size, starburst_decay_rate, starburst_diffusion, 
+          heading_deviation, children_deviation, max_segment_length,
+          conductance_factor, retina_name]
+    for i in a: print i                       
+    
     
     start = clock()                            
     

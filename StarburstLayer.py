@@ -76,6 +76,11 @@ class StarburstLayer:
             neuron.decay_rate = new_decay_rate
         self.decay_rate = new_decay_rate
         
+    def changeConductance(self, new_conductance):
+        for neuron in self.neurons:
+            neuron.conductance_factor = new_conductance
+        self.conductance_factor = new_conductance
+        
     
     def loadPast(self, activity):
         for neuron_index in range(self.number_neurons):

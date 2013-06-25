@@ -54,6 +54,31 @@ class BipolarLayer:
         self.compartmentalize()
         self.establishInputs()
     
+    def getReceptiveField(self, desired_location):
+        acceptable_distance = 10.0
+        step_size = 10.0
+        neuron_found = False
+        while not(neuron_found):
+            for neuron in self.neurons:
+                loc = neuron.location
+                if loc.distanceTo(desired_location) < acceptable_distance:
+                    neuron_found = True
+                    break
+            acceptable_distance += step_size
+        
+        cone_receptive_field    = np.zeros((self.retina.grid_width, self.retina.grid_height))
+        pixel_receptive_field   = np.zeros((self.retina.grid_width, self.retina.grid_height))
+        for triad_info in neuron.inputs:
+            triad_ID, triad_weight = triad_info
+            t_x, t_y = [int(i) for i in triad_ID.split(".")]
+            cone_receptive_field[t_x, t_y] += triad_weight
+            
+            rf = self.cone_layer.getReceptiveField(None, exact_location=(t_x, t_y))
+            pixel_receptive_field += rf
+            
+        return cone_receptive_field, pixel_receptive_field   
+    
+    
     def clearActivities(self):
         for neuron in self.neurons:
             neuron.clearActivities()

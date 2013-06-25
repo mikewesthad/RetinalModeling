@@ -481,10 +481,9 @@ def selectStarburstCompartmentsAlongDendrite(retina, angle):
 from Constants import *
 #retina_name = "12 Direction - 100 FPS Remove Stutter From Floating Point Inaccuracies Increased Diffusion Radius (Best DS 5-22-13)"
 #retina_name = "12 Direction - 100 FPS Remove Stutter From Floating Point Inaccuracies Increased Diffusion Radius (Longer stimulus time)"
-trial_name = "Test"
-retina_name = "0"
-num_retinas = 12
-num_stimuli = 1
+trial_name = "Bar_Batch_Diffusion_Fixed_2"
+num_retinas = 10
+num_stimuli = 6
 
 for retina_name in range(num_retinas):
     retina_name = str(retina_name)

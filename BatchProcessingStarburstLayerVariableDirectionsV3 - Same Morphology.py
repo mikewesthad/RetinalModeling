@@ -1,12 +1,9 @@
 from Constants import *
 from CreateRetina import createStarburstRetina
-from CreateStimulus import createAnnulus
+from CreateStimulus import createManyBars
 from Analysis import *
 from time import clock
-
 import shutil
-import os
-
 
 
 ###############################################################################
@@ -48,51 +45,73 @@ def generateCombinations(parameters, current_parameter_index,
     return combinations
 
 
-
-def run(trial_name, retina_parameters, stimulus_parameters):
+def run(trial_name, retina_parameters, diffusion_parameters, decay_parameters, conductance_parameters, stimulus_parameters):
 
     retina_combinations = generateCombinations(retina_parameters, 0, [], [])
+#    diffusion_combinations = generateCombinations(diffusion_parameters, 0, [], [])
+    diffusion_combinations = generateCombinations(diffusion_parameters, 0, [], [])[0]
+#    decay_combinations = generateCombinations(decay_parameters, 0, [], [])    
+    decay_combinations = generateCombinations(decay_parameters, 0, [], [])[0]
+#    conductance_combinations = generateCombinations(conductance_parameters, 0, [], [])
+    conductance_combinations = generateCombinations(conductance_parameters, 0, [], [])[0]
     stimulus_combinations = generateCombinations(stimulus_parameters, 0, [], [])
     
     print "Retina Combinations", len(retina_combinations)
+    print "Diffusion Combinations", len(diffusion_combinations)
+    print "Decay Combinations", len(decay_combinations)
+    print "Conductance Combinations", len(conductance_combinations)
     print "Stimulus Combinations", len(stimulus_combinations)
-    print "Combined Combinations", len(retina_combinations) * len(stimulus_combinations)
+    print "Combined Combinations", len(retina_combinations) * len(diffusion_combinations) * len(decay_combinations) * len(stimulus_combinations)
+    
+    default_diffusion = diffusion_combinations[0]
+    default_decay = decay_combinations[0]    
+    default_conductance = conductance_combinations[0] 
     
     retina_index = 0
     for retina_combination in retina_combinations:
         
         retina_name = str(retina_index)
-        retina_combination.append(retina_name)    
+        retina_combination.append(retina_name)   
+        retina_combination = retina_combination[0:18] + [default_decay, list(default_diffusion)] + retina_combination[18:23] + [default_conductance] + retina_combination[23:]
         retina = createStarburstRetina(*retina_combination)
         retina_index += 1
-                
-        retina.saveRetina(os.path.join(trial_name, retina_name))        
-            
+        
+        retina.saveRetina(os.path.join(trial_name, retina_name))  
+        
         stimulus_index = 0
-        for stimulus_combination in stimulus_combinations:
+        for diffusion_combination in diffusion_combinations:
+            diffusion_type, diffusion_parameters = diffusion_combination
+            diffusion_parameters = retina.convertDiffusionParametersToGridUnits(diffusion_type, diffusion_parameters)
+            retina.on_starburst_layer.changeDiffusion(diffusion_type, diffusion_parameters)
             
-            
-            start = clock()
-            # SOMETHING STRANGE HAPPENS WHERE THE DIRECTION FLIPS...SO PASS IN OPPOSITE
-            centripetal_annulus = createAnnulus("Centrifugal", *stimulus_combination)
-            stimulus_name = str(stimulus_index)+"_centripetal"
-            retina.loadStimulus(centripetal_annulus)  
-            retina.runModelForStimulus()
-            retina.saveActivities(os.path.join(trial_name, retina_name), stimulus_name) 
-            retina.clearActivity()                   
-            
-            centrifugal_annulus = createAnnulus("Centripetal", *stimulus_combination)
-            stimulus_name = str(stimulus_index)+"_centrifugal"
-            retina.loadStimulus(centrifugal_annulus)  
-            retina.runModelForStimulus()
-            retina.saveActivities(os.path.join(trial_name, retina_name), stimulus_name) 
-            retina.clearActivity()       
-                       
-            stimulus_index += 1                
-            elapsed = clock() - start
-            print "Retina '{0}' stimulated in {1} seconds".format(retina_name, elapsed)
-    
-
+            for decay_combination in decay_combinations:
+                retina.on_starburst_layer.changeDecayRate(decay_combination)
+                
+                for conductance_combination in conductance_combinations:
+                    retina.on_starburst_layer.changeConductance(conductance_combination)        
+                    print retina.on_starburst_layer.conductance_factor  
+                    print retina.on_starburst_layer.neurons[0].conductance_factor
+                    
+                    
+                    for stimulus_combination in stimulus_combinations:
+                        
+                        stimuli, headings = createManyBars(*stimulus_combination)
+                        stimulus_name = str(stimulus_index)        
+                        for stimulus, heading in zip(stimuli, headings):
+                            
+                            start = clock()
+                            
+                            retina.loadStimulus(stimulus)  
+                            retina.runModelForStimulus()
+                            stim_name = stimulus_name+"_"+str(int(heading))
+                            retina.saveActivities(os.path.join(trial_name, retina_name), stim_name)        
+                            retina.clearActivity()       
+                        
+                            elapsed = clock() - start
+                            print "Retina '{0}' stimulated in {1} seconds".format(retina_name, elapsed)
+                        
+                        stimulus_index += 1                    
+        
 
 
 
@@ -166,7 +185,7 @@ def stripUnits(string):
 
 
 # User controlled variables
-trial_name = "Annuli_Test_Batch_5"
+trial_name = "Bar_Diffusion_Speed_Same_Morphology"
 parameter_filename = "BatchProcessingParameters.txt"
 
 # Create a directory to store this trial run
@@ -179,8 +198,13 @@ shutil.copy(parameter_filename, parameter_path)
 
 # Read in the parameters
 parameters = processTextParameters(parameter_filename)
-retina_parameters = parameters[0:24] 
+retina_parameters = parameters[0:18] + parameters[20:23] + parameters[24:24]
+decay_parameters = parameters[18] 
+if isinstance(decay_parameters, float): decay_parameters = [decay_parameters]
+diffusion_parameters = parameters[19]
+conductance_parameters = parameters[23]
+if isinstance(conductance_parameters, float): conductance_parameters = [conductance_parameters]
 stimulus_parameters = parameters[24:]  
 
 # Start the trial
-run(trial_path, retina_parameters, stimulus_parameters)
+run(trial_path, retina_parameters, diffusion_parameters, decay_parameters, conductance_parameters, stimulus_parameters)

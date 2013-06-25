@@ -11,25 +11,38 @@ def createFigure(long_side_size, rows, cols):
     elif cols > rows:
         height *= float(rows)/float(cols)
     return plt.figure(figsize=(width, height))
-    
 
-def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
+
+def calculateData(retina_paths, number_stimulus_variations, number_bars):
     number_retinas  = len(retina_paths)
     number_trials   = number_retinas * number_stimulus_variations
-    fig1_rows, fig1_cols, fig1_index = number_trials, 4, 1
-    fig2_rows, fig2_cols, fig2_index = number_trials, 4, 1
-    fig3_rows, fig3_cols, fig3_index = number_trials, 3, 1
-    fig1 = createFigure(20.0*number_trials/4.0, fig1_rows, fig1_cols)
-    fig2 = createFigure(20.0*number_trials/4.0, fig2_rows, fig2_cols)
-    fig3 = createFigure(20.0*number_trials/4.0, fig3_rows, fig3_cols)
-    matplotlib.rc('xtick', labelsize=12)
-    matplotlib.rc('ytick', labelsize=12)
-
-    headings = np.arange(0.0, 360.0, 360.0/number_bars)
+    headings        = np.arange(0.0, 360.0, 360.0/number_bars)
+    
+    trial_centroids = []
+    trial_compartment_lengths = []
+    trial_compartment_headings = []
+    trial_preferred_headings = []
+    trial_preferred_centrifigualities = []
+    trial_vector_averages = []
+    trial_vector_average_magnitudes = []
+    trial_vector_average_centrifigualities = []
+    trial_DSIs = []
+    trial_voltage_traces = []
+        
+    # Display variables
+    pygame.init()    
+    max_size = Vector2D(1000.0, 1000.0)  
+    background_color = (25, 25, 25)
+    morphology_color = (255, 255, 255)
+    line_color = (243, 134, 48)
+    circle_color = (250, 105, 0)
+    
     
     for retina_path in retina_paths:
         retina = Retina.loadRetina(retina_path)
         for trial_number in range(number_stimulus_variations):
+            
+            
             stored_activities = []
             max_timesteps = 0     
             for heading in headings:
@@ -65,6 +78,7 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
                     centroid = centroid + position
                 centroid = centroid / num_positions
                 centroids.append(centroid)
+            trial_centroids.append(centroids)
                 
             # If we want to graph anything using distance from soma, we need to calculate
             # distance (this assumes all compartments are of size step_size)
@@ -81,14 +95,16 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
                         has_reached_soma = True
                     length += step_size
                 compartment_lengths.append(length)
-                
+            trial_compartment_lengths.append(compartment_lengths)
+            
             # Calculate angular heading from soma for each compartment (based on centroid)
             compartment_headings = []
             for i in range(number_compartments):
                 centroid = centroids[i]
                 compartment_heading = Vector2D().angleHeadingTo(centroid)
                 compartment_headings.append(compartment_heading)
-                
+            trial_compartment_headings.append(compartment_headings)
+            
             # Calculate the preferred heading for each compartment - as defined by the 
             # direction with the greatest maximum response
             preferred_headings = []
@@ -106,8 +122,9 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
                 preferred_centrifiguality = 1.0 - abs(preferred_heading-angle_from_soma)/180.0
                 preferred_headings.append(preferred_heading_index)
                 preferred_centrifigualities.append(preferred_centrifiguality)
-                
-                
+            trial_preferred_headings.append(preferred_headings)
+            trial_preferred_centrifigualities.append(preferred_centrifigualities)    
+            
             # Calculate the vector average heading for each compartment - as defined by
             # the maximum response in each direction
             vector_averages = []
@@ -126,6 +143,9 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
                 angle_from_soma = compartment_headings[compartment_index]
                 vector_average_centrifiguality = 1.0 - abs(vector_angle-angle_from_soma)/180.0
                 vector_average_centrifigualities.append(vector_average_centrifiguality)
+            trial_vector_averages.append(vector_averages)
+            trial_vector_average_magnitudes.append(vector_average_magnitudes)
+            trial_vector_average_centrifigualities.append(vector_average_centrifigualities)     
             
             # Calculate DSI for each compartment as defined by:
             #   preferred_response = greatest response from heading that generated greatest maximum activity
@@ -139,104 +159,223 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
                 null_response = np.max(all_activities[null_heading_index, :, compartment_index])
                 DSI = (preferred_response - null_response) / (preferred_response + null_response)
                 DSIs.append(DSI)
+            trial_DSIs.append(DSIs)
+            
+            voltage_traces = []
+            proximal, intermediate, distal = selectStarburstCompartmentsAlongDendrite(retina, 0)
+            directions = [0.0, 90.0, 180.0, 270.0]
+            heading_indices = [int(d/(360.0/number_bars)) for d in directions]  
+            for compartment_index in [proximal, intermediate, distal]:
+                compartment_traces = []
+                for heading_index in heading_indices:
+                    trace = all_activities[heading_index, :, compartment_index]
+                    compartment_traces.append(trace)
+                voltage_traces.append(compartment_traces)
+            trial_voltage_traces.append(voltage_traces)   
+            
+            # Create a (scaled) pygame display     
+            width_scale = max_size.x / float(retina.grid_width)
+            height_scale = max_size.y / float(retina.grid_height)
+            scale = min(width_scale, height_scale)   
+            starburst.morphology.location = max_size/scale/2.0
+            display = pygame.display.set_mode(max_size.toIntTuple())
+            pygame.display.iconify()    
+            
+            # Draw the morphology
+            if trial_number == 0:
+                display.fill(background_color)     
+                for compartment in starburst.compartments:
+                    compartment.draw(display, color=morphology_color, scale=scale)
+                morphology_path = os.path.join(retina_path, "Morphology.jpg")
+                pygame.image.save(display, morphology_path)
+                    
+            # Draw the DSI over the morphology
+            def drawDSI(display, draw_morphology, morphology_color, line_color, circle_color):
+                for compartment, index in zip(starburst.compartments, range(number_compartments)):            
+                    # Draw the compartment
+                    if draw_morphology: compartment.draw(display, color=morphology_color, scale=scale)
+                    
+                    # Draw a vector in the direction of the preferred heading with magnitude 
+                    # set by DSI
+                    preferred_heading   = float(headings[preferred_headings[index]])
+                    magnitude           = DSIs[index]/max(DSIs) * 50.0
+                    
+                    # Find the centroid of the compartment
+                    centroid = centroids[index]   
+                    centroid = scale * (centroid + starburst.morphology.location)
+                    
+                    # Find the vector that represents the DSI and preferred heading
+                    direction_vector = Vector2D.generateHeadingFromAngle(preferred_heading) * magnitude
+                    
+                    # Find the start and end of the line
+                    start_point = centroid.toTuple()
+                    end_point = (centroid + direction_vector).toTuple()
+                    pygame.draw.line(display, line_color, start_point, end_point, 4)
+                    pygame.draw.circle(display, circle_color, centroid.toIntTuple(), 5)
+            
+            # Save the DSI drawings
+            DSI_no_morphology_path = os.path.join(retina_path, str(trial_number)+" DSI Without Morphology.jpg")
+            display.fill(background_color)
+            drawDSI(display, False, morphology_color, line_color, circle_color)     
+            pygame.image.save(display, DSI_no_morphology_path)
+            
+            # Draw the vector averages over the morphology
+            def drawVectorAverages(display, draw_morphology, morphology_color, line_color, circle_color):
+                for compartment, index in zip(starburst.compartments, range(number_compartments)):            
+                    # Draw the compartment
+                    if draw_morphology: compartment.draw(display, color=morphology_color, scale=scale)
+                    
+                    # Draw a vector in the direction of the preferred heading with magnitude 
+                    # set by DSI
+                    if vector_averages[index].length() != 0:
+                        vector_average = vector_averages[index].copy().normalize()
+                        magnitude = vector_average_magnitudes[index]/max(vector_average_magnitudes)
+                        vector_average = vector_average * magnitude * 50.0
+                        
+                        # Find the centroid of the compartment
+                        centroid = centroids[index]   
+                        centroid = scale * (centroid + starburst.morphology.location)
+                        
+                        # Find the start and end of the line
+                        start_point = centroid.toTuple()
+                        end_point = (centroid + vector_average).toTuple()
+                        pygame.draw.line(display, line_color, start_point, end_point, 4)
+                        pygame.draw.circle(display, circle_color, centroid.toIntTuple(), 5)
+            
+            # Save the vector average drawings
+            average_no_morphology_path = os.path.join(retina_path, str(trial_number)+" Vector Average Without Morphology.jpg")
+            display.fill(background_color)
+            drawVectorAverages(display, False, morphology_color, line_color, circle_color)     
+            pygame.image.save(display, average_no_morphology_path)
+            
+            
+    
+    results = [trial_centroids, trial_compartment_lengths, 
+               trial_compartment_headings, trial_preferred_headings, 
+               trial_preferred_centrifigualities, trial_vector_averages,
+               trial_vector_average_magnitudes, trial_vector_average_centrifigualities,
+               trial_DSIs, trial_voltage_traces]
+    return results
                 
-             
+    
+
+def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
+            
+    results = calculateData(retina_paths, number_stimulus_variations, number_bars) 
+    compartment_lengths                 = results[1]
+    preferred_centrifigualities         = results[4]
+    vector_average_magnitudes           = results[6]
+    vector_average_centrifigualities    = results[7]
+    DSIs                                = results[8]
+    voltage_traces                      = results[9]
+    
+    number_retinas  = len(retina_paths)
+    number_trials   = number_retinas * number_stimulus_variations
+    
+    max_DSI = max([max(x) for x in DSIs])
+    max_vector = max([max(x) for x in vector_average_magnitudes])
+
+    for retina_number in range(number_retinas):
+        fig1_rows, fig1_cols, fig1_index = number_stimulus_variations, 4+4+3, 1
+        fig1 = createFigure(10.0*number_stimulus_variations, fig1_rows, fig1_cols)
+        matplotlib.rc('xtick', labelsize=12)
+        matplotlib.rc('ytick', labelsize=12)
+        for stimulus_number in range(number_stimulus_variations):
+            index = retina_number * number_stimulus_variations + stimulus_number
+    
             # Figure 1 - Vector Averages
             ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
-            ax.hist(vector_average_centrifigualities, bins=20, range=(-1.0, 1.0))
+            ax.hist(vector_average_centrifigualities[index], bins=20, range=(-1.0, 1.0))
             ax.set_title("Average Heading")
             ax.set_xlabel("Centrifugality Index")
             ax.set_ylabel("Frequency")
             fig1_index += 1    
             
             ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
-            ax.scatter(vector_average_centrifigualities, vector_average_magnitudes, alpha=0.25)
+            ax.scatter(vector_average_centrifigualities[index], vector_average_magnitudes[index], alpha=0.25)
             ax.set_title("Average Heading")
             ax.set_ylabel("Magnitude of Vector Average")
             ax.set_xlabel("Centrifugality Index")  
+#            ax.set_ylim([0, max_vector])
             fig1_index += 1      
             
             ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
-            ax.scatter(compartment_lengths, vector_average_centrifigualities, alpha=0.25)
+            ax.scatter(compartment_lengths[index], vector_average_centrifigualities[index], alpha=0.25)
             ax.set_title("Average Heading")
             ax.set_xlabel("Distance from Soma")
             ax.set_ylabel("Centrifugality Index")
+#            ax.set_ylim([0, max_vector])
             fig1_index += 1                
             
             ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
-            ax.scatter(compartment_lengths, vector_average_magnitudes, alpha=0.25)
+            ax.scatter(compartment_lengths[index], vector_average_magnitudes[index], alpha=0.25)
             ax.set_title("Average Heading")
             ax.set_ylabel("Magnitude of Vector Average")
             ax.set_xlabel("Distance from soma")
+#            ax.set_ylim([0, max_vector])
             fig1_index += 1    
             
            
             # Figure 2 - DSI
-            ax = fig2.add_subplot(fig2_rows, fig2_cols, fig2_index)
-            ax.hist(preferred_centrifigualities, bins=20, range=(-1.0, 1.0))
+            ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
+            ax.hist(preferred_centrifigualities[index], bins=20, range=(-1.0, 1.0))
             ax.set_title("Preferred Heading")
             ax.set_xlabel("Centrifugality Index")
             ax.set_ylabel("Frequency")
-            fig2_index += 1    
+            fig1_index += 1    
             
-            ax = fig2.add_subplot(fig2_rows, fig2_cols, fig2_index)
-            ax.scatter(preferred_centrifigualities, DSIs, alpha=0.25)
+            ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
+            ax.scatter(preferred_centrifigualities[index], DSIs[index], alpha=0.25)
             ax.set_title("Preferred Heading")
             ax.set_ylabel("Magnitude of DSI")
             ax.set_xlabel("Centrifugality Index")
-            fig2_index += 1    
+#            ax.set_ylim([0, max_DSI])
+            fig1_index += 1    
             
-            ax = fig2.add_subplot(fig2_rows, fig2_cols, fig2_index)
-            ax.scatter(compartment_lengths, preferred_centrifigualities, alpha=0.25)
+            ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
+            ax.scatter(compartment_lengths[index], preferred_centrifigualities[index], alpha=0.25)
             ax.set_title("Preferred Heading")
             ax.set_xlabel("Distance from Soma")
             ax.set_ylabel("Centrifugality Index")
-            fig2_index += 1    
+#            ax.set_ylim([0, max_DSI])
+            fig1_index += 1    
             
-            ax = fig2.add_subplot(fig2_rows, fig2_cols, fig2_index)
-            ax.scatter(compartment_lengths, DSIs, alpha=0.25)
+            ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
+            ax.scatter(compartment_lengths[index], DSIs[index], alpha=0.25)
             ax.set_title("Preferred Heading")
             ax.set_ylabel("Magnitude of DSI")
             ax.set_xlabel("Distance from soma")
-            fig2_index += 1    
+#            ax.set_ylim([0, max_DSI])
+            fig1_index += 1    
             
             
-            # Figure 3 - Voltage Traces
-            proximal, intermediate, distal = selectStarburstCompartmentsAlongDendrite(retina, 0)
-            x_axis = range(max_timesteps)            
+            # Figure 3 - Voltage Traces     
             directions = [0.0, 90.0, 180.0, 270.0]
-            heading_indices = [int(d/(360.0/number_bars)) for d in directions]  
             labels = [str(int(d)) for d in directions]
             linestyles = ['-', '--', '-', '--']
             colors = ['r', 'g', 'b', 'm']
             
-            for (compartment_index, compartment_name) in zip([proximal, intermediate, distal], ("Proximal", "Intermediate", "Distal")):
-                ax = fig3.add_subplot(fig3_rows, fig3_cols, fig3_index)
-                for (heading_index, ls, c, label) in zip(heading_indices, linestyles, colors, labels):
-                    y_axis = all_activities[heading_index, :, compartment_index]
-                    ax.plot(x_axis, y_axis, c=c, ls=ls, label=label)
+            for (compartment_index, compartment_name) in zip([0,1,2], ["Proximal", "Intermediate", "Distal"]):
+                ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
+                for (heading_index, label, ls, c) in zip(range(4), labels, linestyles, colors):
+                    y_axis = voltage_traces[index][compartment_index][heading_index]
+                    ax.plot(range(len(y_axis)), y_axis, c=c, ls=ls, label=label)
                     max_activity = np.max(y_axis)
                     time_of_max = np.argmax(y_axis)
-                    ax.axhline(max_activity, xmin=0, xmax=(time_of_max-1.0)/float(max_timesteps), ls=ls, c=c)
+                    ax.axhline(max_activity, xmin=0, xmax=(time_of_max-1.0)/float(len(y_axis)), ls=ls, c=c)
                 ax.set_title(compartment_name)
                 ax.set_ylabel("Activity")
                 ax.set_xlabel("Timesteps")
                 ax.set_ylim([0, 1])
                 ax.legend(loc=1)
-                fig3_index += 1
-                
-                
+                fig1_index += 1
             
             
-    fig1.tight_layout()
-    fig2.tight_layout()
-    fig3.tight_layout()
-    fig1_path = os.path.join(trial_path, "Vector Average Results.jpg")
-    fig2_path = os.path.join(trial_path, "DSI Results.jpg")
-    fig3_path = os.path.join(trial_path, "Voltage Trace Results.jpg")
-    fig1.savefig(fig1_path)    
-    fig2.savefig(fig2_path)    
-    fig3.savefig(fig3_path)
+        
+            
+        fig1.tight_layout()
+        fig1_path = os.path.join(trial_path, str(retina_number)+" Results.jpg")
+        fig1.savefig(fig1_path)    
     
     
 def selectStarburstCompartmentsAlongDendrite(retina, angle):
@@ -306,9 +445,9 @@ def selectStarburstCompartmentsAlongDendrite(retina, angle):
         
     
 from Constants import *
-trial_name = "Bar_Batch_Diffusion_Fixed_2"
+trial_name = "Bar_Diffusion_Batch_Large_Same_Morphology"
 number_bars = 12
-number_stimulus_variations = 6
+number_stimulus_variations = len(range(10,640,30))
 
 trial_path = os.path.join(os.getcwd(), "Saved Retinas", trial_name)
 entries = os.listdir(trial_path)
@@ -319,7 +458,7 @@ for entry in entries:
         retina_paths.append(path_to_entry)
 
 #retina_paths = []
-#for x in range(4):
+#for x in range(2):
 #    path_to_entry = os.path.join(trial_path, str(x))
 #    retina_paths.append(path_to_entry)
     

@@ -22,7 +22,7 @@ def analyzeStarburst(retina, retina_name):
     number_trials /= 2
     
     rows, cols, index = number_trials, 3, 1
-    fig = createFigure(13.0, rows, cols)
+    fig = createFigure(20.0, rows, cols)
     
     p, i, d = selectStarburstCompartmentsAlongDendrite(retina, 0)
     
@@ -162,7 +162,7 @@ def selectStarburstCompartmentsAlongDendrite(retina, angle):
         
     
 from Constants import *
-trial_name = "Annuli_Test_6"
+trial_name = "Annuli_Test_Batch_5"
 
 trial_path = os.path.join(os.getcwd(), "Saved Retinas", trial_name)
 entries = os.listdir(trial_path)

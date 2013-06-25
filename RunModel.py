@@ -1,7 +1,4 @@
 from Constants import *
-from random import randint
-from Analysis import selectStarburstCompartmentsAlongDendrite
-
 
 ###############################################################################
 # Build Retina
@@ -32,22 +29,6 @@ input_field_radius  = 10 * UM_TO_M
 output_field_radius = 10 * UM_TO_M
 retina.buildBipolarLayer(bipolar_distance, bipolar_density, input_field_radius, 
                          output_field_radius, build_on_and_off=False)
-                         
-# Build the starburst layer
-starburst_distance  = 50 * UM_TO_M
-starburst_density   = 1000.0
-average_wirelength  = 150 * UM_TO_M
-step_size           = 15 * UM_TO_M
-input_strength      = 0.5
-decay_rate          = 0.1
-diffusion           = ("Flat", [60 * UM_TO_M / grid_size])
-retina.buildStarburstLayer(starburst_distance, starburst_density,
-                           average_wirelength, step_size,
-                           input_strength, decay_rate, diffusion[0], diffusion[1],
-                           build_on_and_off=False)
-                       
-                           
-
 # Build a moving bar stimulus
 framerate               = 30.0              # Fps
 movie_size              = (400, 400)        # pixels
@@ -73,19 +54,50 @@ stimulus = Stimulus(position_on_retina=position_on_retina,
                     pixel_size_in_rgu=pixel_size_in_rgu, movie=bar_movie)
 retina.loadStimulus(stimulus)                           
 
-retina.runModelForStimulus()
 
-from Analysis import *
-retina_name = "Test"
-runtime_name = "0"
-retina.saveRetina(retina_name)    
-retina.saveActivities(retina_name, runtime_name)   
-analyzeSingleRun(retina, retina_name, runtime_name)
+cone_pixel_rf = retina.cone_layer.getReceptiveField(Vector2D(200.0,200.0))
+bipolar_cone_rf, bipolar_pixel_rf = retina.on_bipolar_layer.getReceptiveField(Vector2D(200.0,200.0))
+
+import matplotlib.pyplot as plt
+
+r, c, i = 2, 2, 1
+f = plt.figure(figsize=(12.0, 12.0))
+
+    
+ax = f.add_subplot(r, c, i)
+ax.imshow(cone_pixel_rf, cmap=plt.cm.get_cmap('Reds'), interpolation='none')
+#plt.colorbar()
+i+=2
+
+ax = f.add_subplot(r, c, i)
+ax.imshow(bipolar_cone_rf, cmap=plt.cm.get_cmap('Reds'), interpolation='none')
+#plt.colorbar()
+i+=1
+
+ax = f.add_subplot(r, c, i)
+ax.imshow(bipolar_pixel_rf, cmap=plt.cm.get_cmap('Reds'), interpolation='none')
+#plt.colorbar()
+i+=1
+
+plt.show()
+
+#retina.runModelForStimulus()
 
 
-## Save the morphology 
-#loaded_retina = Retina.loadRetina("Test")
-#loaded_retina.loadActivities("Test", "0")
-#
-#from Visualizer import Visualizer
-#v = Visualizer(retina)
+
+
+
+                         
+## Build the starburst layer
+#starburst_distance  = 50 * UM_TO_M
+#starburst_density   = 1000.0
+#average_wirelength  = 150 * UM_TO_M
+#step_size           = 15 * UM_TO_M
+#input_strength      = 0.5
+#decay_rate          = 0.1
+#diffusion           = ("Flat", [60 * UM_TO_M / grid_size])
+#retina.buildStarburstLayer(starburst_distance, starburst_density,
+#                           average_wirelength, step_size,
+#                           input_strength, decay_rate, diffusion[0], diffusion[1],
+#                           build_on_and_off=False)
+                       

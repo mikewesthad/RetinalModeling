@@ -34,7 +34,37 @@ class ConeLayer:
 
         self.history_size = history_size
         self.initializeActivties() 
+    
+    def getReceptiveField(self, desired_location, exact_location=None):
+        pixel_receptive_field = np.zeros((self.retina.grid_width, self.retina.grid_height))
         
+        if exact_location:
+            x, y = exact_location
+        else:
+            acceptable_distance = 10.0
+            step_size = 10.0
+            neuron_found = False
+            while not(neuron_found):
+                for neuron in range(self.neurons):
+                    loc_list = self.locations[neuron]
+                    x, y = loc_list
+                    x, y = float(x), float(y)
+                    loc = Vector2D(x, y)
+                    if loc.distanceTo(desired_location) < acceptable_distance:
+                        neuron_found = True
+                        break
+                acceptable_distance += step_size
+        
+        x, y = int(x), int(y)
+        loc_ID = str(x)+'.'+str(y)
+        for pixel_info in self.inputs[loc_ID]:
+            pixel_ID, pixel_weight = pixel_info
+            p_x, p_y = pixel_ID.split(".")
+            p_x, p_y = int(p_x), int(p_y)
+            pixel_receptive_field[p_x, p_y] += pixel_weight
+            
+        return pixel_receptive_field
+    
     def clearActivities(self):
         self.initializeActivties()
     

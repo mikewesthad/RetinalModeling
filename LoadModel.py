@@ -1,7 +1,7 @@
 from Constants import *
 
-retina_name = "Bar_Speed_Batch_3_12_Directions\\1"
-stimulus_name = "4_0"
+retina_name = "Annuli_Test_Batch\\0"
+stimulus_name = "4_centripetal"
 #retina_name = "Test"
 #stimulus_name = "0_0"
 retina = Retina.loadRetina(retina_name)

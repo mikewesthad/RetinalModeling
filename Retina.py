@@ -289,7 +289,9 @@ class Retina:
         minimum_distance    /= self.grid_size
         average_wirelength  /= self.grid_size
         step_size           /= self.grid_size
-#        diffusion_parameters = StarburstMorphology.convertDiffusionParametersToGridUnits(diffusion_method, diffusion_parameters, self.grid_size)
+        print diffusion_parameters
+        diffusion_parameters = self.convertDiffusionParametersToGridUnits(diffusion_method, diffusion_parameters)
+        print diffusion_parameters
         start_time = clock()
         self.on_starburst_layer = StarburstLayer(self, "On", layer_depth, 
                                                  self.history_size, input_delay, 
@@ -316,7 +318,25 @@ class Retina:
            
         if verbose: print "On and Off Starburst Layers Construction Time", clock() - start_time
     
-    
+    def convertDiffusionParametersToGridUnits(self, curve_type, curve_parameters):     
+        if curve_type.lower() == "flat":
+            curve_parameters = [curve_parameters[0]/self.grid_size]
+            
+        elif curve_type.lower() == "linear":
+            curve_parameters = [curve_parameters[0]/self.grid_size]
+            curve_parameters = [curve_parameters[1]/self.grid_size]
+            
+        elif curve_type.lower() == "exponential":
+            curve_parameters = [curve_parameters[0]/self.grid_size]
+            # Don't convert ther second element - that's the exp base
+            
+        elif curve_type.lower() == "sigmoidal":
+            curve_parameters = [curve_parameters[0]/self.grid_size]
+            curve_parameters = [curve_parameters[1]/self.grid_size]            
+            curve_parameters = [curve_parameters[2]/self.grid_size]
+            curve_parameters = [curve_parameters[3]/self.grid_size]
+            
+        return curve_parameters
     ###########################################################################
     # Visualization Related Methods
     ###########################################################################
