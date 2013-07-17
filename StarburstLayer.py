@@ -11,7 +11,7 @@ class StarburstLayer:
                  average_wirelength, step_size, diffusion_method, diffusion_parameters, 
                  decay_rate, heading_deviation=10, max_segment_length=35*UM_TO_M,
                  children_deviation=20, conductance_factor=0.5, number_morphologies=1, 
-                 visualize_growth=False, display=None):
+                 num_starting_dendrites=6, visualize_growth=False, display=None):
         self.retina                 = retina
         self.starburst_type         = starburst_type
         self.layer_depth            = layer_depth
@@ -33,6 +33,7 @@ class StarburstLayer:
                                              heading_deviation=heading_deviation, 
                                              max_segment_length=max_segment_length,
                                              children_deviation=children_deviation,
+                                             num_starting_dendrites=num_starting_dendrites,
                                              visualize_growth=visualize_growth,
                                              display=display)
             self.morphologies.append(morphology)    

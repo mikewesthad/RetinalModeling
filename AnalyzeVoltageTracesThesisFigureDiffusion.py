@@ -181,8 +181,8 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, parameter, sel
     matplotlib.rcParams['ytick.major.pad'] = 8
     for retina_number in range(number_retinas):
                 
-        fig1_rows, fig1_cols, fig1_index = 3, 2, 1
-        fig1 = createFigure(4.0*number_trials, fig1_rows, fig1_cols)   
+        fig1_rows, fig1_cols, fig1_index = 3, 3, 1
+        fig1 = createFigure(15.0, fig1_rows, fig1_cols)   
         
         morphology_path = os.path.join(retina_paths[retina_number], "Selected Morphology.jpg")
         morphology_image = mpimg.imread(morphology_path)
@@ -198,7 +198,7 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, parameter, sel
         fig1_index += 1
         
                  
-        for ((value, stimulus_number), fig1_index, fig_letter) in zip(selected_variations, (3, 4, 5, 6), ("C", "D", "E", "F")):
+        for ((value, stimulus_number), fig1_index, fig_letter) in zip(selected_variations, (4, 5, 6, 7, 8, 9), ("C", "D", "E", "F", "G", "H")):
             
             index = retina_number * number_stimulus_variations + stimulus_number
             
@@ -217,16 +217,16 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, parameter, sel
                     y_axis = voltage_traces[index][compartment_index][heading_index]
                     h,  = ax.plot(range(len(y_axis)), y_axis, c=c, ls=ls, label=label)
                     handles.append(h)
-                    textstr = "{0} = {1}".format(parameter, value)
+                    textstr = "{0} = {1} um".format(parameter, value)
                     props = dict(boxstyle='round', facecolor='white', alpha=0.5)
                     
-#                    if fig1_index == 6:      
-#                        ax.text(0.45, 0.1, textstr, transform=ax.transAxes, fontsize=16,
-#                                verticalalignment='top', bbox=props)
-#                    else:
-
-                    ax.text(0.45, 0.95, textstr, transform=ax.transAxes, fontsize=16,
-                            verticalalignment='top', bbox=props)
+                    if fig1_index > 6:      
+                        ax.text(0.2, 0.95, textstr, transform=ax.transAxes, fontsize=16,
+                                verticalalignment='top', bbox=props)
+                    else:
+                        ax.text(0.25, 0.95, textstr, transform=ax.transAxes, fontsize=16,
+                                verticalalignment='top', bbox=props)
+                                
                     ax.set_xlim([0, timesteps])
                     max_activity = np.max(y_axis)
                     time_of_max = np.argmax(y_axis)
@@ -241,19 +241,19 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, parameter, sel
                      fontsize=plot_label_size, verticalalignment="top", bbox=plot_label_props)
              
         
-        fig1_index = 2
+        fig1_index = 3
         ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
         ax.axis('off')
-        row_names = ["Diffusion Radius (um)",
+        row_names = ["Conductance Factor",
                      "Decay Rate", 
                      "Wirelength (um)",
                      "Step Size (um)",
                      "Heading Deviation (deg)",
                      "Child Deviation (deg)",
                      "Branching Length (um)"]
-        cell_values = [["70"], ["0.1"], ["150"], ["15"], ["10"], ["20"], ["35"]]                    
+        cell_values = [["0.5"], ["0.1"], ["150"], ["15"], ["10"], ["20"], ["35"]]                    
         
-        plt.table(cellText=cell_values, rowLabels=row_names, bbox=(0.65,0.4,0.2,0.45), colWidths=[0.2])
+        plt.table(cellText=cell_values, rowLabels=row_names, bbox=(0.65,0.45,0.22,0.4), colWidths=[0.2])
         leg = ax.legend(handles, labels, loc='lower center', fontsize=18)
         leg.legendHandles[0].set_linewidth(2.5)
         plt.text(plot_label_x, plot_label_y, "B", transform=ax.transAxes, 
@@ -278,13 +278,7 @@ for entry in entries:
     if os.path.isdir(path_to_entry):
         retina_paths.append(path_to_entry)
 
-#retina_paths = []
-#for x in range(2):
-#    path_to_entry = os.path.join(trial_path, str(x))
-#    retina_paths.append(path_to_entry)
+selected_variations = [[10, 1+0], [40, 1+2*1], [70, 1+2*2], [100, 1+2*3], [220, 1+2*7], [400, 1+2*13]]
 
-#selected_variations = [(float(x/10.0), x-1) for x in range(1,11,1)]
-selected_variations = [[10, 0], [70, 2], [160, 5], [610, 20]]
-
-parameter = "Diffusion Radius (um)"
+parameter = "Diffusion Radius"
 analyze(trial_path, retina_paths, number_stimulus_variations, parameter, selected_variations, number_bars)

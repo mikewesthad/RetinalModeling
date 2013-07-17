@@ -10,6 +10,7 @@ class StarburstMorphology(object):
                  radius_deviation=.1, min_branches=6, max_branches=6, heading_deviation=10, 
                  step_size=15, max_segment_length=35*UM_TO_M, children_deviation=20, 
                  dendrite_vision_radius=30*UM_TO_M, diffusion_method="linear", diffusion_parameters=[150.0*UM_TO_M, 1.0*UM_TO_M],
+                 num_starting_dendrites=6,
                  color_palette=GOLDFISH, draw_location=Vector2D(0.0,0.0), visualize_growth=False, scale=1.0,
                  display=None):
         
@@ -41,8 +42,10 @@ class StarburstMorphology(object):
         self.dendrite_vision_radius = dendrite_vision_radius / grid_size
         
         # Initialize the first branches
-        number_dendrites    = randint(min_branches, max_branches)
+#        number_dendrites    = randint(min_branches, max_branches)
+        number_dendrites    = int(num_starting_dendrites)
         heading_spacing     = 360.0 / number_dendrites
+        
         heading             = 0.0
         
         self.dendrites = []

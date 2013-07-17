@@ -28,6 +28,7 @@ class DendriteSegment:
         self.children_deviation = children_deviation
         self.master_branch_ID   = master_branch_ID
         
+        
         self.length             = 0.0
         self.step_size          = self.neuron.step_size
         self.heading_deviation  = self.neuron.heading_deviation
@@ -156,6 +157,10 @@ class DendriteSegment:
             return self.is_growing, []
             
         # Calculate the headings to which you can travel
+#        if self.length == 45: 
+#            print "Turning"
+#            self.heading += 110
+#            if self.heading > 360: self.heading -= 360.0
         allowable_range = self.buildAllowableHeadingRange(self.heading, self.heading_deviation)
         
         # If you can't travel anywhere, die.
@@ -439,6 +444,7 @@ def calculateHeadingRange(heading, heading_deviation):
     # Find the heading bounds (assuming heading deviation is positive)
     heading_max = heading + heading_deviation
     heading_min = heading - heading_deviation
+#    heading_min = heading                       # For generating spirals
     
     # Unwrap the heading bounds into the range [0-360]
     if heading_max > 360:   heading_max -= 360.0

@@ -58,32 +58,39 @@ def run(trial_name, retina_parameters, stimulus_parameters):
     for retina_combination in retina_combinations:
         
         retina_name = str(retina_index)
-        retina_combination.append(retina_name)    
+        retina_combination.append(retina_name)  
+        print retina_combination[-5:-3]
+        retina_combination[-4] = retina_combination[-5]
+        print retina_combination[-5:-3]
         retina = createStarburstRetina(*retina_combination)
         retina_index += 1
         
-        retina.saveRetina(os.path.join(trial_name, retina_name))  
-            
-        stimulus_index = 0
-        for stimulus_combination in stimulus_combinations:
-            
-            
-            stimuli, headings = createManyBars(*stimulus_combination)
-            stimulus_name = str(stimulus_index)        
-            for stimulus, heading in zip(stimuli, headings):
-                
-                start = clock()
-                
-                retina.loadStimulus(stimulus)  
-                retina.runModelForStimulus()
-                stim_name = stimulus_name+"_"+str(int(heading))
-                retina.saveActivities(os.path.join(trial_name, retina_name), stim_name)        
-                retina.clearActivity()       
-            
-                elapsed = clock() - start
-                print "Retina '{0}' stimulated in {1} seconds".format(retina_name, elapsed)
-            
-            stimulus_index += 1                    
+        starburst = retina.on_starburst_layer.neurons[0]
+
+        # Display variables
+        pygame.init()    
+        max_size            = Vector2D(1000.0, 1000.0)  
+        background_color    = (25, 25, 25)
+        morphology_color    = (255, 255, 255)
+        distal_color        = (255, 25, 25)
+        interm_color        = (25, 255, 255)
+        proximal_color      = (25, 255, 25)
+        
+        # Create a (scaled) pygame display     
+        width_scale                     = max_size.x / float(retina.grid_width)
+        height_scale                    = max_size.y / float(retina.grid_height)
+        scale                           = min(width_scale, height_scale)   
+        starburst.morphology.location   = max_size/scale/2.0
+        display                         = pygame.display.set_mode(max_size.toIntTuple())
+        
+        # Draw the morphology
+        display.fill(background_color)     
+        for compartment in starburst.compartments:
+            compartment.draw(display, color=morphology_color, scale=scale)
+        morphology_path = os.path.join("Saved Retinas", trial_name, "Morphology.jpg")
+        pygame.image.save(display, morphology_path)
+        
+        
         
 
 
@@ -158,9 +165,9 @@ def stripUnits(string):
 
 
 # User controlled variables
-trial_name = "110_Degree_Kink"
-parameter_filename = "BatchProcessingParameters.txt"
-#parameter_filename = "BatchProcessing2Parameters.txt"
+trial_name = "Test"
+#parameter_filename = "BatchProcessingParameters.txt"
+parameter_filename = "BatchProcessing2Parameters.txt"
 
 # Create a directory to store this trial run
 trial_path = os.path.join(os.getcwd(), "Saved Retinas", trial_name)
@@ -172,8 +179,8 @@ shutil.copy(parameter_filename, parameter_path)
 
 # Read in the parameters
 parameters = processTextParameters(parameter_filename)
-retina_parameters = parameters[0:25] 
-stimulus_parameters = parameters[25:]  
+retina_parameters = parameters[0:24] 
+stimulus_parameters = parameters[24:]  
 
 # Start the trial
 run(trial_path, retina_parameters, stimulus_parameters)

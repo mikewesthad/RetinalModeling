@@ -283,6 +283,7 @@ class Retina:
                             decay_rate, diffusion_method, diffusion_parameters,
                             heading_deviation=10, children_deviation=20,
                             max_segment_length=35*UM_TO_M, conductance_factor=0.5, 
+                            starting_dendrites=6,
                             build_on_and_off=True, verbose=True):
         input_delay = 1
         layer_depth = 0
@@ -301,7 +302,8 @@ class Retina:
                                                  decay_rate, heading_deviation=heading_deviation,
                                                  max_segment_length=max_segment_length,
                                                  children_deviation=children_deviation,
-                                                 conductance_factor=conductance_factor)   
+                                                 conductance_factor=conductance_factor,
+                                                 num_starting_dendrites=starting_dendrites)   
         self.layers[4] = self.on_starburst_layer
 
         if build_on_and_off:                                                 
@@ -313,7 +315,8 @@ class Retina:
                                                      decay_rate, heading_deviation=heading_deviation,
                                                      max_segment_length=max_segment_length,
                                                      children_deviation=children_deviation,
-                                                     conductance_factor=conductance_factor)
+                                                     conductance_factor=conductance_factor,
+                                                     num_starting_dendrites=starting_dendrites)
             self.layers[5] = self.off_starburst_layer
            
         if verbose: print "On and Off Starburst Layers Construction Time", clock() - start_time

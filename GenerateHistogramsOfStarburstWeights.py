@@ -55,7 +55,7 @@ def selectStarburstCompartmentsAlongDendrite(morphology):
 
      
 
-directory_name  = "0"
+directory_name  = os.path.join("Bar_Euler_Results","0")
 retina          = Retina.loadRetina(directory_name)
 
 morphology          = retina.on_starburst_layer.morphologies[0]
@@ -138,7 +138,7 @@ for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Interm
     index += 1
     
 fig.tight_layout()
-fig_path = os.path.join("Saved Retinas", "0","Output Diffusion Weights.pdf")
+fig_path = os.path.join("Saved Retinas", directory_name, "Output Diffusion Weights.pdf")
 fig.savefig(fig_path)
 
 
@@ -152,7 +152,8 @@ rows, cols, index = 4, 3, 1
 diffusion_widths = [10 * UM_TO_M, 30 * UM_TO_M, 50 * UM_TO_M, 70 * UM_TO_M]
 
 for diffusion_width in diffusion_widths:
-    retina.on_starburst_layer.changeDiffusion(diffusion_width)
+    diffusion_parameters = retina.convertDiffusionParametersToGridUnits("Flat", [diffusion_width])
+    retina.on_starburst_layer.changeDiffusion("Flat", diffusion_parameters)
     weights = morphology.diffusion_weights
     
     for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Intermediate"), (distal, "Distal")]:
@@ -178,7 +179,7 @@ for diffusion_width in diffusion_widths:
         index += 1
     
 fig2.tight_layout()
-fig2_path = os.path.join("Saved Retinas", "0","Output Diffusion Weights With Changing Diffusion 1.pdf")
+fig2_path = os.path.join("Saved Retinas", directory_name, "Output Diffusion Weights With Changing Diffusion 1.pdf")
 fig2.savefig(fig2_path)
     
     
@@ -188,7 +189,8 @@ rows, cols, index = 4, 3, 1
 diffusion_widths = [90 * UM_TO_M, 110 * UM_TO_M, 130 * UM_TO_M, 150 * UM_TO_M]
 
 for diffusion_width in diffusion_widths:
-    retina.on_starburst_layer.changeDiffusion(diffusion_width)
+    diffusion_parameters = retina.convertDiffusionParametersToGridUnits("Flat", [diffusion_width])
+    retina.on_starburst_layer.changeDiffusion("Flat", diffusion_parameters)
     weights = morphology.diffusion_weights
     
     for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Intermediate"), (distal, "Distal")]:
@@ -214,7 +216,7 @@ for diffusion_width in diffusion_widths:
         index += 1
     
 fig3.tight_layout()
-fig3_path = os.path.join("Saved Retinas", "0","Output Diffusion Weights With Changing Diffusion 2.pdf")
+fig3_path = os.path.join("Saved Retinas", directory_name, "Output Diffusion Weights With Changing Diffusion 2.pdf")
 fig3.savefig(fig3_path)
     
     
@@ -224,7 +226,8 @@ diffusion_widths = [10 * UM_TO_M, 30 * UM_TO_M, 50 * UM_TO_M, 70 * UM_TO_M]
 fig4 = plt.figure(figsize=(10, 10))
 rows, cols, index = 4, 3, 1    
 for diffusion_width in diffusion_widths:
-    retina.on_starburst_layer.changeDiffusion(diffusion_width)
+    diffusion_parameters = retina.convertDiffusionParametersToGridUnits("Flat", [diffusion_width])
+    retina.on_starburst_layer.changeDiffusion("Flat", diffusion_parameters)
     weights = morphology.diffusion_weights
  
     for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Intermediate"), (distal, "Distal")]:
@@ -253,7 +256,7 @@ for diffusion_width in diffusion_widths:
         index += 1
     
 fig4.tight_layout()
-fig4_path = os.path.join("Saved Retinas", "0","Sum Output Diffusion Weights With Changing Diffusion 1.pdf")
+fig4_path = os.path.join("Saved Retinas", directory_name,"Sum Output Diffusion Weights With Changing Diffusion 1.pdf")
 fig4.savefig(fig4_path)
 
 
@@ -262,7 +265,8 @@ diffusion_widths = [90 * UM_TO_M, 110 * UM_TO_M, 130 * UM_TO_M, 150 * UM_TO_M]
 fig5 = plt.figure(figsize=(10, 10))
 rows, cols, index = 4, 3, 1    
 for diffusion_width in diffusion_widths:
-    retina.on_starburst_layer.changeDiffusion(diffusion_width)
+    diffusion_parameters = retina.convertDiffusionParametersToGridUnits("Flat", [diffusion_width])
+    retina.on_starburst_layer.changeDiffusion("Flat", diffusion_parameters)
     weights = morphology.diffusion_weights
  
     for (location, location_name) in [(proximal, "Proximal"), (intermediate, "Intermediate"), (distal, "Distal")]:
@@ -291,7 +295,7 @@ for diffusion_width in diffusion_widths:
         index += 1
     
 fig5.tight_layout()
-fig5_path = os.path.join("Saved Retinas", "0","Sum Output Diffusion Weights With Changing Diffusion 2.pdf")
+fig5_path = os.path.join("Saved Retinas", directory_name, "Sum Output Diffusion Weights With Changing Diffusion 2.pdf")
 fig5.savefig(fig5_path) 
 
 
@@ -316,7 +320,7 @@ fig5.savefig(fig5_path)
 #for file_path in [fig_path, fig2_path, fig3_path, fig4_path, fig5_path]:
 #    os.remove(file_path)
 
-save_path = os.path.join("Saved Retinas", "0",
+save_path = os.path.join("Saved Retinas", directory_name,
                          "Diffusion Weight Statistics.pdf")
 mergePDFs(save_path, [fig_path, fig2_path, fig3_path, fig4_path, fig5_path])
 

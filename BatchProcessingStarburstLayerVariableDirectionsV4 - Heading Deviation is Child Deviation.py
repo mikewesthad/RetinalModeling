@@ -58,7 +58,10 @@ def run(trial_name, retina_parameters, stimulus_parameters):
     for retina_combination in retina_combinations:
         
         retina_name = str(retina_index)
-        retina_combination.append(retina_name)    
+        retina_combination.append(retina_name)  
+        print retina_combination[-5:-3]
+        retina_combination[-4] = retina_combination[-5]
+        print retina_combination[-5:-3]
         retina = createStarburstRetina(*retina_combination)
         retina_index += 1
         
@@ -158,9 +161,9 @@ def stripUnits(string):
 
 
 # User controlled variables
-trial_name = "110_Degree_Kink"
-parameter_filename = "BatchProcessingParameters.txt"
-#parameter_filename = "BatchProcessing2Parameters.txt"
+trial_name = "TEst"
+#parameter_filename = "BatchProcessingParameters.txt"
+parameter_filename = "BatchProcessing2Parameters.txt"
 
 # Create a directory to store this trial run
 trial_path = os.path.join(os.getcwd(), "Saved Retinas", trial_name)
@@ -172,8 +175,8 @@ shutil.copy(parameter_filename, parameter_path)
 
 # Read in the parameters
 parameters = processTextParameters(parameter_filename)
-retina_parameters = parameters[0:25] 
-stimulus_parameters = parameters[25:]  
+retina_parameters = parameters[0:24] 
+stimulus_parameters = parameters[24:]  
 
 # Start the trial
 run(trial_path, retina_parameters, stimulus_parameters)

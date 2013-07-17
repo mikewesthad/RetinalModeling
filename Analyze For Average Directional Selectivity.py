@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from random import randint 
 import numpy as np
 import matplotlib
+import math
 
 def createFigure(long_side_size, rows, cols):
     width, height = long_side_size, long_side_size
@@ -128,13 +129,16 @@ def calculateData(retina_paths, number_stimulus_variations, number_bars):
             vector_averages = []
             vector_average_magnitudes = []
             vector_average_centrifigualities = []
+            norm = 1.0/12.0
+            angle = 360.0/number_headings
+            for i in range(1, int(math.ceil(90/angle))): norm += 2.0/12.0 * math.cos(math.radians(i*angle)) 
             for compartment_index in range(number_compartments):
                 vector_average = Vector2D()
                 for heading_index in range(number_headings):
                     heading = float(headings[heading_index])
                     max_response = np.max(all_activities[heading_index, :, compartment_index])
                     vector_average = vector_average + max_response * Vector2D.generateHeadingFromAngle(heading)
-                vector_average = vector_average / float(len(headings))
+                vector_average = vector_average / number_headings / norm
                 vector_averages.append(vector_average)
                 vector_average_magnitudes.append(vector_average.length())
                 vector_angle = Vector2D().angleHeadingTo(vector_average)
@@ -171,15 +175,18 @@ def calculateData(retina_paths, number_stimulus_variations, number_bars):
             proximal_vector_centrifugalities    = []
             distal_vector_centrifugalities      = []
             
+            proximal_cutoff = 0.0
+            distal_cutoff = 2.0*150.0/3.0
+            
             for compartment_index in range(number_compartments):
                 compartment_length = compartment_lengths[compartment_index]
-                if compartment_length <= 0.0:        
+                if compartment_length <= proximal_cutoff:        
                     proximal_DSIs.append(DSIs[compartment_index])
                     proximal_preferred_centrifugalities.append(preferred_centrifigualities[compartment_index])
                     proximal_vector_magnitudes.append(vector_average_magnitudes[compartment_index])
                     proximal_vector_centrifugalities.append(vector_average_centrifigualities[compartment_index])
                     
-                elif compartment_length >= 135.0:       
+                elif compartment_length >= distal_cutoff:       
                     distal_DSIs.append(DSIs[compartment_index])
                     distal_preferred_centrifugalities.append(preferred_centrifigualities[compartment_index])
                     distal_vector_magnitudes.append(vector_average_magnitudes[compartment_index])
@@ -193,6 +200,11 @@ def calculateData(retina_paths, number_stimulus_variations, number_bars):
             trial_distal_preferred_centrifigualities.append(distal_preferred_centrifugalities)
             trial_proxmial_vector_centrifigualities.append(proximal_vector_centrifugalities)
             trial_distal_vector_centrifigualities.append(distal_vector_centrifugalities)
+            
+    fh = open(os.path.join(trial_path, "Cutoffs.txt"), 'w')
+    fh.write("Proximal cutoff is {0}\n".format(proximal_cutoff))
+    fh.write("Distal cutoff is {0}\n".format(distal_cutoff))
+    fh.close()
                     
     results = [trial_proxmial_DSIs, trial_distal_DSIs, 
                trial_proxmial_vector_magnitudes, trial_distal_vector_magnitudes, 
@@ -220,7 +232,7 @@ def analyzeAcrossRetinas(trial_path, retina_paths, number_stimulus_variations, n
     fig1 = createFigure(12.0, fig1_rows, fig1_cols)
     
     x_axis              = x_axis_values
-    x_axis_ticks        = x_axis_values#[x_axis_values[0]-(x_axis_values[1]-x_axis_values[0])] + x_axis + [x_axis_values[-1]+(x_axis_values[-1]-x_axis_values[-2])] 
+    x_axis_ticks = x_axis_values#[x_axis_values[0]-(x_axis_values[1]-x_axis_values[0])] + x_axis + [x_axis_values[-1]+(x_axis_values[-1]-x_axis_values[-2])] 
     DSI_ticks           = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35]
     DSI_tick_labels     = ["{0:.2}".format(x) for x in DSI_ticks]    
     CI_ticks            = [-1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
@@ -445,7 +457,7 @@ def analyzeAcrossRetinas(trial_path, retina_paths, number_stimulus_variations, n
     fig1.savefig(fig1_path)    
     
     
-def analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, number_bars, x_axis_values, x_axis_label):
+def analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, number_bars, x_axis_values, x_axis_label, x_axis_ticks=None):
     
     results = calculateData(retina_paths, number_stimulus_variations, number_bars) 
     trial_proxmial_DSIs                         = results[0]
@@ -463,12 +475,12 @@ def analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, n
     fig1 = createFigure(12.0, fig1_rows, fig1_cols)
     
     x_axis              = x_axis_values
-    x_axis_ticks        = x_axis_values#[x_axis_values[0]-(x_axis_values[1]-x_axis_values[0])] + x_axis + [x_axis_values[-1]+(x_axis_values[-1]-x_axis_values[-2])] 
+    if x_axis_ticks==None: x_axis_ticks        = x_axis_values#[x_axis_values[0]-(x_axis_values[1]-x_axis_values[0])] + x_axis + [x_axis_values[-1]+(x_axis_values[-1]-x_axis_values[-2])] 
     DSI_ticks           = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35]
     DSI_tick_labels     = ["{0:.2}".format(x) for x in DSI_ticks]    
     CI_ticks            = [-1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
     CI_tick_labels      = ["{0:.2}".format(x) for x in CI_ticks]
-    AVM_ticks           = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07]
+    AVM_ticks           = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35]
     AVM_tick_labels     = ["{0:.2}".format(x) for x in AVM_ticks] 
     
     for retina_number in range(number_retinas):
@@ -492,7 +504,7 @@ def analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, n
         average_distal_vector_centrifugalities = []
         stdev_distal_vector_centrifugalities = []
         
-        for stimulus_number in range(number_stimulus_variations):
+        for stimulus_number in range(0,number_stimulus_variations):
             index = retina_number * number_stimulus_variations + stimulus_number
             
             ave = np.mean(trial_proxmial_DSIs[index])
@@ -543,6 +555,15 @@ def analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, n
         
         x = x_axis
         
+        plot_label_props    = dict(boxstyle='round', facecolor='white', alpha=1.0)
+        plot_label_x        = 0.05
+        plot_label_y        = 0.95
+        plot_label_size     = 20
+        x_tick_size         = 12
+        x_label_size        = 16
+        y_label_size        = 16
+        y_tick_size         = 12
+        title_size          = 20
         
         # Plot one - proximal DSIs and CIs
         y1      = average_proximal_DSIs
@@ -557,25 +578,28 @@ def analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, n
         ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
         ax.plot(x, y1, ls='-', color=y1_color)
         ax.fill_between(x, y1_min, y1_max, color=y1_err_color)        
-        ax.set_title("Proximal Compartments", size=14)
-        ax.set_xlabel(x_axis_label, size=12)
-        ax.set_ylabel("DSI", color='b', size=12)
+        ax.set_title("Proximal Compartments", size=title_size)
+        ax.set_xlabel(x_axis_label, size=x_label_size)
+        ax.set_ylabel("DSI", color='b', size=y_label_size)
         ax2 = ax.twinx()
         ax2.plot(x, y2, ls='-', color=y2_color)
         ax2.fill_between(x, y2_min, y2_max, color=y2_err_color)  
-        ax2.set_ylabel("Centrifugality Index", color='r', size=12)      
+        ax2.set_ylabel("Centrifugality Index", color='r', size=x_label_size)      
      
         ax.set_xticks(x_axis_ticks)
-        ax.set_xticklabels(x_axis_ticks, rotation=70, size=10)
+        ax.set_xticklabels(x_axis_ticks, rotation=70, size=x_tick_size)
         ax2.set_xticks(x_axis_ticks)
-        ax2.set_xticklabels(x_axis_ticks, rotation=70, size=10)
+        ax2.set_xticklabels(x_axis_ticks, rotation=70, size=x_tick_size)
         ax.set_yticks(DSI_ticks)
-        ax.set_yticklabels(DSI_tick_labels, size=11, color='b')
+        ax.set_yticklabels(DSI_tick_labels, size=y_tick_size, color='b')
         ax2.set_yticks(CI_ticks)
-        ax2.set_yticklabels(CI_tick_labels, size=11, color='r')
+        ax2.set_yticklabels(CI_tick_labels, size=y_tick_size, color='r')
         ax.set_xlim([x_axis_ticks[0], x_axis_ticks[-1]])
         ax.set_ylim([DSI_ticks[0], DSI_ticks[-1]])
         ax2.set_ylim([CI_ticks[0], CI_ticks[-1]])
+        
+        plt.text(plot_label_x, plot_label_y, "A", transform=ax.transAxes, 
+                 fontsize=plot_label_size, verticalalignment="top", bbox=plot_label_props)
         fig1_index += 1  
         
         
@@ -592,25 +616,28 @@ def analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, n
         ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
         ax.plot(x, y1, ls='-', color=y1_color)
         ax.fill_between(x, y1_min, y1_max, color=y1_err_color)    
-        ax.set_title("Distal Compartments", size=14)
-        ax.set_xlabel(x_axis_label, size=12)
-        ax.set_ylabel("DSI", color='b', size=12)
+        ax.set_title("Distal Compartments", size=title_size)
+        ax.set_xlabel(x_axis_label, size=x_label_size)
+        ax.set_ylabel("DSI", color='b', size=y_label_size)
         ax2 = ax.twinx()
         ax2.plot(x, y2, ls='-', color=y2_color)
         ax2.fill_between(x, y2_min, y2_max, color=y2_err_color)   
-        ax2.set_ylabel("Centrifugality Index", color='r', size=12)
+        ax2.set_ylabel("Centrifugality Index", color='r', size=y_label_size)
         
         ax.set_xticks(x_axis_ticks)
-        ax.set_xticklabels(x_axis_ticks, rotation=70, size=10)
+        ax.set_xticklabels(x_axis_ticks, rotation=70, size=x_tick_size)
         ax2.set_xticks(x_axis_ticks)
-        ax2.set_xticklabels(x_axis_ticks, rotation=70, size=10)
+        ax2.set_xticklabels(x_axis_ticks, rotation=70, size=x_tick_size)
         ax.set_yticks(DSI_ticks)
-        ax.set_yticklabels(DSI_tick_labels, size=11, color='b')
+        ax.set_yticklabels(DSI_tick_labels, size=y_tick_size, color='b')
         ax2.set_yticks(CI_ticks)
-        ax2.set_yticklabels(CI_tick_labels, size=11, color='r')
+        ax2.set_yticklabels(CI_tick_labels, size=y_tick_size, color='r')
         ax.set_xlim([x_axis_ticks[0], x_axis_ticks[-1]])
         ax.set_ylim([DSI_ticks[0], DSI_ticks[-1]])
         ax2.set_ylim([CI_ticks[0], CI_ticks[-1]])
+        
+        plt.text(plot_label_x, plot_label_y, "B", transform=ax.transAxes, 
+                 fontsize=plot_label_size, verticalalignment="top", bbox=plot_label_props)
         fig1_index += 1  
                 
         
@@ -626,25 +653,28 @@ def analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, n
         ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
         ax.plot(x, y1, ls='-', color=y1_color)
         ax.fill_between(x, y1_min, y1_max, color=y1_err_color)   
-        ax.set_title("Proximal Compartments", size=14)
-        ax.set_xlabel(x_axis_label, size=12)
-        ax.set_ylabel("AVM", color='b', size=12)
+        ax.set_title("Proximal Compartments", size=title_size)
+        ax.set_xlabel(x_axis_label, size=x_label_size)
+        ax.set_ylabel("AVM", color='b', size=y_label_size)
         ax2 = ax.twinx()
         ax2.plot(x, y2, ls='-', color=y2_color)
         ax2.fill_between(x, y2_min, y2_max, color=y2_err_color)   
-        ax2.set_ylabel("Centrifugality Index", color='r', size=12)
+        ax2.set_ylabel("Centrifugality Index", color='r', size=y_label_size)
         
         ax.set_xticks(x_axis_ticks)
-        ax.set_xticklabels(x_axis_ticks, rotation=70, size=10)
+        ax.set_xticklabels(x_axis_ticks, rotation=70, size=x_tick_size)
         ax2.set_xticks(x_axis_ticks)
-        ax2.set_xticklabels(x_axis_ticks, rotation=70, size=10)
+        ax2.set_xticklabels(x_axis_ticks, rotation=70, size=x_tick_size)
         ax.set_yticks(AVM_ticks)
-        ax.set_yticklabels(AVM_tick_labels, size=11, color='b')
+        ax.set_yticklabels(AVM_tick_labels, size=y_tick_size, color='b')
         ax2.set_yticks(CI_ticks)
-        ax2.set_yticklabels(CI_tick_labels, size=11, color='r')
+        ax2.set_yticklabels(CI_tick_labels, size=y_tick_size, color='r')
         ax.set_xlim([x_axis_ticks[0], x_axis_ticks[-1]])
         ax.set_ylim([AVM_ticks[0], AVM_ticks[-1]])
         ax2.set_ylim([CI_ticks[0], CI_ticks[-1]])
+        
+        plt.text(plot_label_x, plot_label_y, "C", transform=ax.transAxes, 
+                 fontsize=plot_label_size, verticalalignment="top", bbox=plot_label_props)  
         fig1_index += 1  
         
         
@@ -661,28 +691,32 @@ def analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, n
         ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
         ax.plot(x, y1, ls='-', color=y1_color)
         ax.fill_between(x, y1_min, y1_max, color=y1_err_color) 
-        ax.set_title("Distal Compartments", size=14)
-        ax.set_xlabel(x_axis_label, size=12)
-        ax.set_ylabel("AVM", color='b', size=12)
+        ax.set_title("Distal Compartments", size=title_size)
+        ax.set_xlabel(x_axis_label, size=x_label_size)
+        ax.set_ylabel("AVM", color='b', size=y_label_size)
         ax2 = ax.twinx()
         ax2.plot(x, y2, ls='-', color=y2_color)
         ax2.fill_between(x, y2_min, y2_max, color=y2_err_color)  
-        ax2.set_ylabel("Centrifugality Index", color='r', size=12)
+        ax2.set_ylabel("Centrifugality Index", color='r', size=y_label_size)
         ax.set_xticks(x_axis_ticks)
-        ax.set_xticklabels(x_axis_ticks, rotation=70, size=10)
+        ax.set_xticklabels(x_axis_ticks, rotation=70, size=x_tick_size)
         ax2.set_xticks(x_axis_ticks)
-        ax2.set_xticklabels(x_axis_ticks, rotation=70, size=10)
+        ax2.set_xticklabels(x_axis_ticks, rotation=70, size=x_tick_size)
         ax.set_yticks(AVM_ticks)
-        ax.set_yticklabels(AVM_tick_labels, size=11, color='b')
+        ax.set_yticklabels(AVM_tick_labels, size=y_tick_size, color='b')
         ax2.set_yticks(CI_ticks)
-        ax2.set_yticklabels(CI_tick_labels, size=11, color='r')
+        ax2.set_yticklabels(CI_tick_labels, size=y_tick_size, color='r')
         ax.set_xlim([x_axis_ticks[0], x_axis_ticks[-1]])
         ax.set_ylim([AVM_ticks[0], AVM_ticks[-1]])
         ax2.set_ylim([CI_ticks[0], CI_ticks[-1]])
+        
+        props = dict(boxstyle='round', facecolor='white', alpha=1.0)
+        plt.text(0.05, 0.95, "D", transform=ax.transAxes, fontsize=20, 
+                 verticalalignment="top", bbox=props)
         fig1_index += 1  
         
     
-    fig1.tight_layout(pad=4.0, w_pad=6.0, h_pad=3.0)
+    fig1.tight_layout(pad=2.0, w_pad=2.0, h_pad=2.0)
     fig1_path = os.path.join(trial_path, "Directional Selectivity Results.jpg")
     fig1.savefig(fig1_path)        
     
@@ -1161,7 +1195,7 @@ def analyzeWithinRetinasTwoSpeeds(trial_path, retina_paths, number_stimulus_vari
     fig1.savefig(fig1_path)        
     
     
-def analyzeWithinRetinasThreeDiffusions(trial_path, retina_paths, number_stimulus_variations, number_bars, x_axis_values, x_axis_label):
+def analyzeWithinRetinasMultipleDiffusions(trial_path, retina_paths, number_stimulus_variations, trial_ranges, number_bars, x_axis_values, x_axis_label, legend_labels):
     
     results = calculateData(retina_paths, number_stimulus_variations, number_bars) 
     trial_proxmial_DSIs                         = results[0]
@@ -1185,7 +1219,9 @@ def analyzeWithinRetinasThreeDiffusions(trial_path, retina_paths, number_stimulu
     AVM_ticks           = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07]
     AVM_tick_labels     = ["{0:.2}".format(x) for x in AVM_ticks] 
     
-    for (stim_num_min, stim_num_max) in [[0, 18], [19, 37], [38, 56]]:    
+    DSIs_across_trials = []
+    
+    for (stim_num_min, stim_num_max) in trial_ranges:    
         
         fig1_rows, fig1_cols, fig1_index = 2, 2, 1
         fig1 = createFigure(12.0, fig1_rows, fig1_cols)
@@ -1254,7 +1290,9 @@ def analyzeWithinRetinasThreeDiffusions(trial_path, retina_paths, number_stimulu
                 stdv = np.std(trial_distal_vector_centrifigualities[index])
                 average_distal_vector_centrifugalities.append(ave)
                 stdev_distal_vector_centrifugalities.append(stdv)
-                
+            
+            DSIs_across_trials.append(average_distal_DSIs)
+            
             y1_color        = (0,0,1)
             y1_err_color    = (0,0,1,0.3)
             y2_color        = (1,0,0)
@@ -1404,6 +1442,33 @@ def analyzeWithinRetinasThreeDiffusions(trial_path, retina_paths, number_stimulu
         fig1.tight_layout(pad=4.0, w_pad=6.0, h_pad=3.0)
         fig1_path = os.path.join(trial_path, str(stim_num_min)+" Directional Selectivity Results.jpg")
         fig1.savefig(fig1_path)            
+        
+        
+        
+        fig1_rows, fig1_cols, fig1_index = 1, 1, 1
+        fig1 = createFigure(12.0, fig1_rows, fig1_cols)
+        ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
+        handles = []
+        for DSI_curve in DSIs_across_trials:
+            h, = ax.plot(x, DSI_curve, ls='-')
+            handles.append(h)
+                  
+        ax.set_title("Distal DSI", size=14)
+        ax.set_xlabel(x_axis_label, size=12)
+        ax.set_ylabel("DSI", color='b', size=12)   
+        ax.set_xticks(x_axis_ticks)
+        ax.set_xticklabels(x_axis_ticks, rotation=70, size=10)
+        ax.set_yticks(DSI_ticks)
+        ax.set_yticklabels(DSI_tick_labels, size=11, color='r')
+        ax.set_xlim([x_axis_ticks[0], x_axis_ticks[-1]])
+        ax.set_ylim([DSI_ticks[0], DSI_ticks[-1]])
+        ax.legend(handles, legend_labels)
+        
+        
+        fig1.tight_layout()
+        fig1_path = os.path.join(trial_path, "Combined Directional Selectivity Results.jpg")
+        fig1.savefig(fig1_path)            
+            
     
     
 def selectStarburstCompartmentsAlongDendrite(retina, angle):
@@ -1473,11 +1538,12 @@ def selectStarburstCompartmentsAlongDendrite(retina, angle):
         
     
 from Constants import *
-trial_name = "Bar_Conductance_Same_Morphology"
+trial_name = "Bar_Speed_Batch_Fixed_2"
 number_bars = 12
-x_axis_ticks = [x/10.0 for x in range(1, 11, 1)]
-x_axis_label = "Conductance Factor"
-number_stimulus_variations = 11
+x_axis_ticks = range(400, 6200, 200)
+x_axis_tick_labels = range(400, 6200, 400)
+x_axis_label = "Bar Speed (um/s)"
+number_stimulus_variations =  len(x_axis_ticks)
 
 trial_path = os.path.join(os.getcwd(), "Saved Retinas", trial_name)
 entries = os.listdir(trial_path)
@@ -1492,5 +1558,7 @@ for entry in entries:
 #    path_to_entry = os.path.join(trial_path, str(x))
 #    retina_paths.append(path_to_entry)
     
+legend_labels = ["{0} um radius".format(x) for x in range(10,70,20)]
+trial_ranges = [(x, x+6) for x in range(0, 21, 7)]
 
-analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, number_bars, x_axis_ticks, x_axis_label)
+analyzeWithinRetinas(trial_path, retina_paths, number_stimulus_variations, number_bars, x_axis_ticks, x_axis_label, x_axis_tick_labels)

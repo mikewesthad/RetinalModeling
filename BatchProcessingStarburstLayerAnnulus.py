@@ -166,7 +166,7 @@ def stripUnits(string):
 
 
 # User controlled variables
-trial_name = "Annuli_Test_Batch_5"
+trial_name = "Annuli_Test_Batch_6"
 parameter_filename = "BatchProcessingParameters.txt"
 
 # Create a directory to store this trial run

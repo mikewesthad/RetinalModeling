@@ -1,8 +1,10 @@
 import os
 import matplotlib.pyplot as plt
 from random import randint 
+import matplotlib.image as mpimg
 import numpy as np
 import matplotlib
+import math;
 
 def createFigure(long_side_size, rows, cols):
     width, height = long_side_size, long_side_size
@@ -128,13 +130,16 @@ def calculateData(retina_paths, number_stimulus_variations, number_bars):
             vector_averages = []
             vector_average_magnitudes = []
             vector_average_centrifigualities = []
+            norm = 1.0/12.0
+            angle = 360.0/number_headings
+            for i in range(1, int(math.ceil(90/angle))): norm += 2.0/12.0 * math.cos(math.radians(i*angle)) 
             for compartment_index in range(number_compartments):
                 vector_average = Vector2D()
                 for heading_index in range(number_headings):
                     heading = float(headings[heading_index])
                     max_response = np.max(all_activities[heading_index, :, compartment_index])
                     vector_average = vector_average + max_response * Vector2D.generateHeadingFromAngle(heading)
-                vector_average = vector_average / float(len(headings))
+                vector_average = vector_average / number_headings / norm
                 vector_averages.append(vector_average)
                 vector_average_magnitudes.append(vector_average.length())
                 vector_angle = Vector2D().angleHeadingTo(vector_average)
@@ -156,6 +161,7 @@ def calculateData(retina_paths, number_stimulus_variations, number_bars):
                 preferred_response = np.max(all_activities[preferred_heading_index, :, compartment_index])
                 null_response = np.max(all_activities[null_heading_index, :, compartment_index])
                 DSI = (preferred_response - null_response) / (preferred_response + null_response)
+#                DSI = (preferred_response - null_response)
                 DSIs.append(DSI)
             trial_DSIs.append(DSIs)
             
@@ -178,7 +184,7 @@ def calculateData(retina_paths, number_stimulus_variations, number_bars):
                     proximal_vector_magnitudes.append(vector_average_magnitudes[compartment_index])
                     proximal_vector_centrifugalities.append(vector_average_centrifigualities[compartment_index])
                     
-                elif compartment_length >= 135.0:       
+                elif compartment_length >= 100.0:       
                     distal_DSIs.append(DSIs[compartment_index])
                     distal_preferred_centrifugalities.append(preferred_centrifigualities[compartment_index])
                     distal_vector_magnitudes.append(vector_average_magnitudes[compartment_index])
@@ -192,6 +198,77 @@ def calculateData(retina_paths, number_stimulus_variations, number_bars):
             trial_distal_preferred_centrifigualities.append(distal_preferred_centrifugalities)
             trial_proxmial_vector_centrifigualities.append(proximal_vector_centrifugalities)
             trial_distal_vector_centrifigualities.append(distal_vector_centrifugalities)
+            
+            # Display variables
+            pygame.init()    
+            max_size            = Vector2D(1000.0, 1000.0)  
+            background_color    = (25, 25, 25)
+            morphology_color    = (255, 255, 255)
+            distal_color        = (255, 25, 25)
+            interm_color        = (25, 255, 255)
+            proximal_color      = (25, 255, 25)
+            
+            # Create a (scaled) pygame display     
+            width_scale                     = max_size.x / float(retina.grid_width)
+            height_scale                    = max_size.y / float(retina.grid_height)
+            scale                           = min(width_scale, height_scale)   
+            starburst.morphology.location   = max_size/scale/2.0
+            display                         = pygame.display.set_mode(max_size.toIntTuple())
+            
+            # Draw the morphology
+            display.fill(background_color)     
+            for compartment in starburst.compartments:
+                compartment.draw(display, color=morphology_color, scale=scale)
+            morphology_path = os.path.join(retina_path, "Morphology.jpg")
+            pygame.image.save(display, morphology_path)
+            
+            # Draw the vector averages over the morphology
+            def drawVectorAverages(display, draw_morphology, morphology_color):
+                for compartment, index in zip(starburst.compartments, range(number_compartments)):            
+                    # Draw the compartment
+                    if draw_morphology: compartment.draw(display, color=morphology_color, scale=scale)
+                    
+                    # Draw a vector in the direction of the preferred heading with magnitude 
+                    # set by DSI
+                    if vector_averages[index].length() != 0:
+                        vector_average = vector_averages[index].copy().normalize()
+                        magnitude = vector_average_magnitudes[index]/max(vector_average_magnitudes)
+                        vector_average = vector_average * magnitude * 50.0
+                        
+                        # Find the centroid of the compartment
+                        centroid = centroids[index]   
+                        centroid = scale * (centroid + starburst.morphology.location)
+                            
+                        if compartment_lengths[index] <= 150.0/3.0: color = proximal_color 
+                        elif compartment_lengths[index] < 2.0*150.0/3.0: color = interm_color
+                        else: color = distal_color
+                        
+                        # Find the start and end of the line
+                        start_point = centroid.toTuple()
+                        end_point = (centroid + vector_average).toTuple()
+                        pygame.draw.line(display, color, start_point, end_point, 4)
+                        pygame.draw.circle(display, color, centroid.toIntTuple(), 5)
+                    
+                # Scale Bar
+                vector_average = Vector2D(0.0, -1.0)
+                magnitude = 1.0
+                vector_average = vector_average * magnitude * 50.0
+                start_point = Vector2D(750.0, 850.0)
+                end_point = start_point + vector_average
+                pygame.draw.line(display, (255,255,255), start_point.toTuple(), end_point.toTuple(), 4)
+                pygame.draw.circle(display, (255,255,255), start_point.toIntTuple(), 5)
+                
+                font = pygame.font.Font(None, 40)
+                label = font.render("{0:.3}".format(max(vector_average_magnitudes)), True, (255,255,255))
+                label_rectangle = label.get_rect()
+                label_rectangle.center  = (820,825)
+                display.blit(label, label_rectangle)
+            
+            # Save the vector average drawings
+            average_no_morphology_path = os.path.join(retina_path, "Vector Average Without Morphology.jpg")
+            display.fill(background_color)
+            drawVectorAverages(display, False, morphology_color)     
+            pygame.image.save(display, average_no_morphology_path)
                     
     results = [trial_proxmial_DSIs, trial_distal_DSIs, 
                trial_proxmial_vector_magnitudes, trial_distal_vector_magnitudes, 
@@ -200,10 +277,9 @@ def calculateData(retina_paths, number_stimulus_variations, number_bars):
                trial_DSIs]
     return results
                 
-    
 
-def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
-            
+def analyzeMorphology(trial_path, retina_paths, number_stimulus_variations, number_bars, x_axis_values, x_axis_label, x_axis_ticks_labels=None):
+    
     results = calculateData(retina_paths, number_stimulus_variations, number_bars) 
     trial_proxmial_DSIs                         = results[0]
     trial_distal_DSIs                           = results[1]
@@ -213,24 +289,23 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
     trial_distal_preferred_centrifigualities    = results[5]
     trial_proxmial_vector_centrifigualities     = results[6]
     trial_distal_vector_centrifigualities       = results[7]
-#    trial_DSIs                                  = results[8]
     
     number_retinas  = len(retina_paths)
-#    number_trials   = number_retinas * number_stimulus_variations
     
     fig1_rows, fig1_cols, fig1_index = 2, 2, 1
     fig1 = createFigure(12.0, fig1_rows, fig1_cols)
-    diffusion_radii         = [180, 210, 240, 270, 300, 330, 360, 390]
-    diffusion_radii_ticks   = [diffusion_radii[0]-10] + diffusion_radii + [diffusion_radii[-1]+10] 
-    DSI_ticks               = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35]
-    DSI_tick_labels         = ["{0:.2}".format(x) for x in DSI_ticks]    
-    CI_ticks                = [-1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
-    CI_tick_labels          = ["{0:.2}".format(x) for x in CI_ticks]
-    AVM_ticks               = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07]
-    AVM_tick_labels         = ["{0:.2}".format(x) for x in AVM_ticks] 
+    
+    x_axis              = x_axis_values
+    x_axis_ticks        = x_axis_values#[x_axis_values[0]-(x_axis_values[1]-x_axis_values[0])] + x_axis + [x_axis_values[-1]+(x_axis_values[-1]-x_axis_values[-2])] 
+    if x_axis_ticks_labels==None: x_axis_ticks_labels = x_axis_values  
+    DSI_ticks           = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35]
+    DSI_tick_labels     = ["{0:.2}".format(x) for x in DSI_ticks]    
+    CI_ticks            = [-1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    CI_tick_labels      = ["{0:.2}".format(x) for x in CI_ticks]
+    AVM_ticks           = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35]
+    AVM_tick_labels     = ["{0:.2}".format(x) for x in AVM_ticks] 
     
     
-        
     average_proximal_DSIs = []
     stdev_proximal_DSIs = []
     average_proximal_preferred_centrifugalities = []
@@ -251,60 +326,67 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
     average_distal_vector_centrifugalities = []
     stdev_distal_vector_centrifugalities = []
     
-    stimulus_number = 0
     for retina_number in range(number_retinas):
-        
-        index = retina_number * number_stimulus_variations + stimulus_number
-        
-        ave = np.mean(trial_proxmial_DSIs[index])
-        stdv = np.std(trial_proxmial_DSIs[index])
-        average_proximal_DSIs.append(ave)
-        stdev_proximal_DSIs.append(stdv)
-        
-        ave = np.mean(trial_proxmial_preferred_centrifigualities[index])
-        stdv = np.std(trial_proxmial_preferred_centrifigualities[index])
-        average_proximal_preferred_centrifugalities.append(ave)
-        stdev_proximal_preferred_centrifugalities.append(stdv)
-        
-        ave = np.mean(trial_distal_DSIs[index])
-        stdv = np.std(trial_distal_DSIs[index])
-        average_distal_DSIs.append(ave)
-        stdev_distal_DSIs.append(stdv)
-        
-        ave = np.mean(trial_distal_preferred_centrifigualities[index])
-        stdv = np.std(trial_distal_preferred_centrifigualities[index])
-        average_distal_preferred_centrifugalities.append(ave)
-        stdev_distal_preferred_centrifugalities.append(stdv)
-        
-        
-        ave = np.mean(trial_proxmial_vector_magnitudes[index])
-        stdv = np.std(trial_proxmial_vector_magnitudes[index])
-        average_proximal_vector_magnitudes.append(ave)
-        stdev_proximal_vector_magnitudes.append(stdv)
-        
-        ave = np.mean(trial_proxmial_vector_centrifigualities[index])
-        stdv = np.std(trial_proxmial_vector_centrifigualities[index])
-        average_proximal_vector_centrifugalities.append(ave)
-        stdev_proximal_vector_centrifugalities.append(stdv)
-        
-        ave = np.mean(trial_distal_vector_magnitudes[index])
-        stdv = np.std(trial_distal_vector_magnitudes[index])
-        average_distal_vector_magnitudes.append(ave)
-        stdev_distal_vector_magnitudes.append(stdv)
-        
-        ave = np.mean(trial_distal_vector_centrifigualities[index])
-        stdv = np.std(trial_distal_vector_centrifigualities[index])
-        average_distal_vector_centrifugalities.append(ave)
-        stdev_distal_vector_centrifugalities.append(stdv)
+        for stimulus_number in range(number_stimulus_variations):
+            index = retina_number * number_stimulus_variations + stimulus_number
             
+            ave = np.mean(trial_proxmial_DSIs[index])
+            stdv = np.std(trial_proxmial_DSIs[index])
+            average_proximal_DSIs.append(ave)
+            stdev_proximal_DSIs.append(stdv)
+            
+            ave = np.mean(trial_proxmial_preferred_centrifigualities[index])
+            stdv = np.std(trial_proxmial_preferred_centrifigualities[index])
+            average_proximal_preferred_centrifugalities.append(ave)
+            stdev_proximal_preferred_centrifugalities.append(stdv)
+            
+            ave = np.mean(trial_distal_DSIs[index])
+            stdv = np.std(trial_distal_DSIs[index])
+            average_distal_DSIs.append(ave)
+            stdev_distal_DSIs.append(stdv)
+            
+            ave = np.mean(trial_distal_preferred_centrifigualities[index])
+            stdv = np.std(trial_distal_preferred_centrifigualities[index])
+            average_distal_preferred_centrifugalities.append(ave)
+            stdev_distal_preferred_centrifugalities.append(stdv)
+            
+            
+            ave = np.mean(trial_proxmial_vector_magnitudes[index])
+            stdv = np.std(trial_proxmial_vector_magnitudes[index])
+            average_proximal_vector_magnitudes.append(ave)
+            stdev_proximal_vector_magnitudes.append(stdv)
+            
+            ave = np.mean(trial_proxmial_vector_centrifigualities[index])
+            stdv = np.std(trial_proxmial_vector_centrifigualities[index])
+            average_proximal_vector_centrifugalities.append(ave)
+            stdev_proximal_vector_centrifugalities.append(stdv)
+            
+            ave = np.mean(trial_distal_vector_magnitudes[index])
+            stdv = np.std(trial_distal_vector_magnitudes[index])
+            average_distal_vector_magnitudes.append(ave)
+            stdev_distal_vector_magnitudes.append(stdv)
+            
+            ave = np.mean(trial_distal_vector_centrifigualities[index])
+            stdv = np.std(trial_distal_vector_centrifigualities[index])
+            average_distal_vector_centrifugalities.append(ave)
+            stdev_distal_vector_centrifugalities.append(stdv)
+            
+    plot_label_props    = dict(boxstyle='round', facecolor='white', alpha=1.0)
+    plot_label_x        = 0.05
+    plot_label_y        = 0.95
+    plot_label_size     = 20
+    x_tick_size         = 12
+    x_label_size        = 16
+    y_label_size        = 16
+    y_tick_size         = 12
+    title_size          = 20
+        
     y1_color        = (0,0,1)
     y1_err_color    = (0,0,1,0.3)
     y2_color        = (1,0,0)
     y2_err_color    = (1,0,0,0.3)
-#        dot_size        = 6
-#        error_width     = 1.5
     
-    x = diffusion_radii
+    x = x_axis
     
     
     # Plot one - proximal DSIs and CIs
@@ -317,35 +399,32 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
     y2_max  = np.array(y2) + np.array(y2_err)
     y2_min  = np.array(y2) - np.array(y2_err)
     
-    print x
-    print y1
-    
     ax = fig1.add_subplot(fig1_rows, fig1_cols, fig1_index)
     ax.plot(x, y1, ls='-', color=y1_color)
     ax.fill_between(x, y1_min, y1_max, color=y1_err_color)        
     ax.set_title("Proximal Compartments", size=14)
-    ax.set_xlabel("Diffusion Radius (um)", size=12)
+    ax.set_xlabel(x_axis_label, size=12)
     ax.set_ylabel("DSI", color='b', size=12)
     ax2 = ax.twinx()
     ax2.plot(x, y2, ls='-', color=y2_color)
     ax2.fill_between(x, y2_min, y2_max, color=y2_err_color)        
     ax2.set_ylabel("Centrifugality Index", color='r', size=12)
-    
-#        ax.errorbar(bar_speeds, average_proximal_DSIs, yerr=stdev_proximal_DSIs, fmt='.', color=y1_color, ls='-', markersize=dot_size, ecolor=y1_err_color, elinewidth=error_width)
-#        ax2.errorbar(bar_speeds_shifted, average_proximal_preferred_centrifugalities, yerr=stdev_proximal_preferred_centrifugalities, fmt='.', color=y2_color, ls='-', markersize=dot_size, ecolor=y2_err_color, elinewidth=error_width)
-
-    ax.set_xticks(diffusion_radii_ticks)
-    ax.set_xticklabels(diffusion_radii_ticks, rotation=70, size=10)
-    ax2.set_xticks(diffusion_radii_ticks)
-    ax2.set_xticklabels(diffusion_radii_ticks, rotation=70, size=10)
+ 
+    ax.set_xticks(x_axis_ticks)
+    ax.set_xticklabels(x_axis_ticks_labels, rotation=70, size=10)
+    ax2.set_xticks(x_axis_ticks)
+    ax2.set_xticklabels(x_axis_ticks_labels, rotation=70, size=10)
     ax.set_yticks(DSI_ticks)
     ax.set_yticklabels(DSI_tick_labels, size=11, color='b')
     ax2.set_yticks(CI_ticks)
     ax2.set_yticklabels(CI_tick_labels, size=11, color='r')
-    ax.set_xlim([diffusion_radii_ticks[0], diffusion_radii_ticks[-1]])
+    ax.set_xlim([x_axis_ticks[0], x_axis_ticks[-1]])
     ax.set_ylim([DSI_ticks[0], DSI_ticks[-1]])
     ax2.set_ylim([CI_ticks[0], CI_ticks[-1]])
     fig1_index += 1  
+        
+    plt.text(plot_label_x, plot_label_y, "A", transform=ax.transAxes, 
+             fontsize=plot_label_size, verticalalignment="top", bbox=plot_label_props)
     
     
     
@@ -362,29 +441,29 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
     ax.plot(x, y1, ls='-', color=y1_color)
     ax.fill_between(x, y1_min, y1_max, color=y1_err_color)    
     ax.set_title("Distal Compartments", size=14)
-    ax.set_xlabel("Diffusion Radius (um)", size=12)
+    ax.set_xlabel(x_axis_label, size=12)
     ax.set_ylabel("DSI", color='b', size=12)
     ax2 = ax.twinx()
     ax2.plot(x, y2, ls='-', color=y2_color)
     ax2.fill_between(x, y2_min, y2_max, color=y2_err_color)   
     ax2.set_ylabel("Centrifugality Index", color='r', size=12)
     
-#        ax.errorbar(bar_speeds_shifted, average_distal_DSIs, yerr=stdev_distal_DSIs, fmt='.', color=y1_color, ls='-', markersize=dot_size, ecolor=y1_err_color, elinewidth=error_width)
-#        ax2.errorbar(bar_speeds, average_distal_preferred_centrifugalities, yerr=stdev_distal_preferred_centrifugalities, fmt='.', color=y2_color, ls='-', markersize=dot_size, ecolor=y2_err_color, elinewidth=error_width)
-
-    ax.set_xticks(diffusion_radii_ticks)
-    ax.set_xticklabels(diffusion_radii_ticks, rotation=70, size=10)
-    ax2.set_xticks(diffusion_radii_ticks)
-    ax2.set_xticklabels(diffusion_radii_ticks, rotation=70, size=10)
+    ax.set_xticks(x_axis_ticks)
+    ax.set_xticklabels(x_axis_ticks_labels, rotation=70, size=10)
+    ax2.set_xticks(x_axis_ticks)
+    ax2.set_xticklabels(x_axis_ticks_labels, rotation=70, size=10)
     ax.set_yticks(DSI_ticks)
     ax.set_yticklabels(DSI_tick_labels, size=11, color='b')
     ax2.set_yticks(CI_ticks)
     ax2.set_yticklabels(CI_tick_labels, size=11, color='r')
-    ax.set_xlim([diffusion_radii_ticks[0], diffusion_radii_ticks[-1]])
+    ax.set_xlim([x_axis_ticks[0], x_axis_ticks[-1]])
     ax.set_ylim([DSI_ticks[0], DSI_ticks[-1]])
     ax2.set_ylim([CI_ticks[0], CI_ticks[-1]])
     fig1_index += 1  
             
+        
+    plt.text(plot_label_x, plot_label_y, "B", transform=ax.transAxes, 
+             fontsize=plot_label_size, verticalalignment="top", bbox=plot_label_props)
     
     # Plot three - proximal AVMs and CIs
     y1      = average_proximal_vector_magnitudes
@@ -399,29 +478,29 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
     ax.plot(x, y1, ls='-', color=y1_color)
     ax.fill_between(x, y1_min, y1_max, color=y1_err_color)   
     ax.set_title("Proximal Compartments", size=14)
-    ax.set_xlabel("Diffusion Radius (um)", size=12)
+    ax.set_xlabel(x_axis_label, size=12)
     ax.set_ylabel("AVM", color='b', size=12)
     ax2 = ax.twinx()
     ax2.plot(x, y2, ls='-', color=y2_color)
     ax2.fill_between(x, y2_min, y2_max, color=y2_err_color)   
     ax2.set_ylabel("Centrifugality Index", color='r', size=12)
     
-#        ax.errorbar(bar_speeds, average_proximal_vector_magnitudes, yerr=stdev_proximal_vector_magnitudes, fmt='.', color=y1_color, ls='-', markersize=dot_size, ecolor=y1_err_color, elinewidth=error_width)
-#        ax2.errorbar(bar_speeds_shifted, average_proximal_vector_centrifugalities, yerr=stdev_proximal_vector_centrifugalities, fmt='.', color=y2_color, ls='-', markersize=dot_size, ecolor=y2_err_color, elinewidth=error_width)
-    
-    ax.set_xticks(diffusion_radii_ticks)
-    ax.set_xticklabels(diffusion_radii_ticks, rotation=70, size=10)
-    ax2.set_xticks(diffusion_radii_ticks)
-    ax2.set_xticklabels(diffusion_radii_ticks, rotation=70, size=10)
+    ax.set_xticks(x_axis_ticks)
+    ax.set_xticklabels(x_axis_ticks_labels, rotation=70, size=10)
+    ax2.set_xticks(x_axis_ticks)
+    ax2.set_xticklabels(x_axis_ticks_labels, rotation=70, size=10)
     ax.set_yticks(AVM_ticks)
     ax.set_yticklabels(AVM_tick_labels, size=11, color='b')
     ax2.set_yticks(CI_ticks)
     ax2.set_yticklabels(CI_tick_labels, size=11, color='r')
-    ax.set_xlim([diffusion_radii_ticks[0], diffusion_radii_ticks[-1]])
+    ax.set_xlim([x_axis_ticks[0], x_axis_ticks[-1]])
     ax.set_ylim([AVM_ticks[0], AVM_ticks[-1]])
     ax2.set_ylim([CI_ticks[0], CI_ticks[-1]])
     fig1_index += 1  
     
+        
+    plt.text(plot_label_x, plot_label_y, "C", transform=ax.transAxes, 
+             fontsize=plot_label_size, verticalalignment="top", bbox=plot_label_props)
     
     
     # Plot three - distal AVMs and CIs
@@ -437,105 +516,88 @@ def analyze(trial_path, retina_paths, number_stimulus_variations, number_bars):
     ax.plot(x, y1, ls='-', color=y1_color)
     ax.fill_between(x, y1_min, y1_max, color=y1_err_color) 
     ax.set_title("Distal Compartments", size=14)
-    ax.set_xlabel("Diffusion Radius (um)", size=12)
+    ax.set_xlabel(x_axis_label, size=12)
     ax.set_ylabel("AVM", color='b', size=12)
     ax2 = ax.twinx()
     ax2.plot(x, y2, ls='-', color=y2_color)
     ax2.fill_between(x, y2_min, y2_max, color=y2_err_color)  
     ax2.set_ylabel("Centrifugality Index", color='r', size=12)
-    
-#        ax.errorbar(bar_speeds_shifted, average_distal_vector_magnitudes, yerr=stdev_distal_vector_magnitudes, fmt='.', color=y1_color, ls='-', markersize=dot_size, ecolor=y1_err_color, elinewidth=error_width)
-#        ax2.errorbar(bar_speeds, average_distal_vector_centrifugalities, yerr=stdev_distal_vector_centrifugalities, fmt='.', color=y2_color, ls='-', markersize=dot_size, ecolor=y2_err_color, elinewidth=error_width)
-    
-    ax.set_xticks(diffusion_radii_ticks)
-    ax.set_xticklabels(diffusion_radii_ticks, rotation=70, size=10)
-    ax2.set_xticks(diffusion_radii_ticks)
-    ax2.set_xticklabels(diffusion_radii_ticks, rotation=70, size=10)
+    ax.set_xticks(x_axis_ticks)
+    ax.set_xticklabels(x_axis_ticks_labels, rotation=70, size=10)
+    ax2.set_xticks(x_axis_ticks)
+    ax2.set_xticklabels(x_axis_ticks_labels, rotation=70, size=10)
     ax.set_yticks(AVM_ticks)
     ax.set_yticklabels(AVM_tick_labels, size=11, color='b')
     ax2.set_yticks(CI_ticks)
     ax2.set_yticklabels(CI_tick_labels, size=11, color='r')
-    ax.set_xlim([diffusion_radii_ticks[0], diffusion_radii_ticks[-1]])
+    ax.set_xlim([x_axis_ticks[0], x_axis_ticks[-1]])
     ax.set_ylim([AVM_ticks[0], AVM_ticks[-1]])
     ax2.set_ylim([CI_ticks[0], CI_ticks[-1]])
     fig1_index += 1  
-    
-
-    fig1.tight_layout(pad=2.0, w_pad=6.0, h_pad=3.0)
+        
+    plt.text(plot_label_x, plot_label_y, "D", transform=ax.transAxes, 
+             fontsize=plot_label_size, verticalalignment="top", bbox=plot_label_props)
+             
+    fig1.tight_layout(pad=4.0, w_pad=6.0, h_pad=3.0)
     fig1_path = os.path.join(trial_path, "Directional Selectivity Results.jpg")
     fig1.savefig(fig1_path)    
     
     
-def selectStarburstCompartmentsAlongDendrite(retina, angle):
-    starburst = retina.on_starburst_layer.neurons[0]
+def drawMorphology(trial_path, retina_paths):
+    # Display variables
+    pygame.init()    
+    max_size            = Vector2D(1000.0, 1000.0)  
+    background_color    = (25, 25, 25)
+    morphology_color    = (255, 255, 255)
     
-    acceptable_deviation = 10
-    min_angle = angle - acceptable_deviation
-    max_angle = angle + acceptable_deviation
-    if max_angle > 360: max_angle -= 360
-    if min_angle < 0: min_angle = 360 + min_angle    
-        
-    starburst_center = Vector2D()
-       
-    acceptable_compartment = False
-    number_tries = 0
-    max_tries = 1000
-    while not(acceptable_compartment):        
-        random_compartment_index = randint(0, starburst.number_compartments-1)
-        random_compartment = starburst.compartments[random_compartment_index]
-        
-        # Check if terminal compartment        
-        if random_compartment.distal_neighbors == []:
-            
-            # Check angle heading
-            terminal_point = random_compartment.line_points[-1]
-            compartment_heading = starburst_center.angleHeadingTo(terminal_point)
-            is_angle_acceptable = False            
-            
-            if max_angle < min_angle:
-                is_angle_acceptable = compartment_heading <= max_angle or compartment_heading >= min_angle
-            else:
-                is_angle_acceptable = compartment_heading <= max_angle and compartment_heading >= min_angle
-                
-            if is_angle_acceptable:
-                terminal_compartment = random_compartment
-                acceptable_compartment = True
-        
-        number_tries += 1
-        if number_tries > max_tries:
-            print "Increased acceptable deviation", acceptable_deviation
-            number_tries = 0
-            acceptable_deviation += 10
-            min_angle = angle - acceptable_deviation
-            max_angle = angle + acceptable_deviation
-            if max_angle > 360: max_angle -= 360
-            if min_angle < 0: min_angle = 360 + min_angle
-            
-    dendrite_path = [terminal_compartment]
-    has_reached_soma = False
-    while not(has_reached_soma):
-        most_proximal_compartment = dendrite_path[0]
-        proximal_neighbors = most_proximal_compartment.proximal_neighbors
-        
-        new_proximal_compartment = proximal_neighbors[0]
-        dendrite_path.insert(0, new_proximal_compartment)
-        
-        if new_proximal_compartment in starburst.morphology.master_compartments:
-            has_reached_soma = True
-        
-    number_compartments = len(dendrite_path)
-    proximal = dendrite_path[0]
-    interm   = dendrite_path[int(round(number_compartments/2.0))]
-    distal   = dendrite_path[-1]
+    # Create a (scaled) pygame display     
+    width_scale                     = max_size.x / 400.0
+    height_scale                    = max_size.y / 400.0
+    scale                           = min(width_scale, height_scale)   
+    display                         = pygame.display.set_mode(max_size.toIntTuple())
     
-    return proximal.index, interm.index, distal.index                 
+    pygame.display.iconify()
     
+    fig_rows, fig_cols, fig_index = 1, 7, 1
+    fig = createFigure(20.0, fig_rows, fig_cols)    
+    
+    retina_number = 0
+    for retina_path in retina_paths:
+        retina = Retina.loadRetina(retina_path)
+        starburst = retina.on_starburst_layer.neurons[0]
+        starburst.morphology.location   = max_size/scale/2.0
         
+        # Draw the morphology
+        display.fill(background_color)     
+        for compartment in starburst.compartments:
+            compartment.draw(display, color=morphology_color, scale=scale)
+        morphology_path = os.path.join(trial_path, str(retina_number)+" Morphology.jpg")
+        pygame.image.save(display, morphology_path)
+        
+        morphology_image = mpimg.imread(morphology_path)
+        morphology_image = morphology_image[100:900, 100:900]
+        ax = fig.add_subplot(fig_rows, fig_cols, fig_index)
+        ax.imshow(morphology_image)
+        ax.set_title(str(retina_number))
+        ax.axis('off')           
+        
+        fig_index += 1
+        
+        
+        
+        retina_number += 1
+        
+        
+    fig_path = os.path.join(trial_path, "Morphologies.jpg")
+    fig.savefig(fig_path)    
     
 from Constants import *
-trial_name = "Bar_Diffusion_Speed_Same_Morphology"
+trial_name = "Bar_No_Deviation_Increasing_Branching"
 number_bars = 12
-number_stimulus_variations = 91
+x_axis_ticks = [130, 110, 90, 70, 50, 30, 10]
+x_axis_ticks_labels = [1000, 150, 100, 70, 50, 30, 10]
+x_axis_label = "Max Segment Length (um)"
+number_stimulus_variations = 1
 
 trial_path = os.path.join(os.getcwd(), "Saved Retinas", trial_name)
 entries = os.listdir(trial_path)
@@ -545,10 +607,5 @@ for entry in entries:
     if os.path.isdir(path_to_entry):
         retina_paths.append(path_to_entry)
 
-#retina_paths = []
-#for x in range(2):
-#    path_to_entry = os.path.join(trial_path, str(x))
-#    retina_paths.append(path_to_entry)
-    
-
-analyze(trial_path, retina_paths, number_stimulus_variations, number_bars)
+drawMorphology(trial_path, retina_paths)
+analyzeMorphology(trial_path, retina_paths, number_stimulus_variations, number_bars, x_axis_ticks, x_axis_label, x_axis_ticks_labels)

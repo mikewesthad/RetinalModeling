@@ -30,15 +30,14 @@ bipolar_output_radius   = 10 um
 # Starburst layer
 starburst_distance      = 50 um
 starburst_density       = 1000.0
-starburst_wirelength    = 180 um
+starburst_wirelength    = 150 um
 starburt_step_size      = 15 um
 starburt_decay_rate     = 0.1
 starburt_diffusion      = ('Flat', "['70 um']")
-heading_deviation       = 1
+heading_deviation       = 10
 children_deviation      = 20
-max_segment_length      = 1000 um
+max_segment_length      = 35 um
 conductance_factor      = 0.5
-starting_dendrites      = ['1', '2', '3', '4', '5', '6']
 
 # Bar parameters
 bars                    = 12
@@ -54,8 +53,8 @@ pixel_size_in_rgu       = 1.0
 # Annulus paramters
 #pixel_size_in_rgu       = 1.0
 #framerate               = 100
-#duration                = 2000 ms
-#stimulus_frequency      = 4
+#duration                = 1000 ms
+#stimulus_frequency      = ['2', '4']
 #max_radius              = 200
 #radius_filter_factor    = 0.5
 #width_filter_factor     = 0.562
