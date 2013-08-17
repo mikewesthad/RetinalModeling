@@ -357,7 +357,16 @@ class StarburstMorphology(object):
         # Shift the cell's location back to the original
         self.location = old_location 
 
-
+    def drawWithSelected(self, surface, compartment_index, scale=1.0):
+        
+        for i in range(len(self.compartments)):
+            compartment = self.compartments[i]
+            if i == compartment_index:
+                compartment.draw(surface, scale=scale, color=(238,94,0), draw_text=False)
+            else:
+                compartment.draw(surface, scale=scale, color=(225,225,225), draw_text=False)
+                
+                
 
 # .............................................................................
 # Old functions that may not be used?

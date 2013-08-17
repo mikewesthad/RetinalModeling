@@ -54,6 +54,22 @@ class BipolarLayer:
         self.compartmentalize()
         self.establishInputs()
     
+    
+        
+    def findBipolarNear(self, desired_location):
+        acceptable_distance = 10.0
+        step_size = 10.0
+        neuron_found = False
+        while not(neuron_found):
+            for neuron_index in range(len(self.neurons)):
+                neuron = self.neurons[neuron_index]
+                loc = neuron.location
+                if loc.distanceTo(desired_location) < acceptable_distance:
+                    neuron_found = True
+                    break
+            acceptable_distance += step_size
+        return neuron_index    
+    
     def getReceptiveField(self, desired_location):
         acceptable_distance = 10.0
         step_size = 10.0
@@ -123,7 +139,16 @@ class BipolarLayer:
         if radius == None: radius = self.nearest_neighbor_distance_gridded / 2.0
         for neuron in self.neurons:
             neuron.draw(surface, radius, color=color, scale=scale)
-            
+                     
+    def drawWithSelected(self, surface, bipolar_index, scale=1.0):     
+        radius  = self.nearest_neighbor_distance_gridded/2.0
+        for i in range(len(self.neurons)): 
+            neuron = self.neurons[i]
+            if i == bipolar_index:
+                neuron.draw(surface, radius, color=(238,94,0), scale=scale)
+            else:
+                neuron.draw(surface, radius, color=(225,225,225), scale=scale)
+                
     def __str__(self):
         string = ""
         string += "Bipolar " + self.bipolar_type + " Layer\n"
